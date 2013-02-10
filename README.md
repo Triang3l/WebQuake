@@ -8,7 +8,7 @@ The current development stage is **Public Singleplayer Beta**.
 
 Follow these steps to install WebQuake:
 
-1. Install a web server with HTTP 1.1 Range support. The project was developed and tested on Abyss Web Server on Windows, so it's guaranteed to work on it.
+1. Install a web server with HTTP 1.1 Range support. The project was developed and tested on [Abyss Web Server](http://www.aprelium.com/abyssws/) on Windows, so it's guaranteed to work on it.
 2. Download Client/WebQuake.htm from the Code tab and put it somewhere on your server.
 3. Get Quake resource files. The demo version containing only the first episode is enough.
 4. Copy "id1" folder from the Quake folder to the folder where you put WebQuake.htm.
@@ -25,7 +25,7 @@ To launch mods, copy the mod folder into the folder containing WebQuake.htm and 
 
 # Adding game music
 
-To add music to WebQuake, you need to get the music off the Quake CD and convert it into .ogg format.
+To add music to WebQuake, you need to get the music off the Quake CD and convert it into .ogg format ([Audacity](http://audacity.sourceforge.net/) is great for this).
 
 The .ogg files should be named **quake(track number - 1).ogg** with trailing 0, so the main theme is named **quake01.ogg** and the last track on the Quake disc is **quake10.ogg**.
 
