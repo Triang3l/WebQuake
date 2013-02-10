@@ -25,7 +25,7 @@ To launch mods, copy the mod folder into the folder containing WebQuake.htm and 
 
 # Adding game music
 
-To add music to WebQuake, you need to get the music off the Quake CD and convert it into .ogg format.
+To add the music to WebQuake, you need to get the music off the Quake CD and convert it into .ogg format.
 
 The .ogg files should be named **quake(track number - 1).ogg** with trailing 0, so the main theme is named **quake01.ogg** and the last track on the Quake disc is **quake10.ogg**.
 
