@@ -11,6 +11,7 @@ Sys.Quit = function()
 	window.onkeyup = null;
 	window.onmousedown = null;
 	window.onmouseup = null;
+	window.onunload = null;
 	Host.Shutdown();
 	document.body.style.cursor = 'auto';
 	VID.mainwindow.style.display = 'none';
@@ -38,6 +39,7 @@ Sys.Error = function(text)
 	window.onkeyup = null;
 	window.onmousedown = null;
 	window.onmouseup = null;
+	window.onunload = null;
 	if (Host.initialized === true)
 		Host.Shutdown();
 	document.body.style.cursor = 'auto';
@@ -150,6 +152,7 @@ window.onload = function()
 	window.onkeyup = Sys.onkeyup;
 	window.onmousedown = Sys.onmousedown;
 	window.onmouseup = Sys.onmouseup;
+	window.onunload = Sys.onunload;
 
 	Sys.frame = setInterval(Host.Frame, 1000.0 / 60.0);
 };
@@ -232,4 +235,9 @@ Sys.onmouseup = function(e)
 	}
 	Key.Event(key)
 	e.preventDefault();
+};
+
+Sys.onunload = function()
+{
+	Host.Shutdown();
 };
