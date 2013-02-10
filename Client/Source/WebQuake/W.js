@@ -8,7 +8,7 @@ W.CleanupName = function(name)
 	if (i !== -1)
 		name = name.substring(0, i);
 	return name.toLowerCase();
-}
+};
 
 W.LoadWadFile = function(filename)
 {
