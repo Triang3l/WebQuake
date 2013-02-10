@@ -1286,7 +1286,7 @@ R.ReadPointFile_f = function()
 		if (org.length !== 3)
 			break;
 		++c;
-		p = R.AllocParticles(c);
+		p = R.AllocParticles(1);
 		if (p.length === 0)
 		{
 			Con.Print('Not enough free particles\n');
