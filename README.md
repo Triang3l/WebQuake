@@ -7,6 +7,7 @@ The current development stage is **Public Singleplayer Beta**.
 # Installing and running
 
 Follow these steps to install WebQuake:
+
 1. Install a web server with HTTP 1.1 Range support. The project was developed and tested on Abyss Web Server on Windows, so it's guaranteed to work on it.
 2. Download Client/WebQuake.htm from the Code tab and put it somewhere on your server.
 3. Get Quake resource files. The demo version containing only the first episode is enough.
