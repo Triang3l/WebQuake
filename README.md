@@ -25,7 +25,7 @@ To launch mods, copy the mod folder into the folder containing WebQuake.htm and 
 
 # Adding game music
 
-To add the music to WebQuake, you need to get the music off the Quake CD and convert it into .ogg format.
+To add music to WebQuake, you need to get the music off the Quake CD and convert it into .ogg format.
 
 The .ogg files should be named **quake(track number - 1).ogg** with trailing 0, so the main theme is named **quake01.ogg** and the last track on the Quake disc is **quake10.ogg**.
 
@@ -35,7 +35,7 @@ After that, create "media" folder in "id1" folder (or, for the mission pack musi
 
 # Browser support
 
-The port was tested on the following browsers:
+The port has been tested on the following browsers:
 
 * Firefox (Windows) - **Perfect** - developed on it.
 * Chrome (Windows, Android) - **Very Good** - no "loading" image. On Android, a Windows-compatible keyboard is required for Esc and F1-F12 keys.
