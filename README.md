@@ -19,7 +19,7 @@ To launch WebQuake, go to WebQuake.htm on your server in your browser.
 
 To launch the game with command line arguments, add ? after the address and put the arguments after it in the same format as you use for Quake.
 
-For Scourge of Armagon, add -hipnotic command line argument. For Dissolution of Eternity, add -hipnotic.
+For Scourge of Armagon, add -hipnotic command line argument. For Dissolution of Eternity, add -rogue.
 
 To launch mods, copy the mod folder into the folder containing WebQuake.htm and add -game MOD_NAME_HERE command line argument. Ensure step 6 of the installing instructions for the mod folder.
 
