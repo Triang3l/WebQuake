@@ -106,7 +106,7 @@ Draw.StringWhite = function(x, y, str)
 
 Draw.PicFromWad = function(name)
 {
-	var buf = W.lumps[name.toLowerCase()];
+	var buf = W.lumps[name];
 	var p = {};
 	var view = new DataView(buf, 0, 8);
 	p.width = view.getUint32(0, true);
