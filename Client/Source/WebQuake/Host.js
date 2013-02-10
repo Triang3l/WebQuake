@@ -217,8 +217,6 @@ Host._Frame = function()
 
 	if (SV.server.active)
 		CL.SendCmd();
-	
-	// Host.GetConsoleCommands();
 
 	if (SV.server.active)
 		Host.ServerFrame();
