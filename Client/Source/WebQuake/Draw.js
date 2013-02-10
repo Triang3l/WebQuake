@@ -20,7 +20,7 @@ Draw.Init = function()
 {
 	var i;
 
-	Draw.chars = new Uint8Array(W.lumps['conchars']);
+	Draw.chars = new Uint8Array(W.GetLumpName('conchars'));
 	
 	var trans = new ArrayBuffer(65536);
 	var trans32 = new Uint32Array(trans);
@@ -106,7 +106,7 @@ Draw.StringWhite = function(x, y, str)
 
 Draw.PicFromWad = function(name)
 {
-	var buf = W.lumps[name];
+	var buf = W.GetLumpName(name);
 	var p = {};
 	var view = new DataView(buf, 0, 8);
 	p.width = view.getUint32(0, true);

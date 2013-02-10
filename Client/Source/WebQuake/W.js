@@ -22,3 +22,11 @@ W.LoadWadFile = function(filename)
 		infotableofs += 32;
 	}
 };
+
+W.GetLumpName = function(name)
+{
+	var lump = W.lumps[name];
+	if (lump == null)
+		Sys.Error('W.GetLumpName: ' + name + ' not found');
+	return lump;
+};
