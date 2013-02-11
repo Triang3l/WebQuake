@@ -66,9 +66,7 @@ Vec.RotatePointAroundVector = function(dir, point, degrees)
 
 Vec.Anglemod = function(a)
 {
-	if (a >= 0.0)
-		return a - 360.0 * Math.floor(a / 360.0);
-	return a + 360.0 * (1 - Math.floor(-a / 360.0));
+	return (a % 360.0 + 360.0) % 360.0;
 };
 
 Vec.BoxOnPlaneSide = function(emins, emaxs, p)
