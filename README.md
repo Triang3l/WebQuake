@@ -6,16 +6,20 @@ The current development stage is **Public Singleplayer Beta**.
 
 [Online demo by Quaddicted](http://quaddicted.com/forum/viewtopic.php?pid=438) (may be outdated, check the build number).
 
+**VERY IMPORTANT INFO: CLOSURE COMPILER MESSED UP THE CODE SO THE STATUS BAR IS DRAWN INCORRECTLY IN THE MINIFIED VERSION.
+
+A MINIFIED VERSION WILL NOT BE DISTRIBUTED ANYMORE. PLEASE DELETE IT AND REINSTALL IT.**
+
 # Installing and running
 
 Follow these steps to install WebQuake:
 
 1. Install a web server with HTTP 1.1 Range support. The project was developed and tested on [Abyss Web Server](http://www.aprelium.com/abyssws/) on Windows, so it's guaranteed to work on it.
-2. Download Client/WebQuake.htm from the Code tab and put it somewhere on your server.
+2. Download the contents of the Client folder from the Code tab and put it somewhere on your server.
 3. Get Quake resource files. The demo version containing only the first episode is enough.
 4. Copy "id1" folder from the Quake folder to the folder where you put WebQuake.htm.
 5. If you have Quake mission packs, repeat step 4 for "hipnotic" and/or "rogue" folders.
-6. If you're running a system with case-sensitive names (such as Linux), make sure that all game files have lowercase names.
+6. If you're running a system with case-sensitive names (such as Linux), make sure that all game files (**not** including code files) have lowercase names.
 
 To launch WebQuake, go to WebQuake.htm on your server in your browser.
 
@@ -62,5 +66,3 @@ These features are intentionally left unimplemented in this build. Please don't 
 # Contributing
 
 If you want to contribute to WebQuake, feel free to fork the project and make a pull request. Pull requests and issues will be reviewed by the developer.
-
-The uncompressed version is located in Client/Source folder.
