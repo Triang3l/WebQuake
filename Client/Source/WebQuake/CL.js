@@ -649,13 +649,13 @@ CL.NextDemo = function()
 	SCR.BeginLoadingPlaque();
 	if (CL.cls.demonum >= CL.cls.demos.length)
 	{
-		CL.cls.demonum = 0;
 		if (CL.cls.demos.length === 0)
 		{
 			Con.Print('No demos listed with startdemos\n');
 			CL.cls.demonum = -1;
 			return;
 		}
+		CL.cls.demonum = 0;
 	}
 	Cmd.text = 'playdemo ' + CL.cls.demos[CL.cls.demonum++] + '\n' + Cmd.text;
 };

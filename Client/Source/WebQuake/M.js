@@ -126,7 +126,7 @@ M.Main_Key = function(k)
 		Key.dest.value = Key.dest.game;
 		M.state.value = M.state.none;
 		CL.cls.demonum = M.save_demonum;
-		if ((CL.cls.demonum !== -1) && (CL.cls.demoplayback !== true) && (CL.cls.state !== CL.active.connnected))
+		if ((CL.cls.demonum !== -1) && (CL.cls.demoplayback !== true) && (CL.cls.state !== CL.active.connected))
 			CL.NextDemo();
 		return;
 	case Key.k.downarrow:
