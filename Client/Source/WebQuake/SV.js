@@ -266,10 +266,11 @@ SV.AddToFatPVS = function(org, node)
 		d = org[0] * normal[0] + org[1] * normal[1] + org[2] * normal[2] - node.plane.dist;
 		if (d > 8.0)
 			node = node.children[0];
+		else if (d < 8.0)
+			node = node.children[1];
 		else
 		{
-			if (d >= -8.0)
-				SV.AddToFatPVS(org, node.children[0]);
+			SV.AddToFatPVS(org, node.children[0]);
 			node = node.children[1];
 		}
 	}
