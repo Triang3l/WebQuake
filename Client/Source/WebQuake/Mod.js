@@ -427,6 +427,7 @@ Mod.LoadSubmodels = function(buf)
 			}
 		];
 		out.textures = Mod.loadmodel.textures;
+		out.lightdata = Mod.loadmodel.lightdata;
 		out.faces = Mod.loadmodel.faces;
 		out.firstface = view.getUint32(fileofs + 56, true);
 		out.numfaces = view.getUint32(fileofs + 60, true);

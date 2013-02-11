@@ -802,6 +802,8 @@ R.SetupGL = function()
 
 R.RenderScene = function()
 {
+	if (CL.state.maxclients >= 2)
+		Cvar.Set('r_fullbright', '0');
 	R.AnimateLight();
 	Vec.AngleVectors(R.refdef.viewangles, R.vpn, R.vright, R.vup);
 	R.viewleaf = Mod.PointInLeaf(R.refdef.vieworg, CL.state.worldmodel);
@@ -1072,6 +1074,12 @@ R.InitTextures = function()
 
 	R.lightstyle_texture = gl.createTexture();
 	GL.Bind(0, R.lightstyle_texture);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+	R.fullbright_texture = gl.createTexture();
+	GL.Bind(0, R.fullbright_texture);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 0, 0, 0]));
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
@@ -1739,22 +1747,6 @@ R.BuildLightMap = function(surf)
 	var smax = (surf.extents[0] >> 4) + 1;
 	var tmax = (surf.extents[1] >> 4) + 1;
 	var i, j;
-	if ((R.fullbright.value !== 0) || (R.currentmodel.lightdata == null))
-	{
-		dest = (surf.light_t << 12) + (surf.light_s << 2);
-		for (i = 0; i < tmax; ++i)
-		{
-			for (j = 0; j < smax; ++j)
-			{
-				R.lightmaps[dest + (j << 2)] = 255;
-				R.lightmaps[dest + (j << 2) + 1] = 0;
-				R.lightmaps[dest + (j << 2) + 2] = 0;
-				R.lightmaps[dest + (j << 2) + 3] = 0;
-			}
-			dest += 4096;
-		}
-		return;
-	}
 	var lightmap = surf.lightofs;
 	var maps;
 	for (maps = 0; maps < surf.styles.length; ++maps)
@@ -1840,7 +1832,10 @@ R.DrawBrushModel = function(e)
 	gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 44, 0);
 	gl.vertexAttribPointer(program.aTexCoord, 4, gl.FLOAT, false, 44, 12);
 	gl.vertexAttribPointer(program.aLightStyle, 4, gl.FLOAT, false, 44, 28);
-	GL.Bind(program.tLightmap, R.lightmap_texture);
+	if ((R.fullbright.value !== 0) || (clmodel.lightdata == null))
+		GL.Bind(program.tLightmap, R.fullbright_texture);
+	else
+		GL.Bind(program.tLightmap, R.lightmap_texture);
 	GL.Bind(program.tDlight, ((R.flashblend.value === 0) && (clmodel.submodel === true)) ? R.dlightmap_texture : R.null_texture);
 	GL.Bind(program.tLightStyle, R.lightstyle_texture);
 	var i, chain, texture;
@@ -1902,7 +1897,10 @@ R.DrawWorld = function()
 	gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 44, 0);
 	gl.vertexAttribPointer(program.aTexCoord, 4, gl.FLOAT, false, 44, 12);
 	gl.vertexAttribPointer(program.aLightStyle, 4, gl.FLOAT, false, 44, 28);
-	GL.Bind(program.tLightmap, R.lightmap_texture);
+	if ((R.fullbright.value !== 0) || (ent.model.lightdata == null))
+		GL.Bind(program.tLightmap, R.fullbright_texture);
+	else
+		GL.Bind(program.tLightmap, R.lightmap_texture);
 	if (R.flashblend.value === 0)
 		GL.Bind(program.tDlight, R.dlightmap_texture);
 	else
@@ -2087,9 +2085,6 @@ R.BuildSurfaceDisplayList = function(fa)
 
 R.BuildLightmaps = function()
 {
-	if (CL.state.maxclients > 1)
-		Cvar.Set('r_fullbright', '0');
-
 	var i, j;
 
 	R.allocated = [];
@@ -2112,7 +2107,8 @@ R.BuildLightmaps = function()
 				if (surf.turbulent !== true)
 				{
 					R.AllocBlock(surf);
-					R.BuildLightMap(surf);
+					if (R.currentmodel.lightdata != null)
+						R.BuildLightMap(surf);
 				}
 				R.BuildSurfaceDisplayList(surf);
 			}
