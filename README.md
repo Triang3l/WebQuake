@@ -4,6 +4,8 @@
 
 The current development stage is **Public Singleplayer Beta**.
 
+[Online demo by Quaddicted](http://quaddicted.com/forum/viewtopic.php?pid=438) (may be outdated, check the build number).
+
 # Installing and running
 
 Follow these steps to install WebQuake:
