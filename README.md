@@ -35,7 +35,7 @@ After that, create "media" folder in "id1" folder (or, for the mission pack musi
 
 # Browser support
 
-The port has been tested on the following browsers:
+The port has been tested in the following browsers:
 
 * Firefox (Windows) - **Perfect** - developed on it.
 * Chrome (Windows, Android) - **Very Good** - no "loading" image. On Android, a Windows-compatible keyboard is required for Esc and F1-F12 keys.
