@@ -43,6 +43,12 @@ The port has been tested in the following browsers:
 * Opera (Windows) - **Not Good** - low performance, nothing is drawn in water (type r_waterwarp 0 in the console).
 * Internet Explorer (Windows) - **Unsupported** - no WebGL, audio formats are not supported, XMLHttpRequest.overrideMimeType doesn't exist.
 
+# Tips
+
+If the sound randomly doesn't play, go to console (press ~ or Options > Go to console in main menu), type *stopsound* and press Enter.
+
+You can delete saved games by pressing Del in the load or save menus. This only works for the saved games created in WebQuake.
+
 # Intentionally unimplemented features
 
 These features are intentionally left unimplemented in this build. Please don't make pull requests adding them.
