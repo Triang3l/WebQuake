@@ -2053,8 +2053,8 @@ R.BuildSurfaceDisplayList = function(fa)
 		];
 		if (fa.turbulent !== true)
 		{
-			vert[5] = (s - fa.texturemins[0] + fa.light_s * 16 + 8) / 16384.0;
-			vert[6] = (t - fa.texturemins[1] + fa.light_t * 16 + 8) / 16384.0;
+			vert[5] = (s - fa.texturemins[0] + (fa.light_s << 4) + 8) / 16384.0;
+			vert[6] = (t - fa.texturemins[1] + (fa.light_t << 4) + 8) / 16384.0;
 		}
 		fa.verts[fa.verts.length] = vert;
 	}
@@ -2076,8 +2076,8 @@ R.BuildSurfaceDisplayList = function(fa)
 		];
 		if (fa.turbulent !== true)
 		{
-			vert[5] = (s - fa.texturemins[0] + fa.light_s * 16 + 8) / 16384.0;
-			vert[6] = (t - fa.texturemins[1] + fa.light_t * 16 + 8) / 16384.0;
+			vert[5] = (s - fa.texturemins[0] + (fa.light_s << 4) + 8) / 16384.0;
+			vert[6] = (t - fa.texturemins[1] + (fa.light_t << 4) + 8) / 16384.0;
 		}
 		fa.verts[fa.verts.length] = vert;
 	}
