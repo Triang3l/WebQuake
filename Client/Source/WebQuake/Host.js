@@ -797,6 +797,7 @@ Host.Loadgame_f = function()
 
 	SV.server.time = time;
 	var client = SV.svs.clients[0];
+	client.spawn_parms = [];
 	for (i = 0; i <= 15; ++i)
 		client.spawn_parms[i] = spawn_parms[i];
 	CL.EstablishConnection('local');

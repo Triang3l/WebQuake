@@ -182,6 +182,11 @@ SV.ConnectClient = function(clientnum)
 	if (SV.server.loadgame === true)
 	{
 		spawn_parms = [];
+		if (client.spawn_parms == null)
+		{
+			client.spawn_parms = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+		}
 		for (i = 0; i <= 15; ++i)
 			spawn_parms[i] = client.spawn_parms[i];
 	}
