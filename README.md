@@ -4,11 +4,7 @@
 
 The current development stage is **Public Singleplayer Beta**.
 
-[Online demo by SpiritQuaddicted](http://quaddicted.com/forum/viewtopic.php?pid=438) (may be outdated, check the build number).
-
-**VERY IMPORTANT INFO: CLOSURE COMPILER MESSED UP THE CODE SO THE STATUS BAR IS DRAWN INCORRECTLY IN THE MINIFIED VERSION.**
-
-**THE MINIFIED VERSION WILL NOT BE DISTRIBUTED ANYMORE. PLEASE REINSTALL WEBQUAKE.**
+[Online demo by SpiritQuaddicted](http://quaddicted.com/forum/viewtopic.php?pid=438).
 
 # Installing and running
 
