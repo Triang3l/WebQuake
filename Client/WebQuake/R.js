@@ -2233,7 +2233,7 @@ R.InitSky = function(src)
 	for (i = 0; i < 128; ++i)
 	{
 		for (j = 0; j < 128; ++j)
-			trans32[(i << 7) + j] = Q.LittleULong(VID.d_8to24table[src[(i << 8) + j + 128]]);
+			trans32[(i << 7) + j] = COM.LittleLong(VID.d_8to24table[src[(i << 8) + j + 128]]);
 	}
 	GL.Bind(0, R.solidskytexture);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(trans));
@@ -2245,7 +2245,7 @@ R.InitSky = function(src)
 		{
 			p = (i << 8) + j;
 			if (src[p] !== 0)
-				trans32[(i << 7) + j] = Q.LittleULong(VID.d_8to24table[src[p]]);
+				trans32[(i << 7) + j] = COM.LittleLong(VID.d_8to24table[src[p]]);
 			else
 				trans32[(i << 7) + j] = 0;
 		}

@@ -159,31 +159,9 @@ COM.Init = function()
 	swaptestview[0] = 1;
 	swaptestview[1] = 0;
 	if ((new Uint16Array(swaptest))[0] === 1)
-	{
-		Q.BigShort = Q.ShortSwap;
-		Q.LittleShort = Q.NoSwap;
-		Q.BigUShort = Q.UShortSwap;
-		Q.LittleUShort = Q.NoSwap;
-		Q.BigLong = Q.LongSwap;
-		Q.LittleLong = Q.NoSwap;
-		Q.BigULong = Q.ULongSwap;
-		Q.LittleULong = Q.NoSwap;
-		Q.BigFloat = Q.FloatSwap;
-		Q.LittleFloat = Q.NoSwap;
-	}
+		COM.LittleLong = (function(l) {return l;});
 	else
-	{
-		Q.BigShort = Q.NoSwap;
-		Q.LittleShort = Q.ShortSwap;
-		Q.BigUShort = Q.NoSwap;
-		Q.LittleUShort = Q.UShortSwap;
-		Q.BigLong = Q.NoSwap;
-		Q.LittleLong = Q.LongSwap;
-		Q.BigULong = Q.NoSwap;
-		Q.LittleULong = Q.ULongSwap;
-		Q.BigFloat = Q.NoSwap;
-		Q.LittleFloat = Q.FloatSwap;
-	}
+		COM.LittleLong = (function(l) {return (l >>> 24) + ((l & 0xff0000) >>> 8) + (((l & 0xff00) << 8) >>> 0) + ((l << 24) >>> 0);});
 	COM.registered = Cvar.RegisterVariable('registered', '0');
 	Cvar.RegisterVariable('cmdline', COM.cmdline, false, true);
 	Cmd.AddCommand('path', COM.Path_f);

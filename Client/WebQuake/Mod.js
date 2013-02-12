@@ -1209,7 +1209,7 @@ Mod.LoadSpriteFrame = function(identifier, buffer, inframe, frame)
 	for (i = 0; i < size; ++i)
 	{
 		if (data[i] !== 255)
-			trans32[i] = Q.LittleULong(VID.d_8to24table[data[i]]);
+			trans32[i] = COM.LittleLong(VID.d_8to24table[data[i]]);
 	}
 
 	glt = {texnum: gl.createTexture(), identifier: identifier, width: frame.width, height: frame.height};

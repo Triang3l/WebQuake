@@ -127,7 +127,7 @@ GL.Upload = function(data, width, height)
 	var i;
 	for (i = scaled_width * scaled_height - 1; i >= 0; --i)
 	{
-		trans32[i] = Q.LittleULong(VID.d_8to24table[data[i]]);
+		trans32[i] = COM.LittleLong(VID.d_8to24table[data[i]]);
 		if (data[i] >= 224)
 			trans32[i] &= 0xffffff;
 	}
@@ -227,7 +227,7 @@ GL.LoadPicTexture = function(pic)
 	for (i = scaled_width * scaled_height - 1; i >= 0; --i)
 	{
 		if (data[i] !== 255)
-			trans32[i] = Q.LittleULong(VID.d_8to24table[data[i]]);
+			trans32[i] = COM.LittleLong(VID.d_8to24table[data[i]]);
 	}
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, scaled_width, scaled_height, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(trans));
 	gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);

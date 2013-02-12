@@ -27,7 +27,7 @@ Draw.Init = function()
 	for (i = 0; i < 16384; ++i)
 	{
 		if (Draw.chars[i] !== 0)
-			trans32[i] = Q.LittleULong(VID.d_8to24table[Draw.chars[i]]);
+			trans32[i] = COM.LittleLong(VID.d_8to24table[Draw.chars[i]]);
 	}
 	Draw.char_texture = gl.createTexture();
 	GL.Bind(0, Draw.char_texture);
@@ -213,7 +213,7 @@ Draw.PicToDataURL = function(pic)
 	var trans32 = new Uint32Array(trans);
 	var i;
 	for (i = 0; i < pic.data.length; ++i)
-		trans32[i] = Q.LittleULong(VID.d_8to24table[pic.data[i]]);
+		trans32[i] = COM.LittleLong(VID.d_8to24table[pic.data[i]]);
 	data.data.set(new Uint8Array(trans));
 	ctx.putImageData(data, 0, 0);
 	return canvas.toDataURL();
