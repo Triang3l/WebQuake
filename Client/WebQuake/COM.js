@@ -196,12 +196,13 @@ COM.searchpaths = [];
 COM.Path_f = function()
 {
 	Con.Print('Current search path:\n');
-	var i = COM.searchpaths.length, j;
+	var i = COM.searchpaths.length, j, s;
 	for (i = COM.searchpaths.length - 1; i >= 0; --i)
 	{
-		for (j = COM.searchpaths[i].pack.length - 1; j >= 0; --j)
-			Con.Print(COM.searchpaths[i].filename + '/' + 'pak' + j + '.pak (' + COM.searchpaths[i].pack[j].length + ' files)\n');
-		Con.Print(COM.searchpaths[i].filename + '\n');
+		s = COM.searchpaths[i];
+		for (j = s.pack.length - 1; j >= 0; --j)
+			Con.Print(s.filename + '/' + 'pak' + j + '.pak (' + s.pack[j].length + ' files)\n');
+		Con.Print(s.filename + '\n');
 	}
 };
 
