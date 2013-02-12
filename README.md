@@ -42,7 +42,7 @@ The port has been tested in the following browsers:
 * Firefox (Windows) - **Perfect** - developed on it.
 * Chrome (Windows, Android) - **Very Good** - no "loading" image. On Android, a Windows-compatible keyboard is required for Esc and F1-F12 keys.
 * Firefox (Android) - **Okay** - very low performance (canvas is locked at 12 FPS). Keypresses are incorrect, not tested with Windows keyboard.
-* Opera (Windows) - **Not Good** - low performance, nothing is drawn in water (type r_waterwarp 0 in the console).
+* Opera (Windows) - **Not Good** - low performance, nothing is drawn in water (type *r_waterwarp 0* in the console).
 * Internet Explorer (Windows) - **Unsupported** - no WebGL, audio formats are not supported, XMLHttpRequest.overrideMimeType doesn't exist.
 
 # Tips
