@@ -185,6 +185,8 @@ COM.Init = function()
 		Q.LittleFloat = Q.FloatSwap;
 	}
 	COM.registered = Cvar.RegisterVariable('registered', '0');
+	Cvar.RegisterVariable('cmdline', COM.cmdline, false, true);
+	Cmd.AddCommand('path', COM.Path_f);
 	COM.InitFilesystem();
 	COM.CheckRegistered();
 };
@@ -205,6 +207,7 @@ COM.Path_f = function()
 
 COM.WriteFile = function(filename, data, len)
 {
+	filename = filename.toLowerCase();
 	var dest = [], i;
 	for (i = 0; i < len; ++i)
 		dest[i] = String.fromCharCode(data[i]);
@@ -223,6 +226,7 @@ COM.WriteFile = function(filename, data, len)
 
 COM.WriteTextFile = function(filename, data)
 {
+	filename = filename.toLowerCase();
 	try
 	{
 		localStorage.setItem('Quake.' + COM.searchpaths[COM.searchpaths.length - 1].filename + '/' + filename, data);
@@ -238,6 +242,7 @@ COM.WriteTextFile = function(filename, data)
 
 COM.LoadFile = function(filename)
 {
+	filename = filename.toLowerCase();
 	var xhr = new XMLHttpRequest();
 	xhr.overrideMimeType('text/plain; charset=x-user-defined');
 	var i, j, k, path, pak, file, data;
@@ -334,7 +339,7 @@ COM.LoadPackFile = function(packfile)
 		{
 			pack[pack.length] =
 			{
-				name: Q.memstr(new Uint8Array(info, i << 6, 64)),
+				name: Q.memstr(new Uint8Array(info, i << 6, 64)).toLowerCase(),
 				filepos: (new DataView(info)).getUint32((i << 6) + 56, true),
 				filelen: (new DataView(info)).getUint32((i << 6) + 60, true)
 			}

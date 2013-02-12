@@ -1,6 +1,6 @@
 var Def = {};
 
-Def.webquake_version = 9;
+Def.webquake_version = 10;
 
 Def.max_edicts = 600;
 
@@ -81,4 +81,4 @@ Def.hit = {
 	empathy_shields: 67108864
 };
 
-Def.timedate = 'Exe: 20:50:53 Feb 11 2013\n';
+Def.timedate = 'Exe: 12:00:46 Feb 12 2013\n';

@@ -65,6 +65,7 @@ window.onload = function()
 	var i;
 
 	var cmdline = decodeURIComponent(document.location.search);
+	COM.cmdline = [' '];
 	if (cmdline.charCodeAt(0) === 63)
 	{
 		var argv = [];
@@ -76,6 +77,7 @@ window.onload = function()
 			c = cmdline.charCodeAt(i);
 			if ((c < 32) || (c > 127))
 				continue;
+			COM.cmdline[COM.cmdline.length] = String.fromCharCode(c);
 			if (c === 34)
 			{
 				quotes = !quotes;
@@ -95,6 +97,8 @@ window.onload = function()
 			argv[argv.length] = text;
 		COM.InitArgv(argv);
 	}
+	COM.cmdline[COM.cmdline.length] = ' ';
+	COM.cmdline = COM.cmdline.join('');
 
 	var html = document.getElementsByTagName('html')[0];
 	VID.width = (html.clientWidth <= 320) ? 320 : html.clientWidth;
