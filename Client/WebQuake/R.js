@@ -910,6 +910,7 @@ R.MakeBrushModelDisplayLists = function(m)
 		texture = m.textures[i];
 		if ((texture.sky === true) || (texture.turbulent !== true))
 			continue;
+		chain = [i, verts, 0];
 		for (j = 0; j < m.numfaces; ++j)
 		{
 			surf = m.faces[m.firstface + j];
@@ -1887,9 +1888,9 @@ R.RecursiveWorldNode = function(node)
 
 R.DrawWorld = function()
 {
-	var ent = CL.entities[0];
-	R.currententity = ent;
-	gl.bindBuffer(gl.ARRAY_BUFFER, ent.model.cmds);
+	var clmodel = CL.state.worldmodel;
+	R.currententity = CL.entities[0];
+	gl.bindBuffer(gl.ARRAY_BUFFER, clmodel.cmds);
 
 	var program = GL.UseProgram('Brush');
 	gl.uniform3f(program.uOrigin, 0.0, 0.0, 0.0);
@@ -1897,7 +1898,7 @@ R.DrawWorld = function()
 	gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 44, 0);
 	gl.vertexAttribPointer(program.aTexCoord, 4, gl.FLOAT, false, 44, 12);
 	gl.vertexAttribPointer(program.aLightStyle, 4, gl.FLOAT, false, 44, 28);
-	if ((R.fullbright.value !== 0) || (ent.model.lightdata == null))
+	if ((R.fullbright.value !== 0) || (clmodel.lightdata == null))
 		GL.Bind(program.tLightmap, R.fullbright_texture);
 	else
 		GL.Bind(program.tLightmap, R.lightmap_texture);
@@ -1907,10 +1908,10 @@ R.DrawWorld = function()
 		GL.Bind(program.tDlight, R.null_texture);
 	GL.Bind(program.tLightStyle, R.lightstyle_texture);
 	var i, j, leaf, cmds, texture;
-	for (i = 0; i < ent.model.leafs.length; ++i)
+	for (i = 0; i < clmodel.leafs.length; ++i)
 	{
-		leaf = ent.model.leafs[i];
-		if (leaf.visframe !== R.visframecount)
+		leaf = clmodel.leafs[i];
+		if ((leaf.visframe !== R.visframecount) || (leaf.waterchain === 0))
 			continue;
 		if (R.CullBox(leaf.mins, leaf.maxs) === true)
 			continue;
@@ -1918,7 +1919,7 @@ R.DrawWorld = function()
 		{
 			cmds = leaf.cmds[j];
 			R.c_brush_verts += cmds[2];
-			GL.Bind(program.tTexture, R.TextureAnimation(ent.model.textures[cmds[0]]).texturenum);
+			GL.Bind(program.tTexture, R.TextureAnimation(clmodel.textures[cmds[0]]).texturenum);
 			gl.drawArrays(gl.TRIANGLES, cmds[1], cmds[2]);
 		}
 	}
@@ -1927,11 +1928,11 @@ R.DrawWorld = function()
 	gl.uniform3f(program.uOrigin, 0.0, 0.0, 0.0);
 	gl.uniformMatrix3fv(program.uAngles, false, GL.identity);
 	gl.uniform1f(program.uTime, Host.realtime);
-	gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 20, ent.model.waterchain);
-	gl.vertexAttribPointer(program.aTexCoord, 2, gl.FLOAT, false, 20, ent.model.waterchain + 12);
-	for (i = 0; i < ent.model.leafs.length; ++i)
+	gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 20, clmodel.waterchain);
+	gl.vertexAttribPointer(program.aTexCoord, 2, gl.FLOAT, false, 20, clmodel.waterchain + 12);
+	for (i = 0; i < clmodel.leafs.length; ++i)
 	{
-		leaf = ent.model.leafs[i];
+		leaf = clmodel.leafs[i];
 		if ((leaf.visframe !== R.visframecount) || (leaf.waterchain === leaf.cmds.length))
 			continue;
 		if (R.CullBox(leaf.mins, leaf.maxs) === true)
@@ -1940,7 +1941,7 @@ R.DrawWorld = function()
 		{
 			cmds = leaf.cmds[j];
 			R.c_brush_verts += cmds[2];
-			GL.Bind(program.tTexture, ent.model.textures[cmds[0]].texturenum);
+			GL.Bind(program.tTexture, clmodel.textures[cmds[0]].texturenum);
 			gl.drawArrays(gl.TRIANGLES, cmds[1], cmds[2]);
 		}
 	}
@@ -2022,10 +2023,11 @@ R.AllocBlock = function(surf)
 			y = best = best2;
 		}
 	}
-	if ((best + h) > 1024)
+	best += h;
+	if (best > 1024)
 		Sys.Error('AllocBlock: full');
 	for (i = 0; i < w; ++i)
-		R.allocated[x + i] = best + h;
+		R.allocated[x + i] = best;
 	surf.light_s = x;
 	surf.light_t = y;
 };
@@ -2033,14 +2035,16 @@ R.AllocBlock = function(surf)
 // Based on Quake 2 polygon generation algorithm by Toji - http://blog.tojicode.com/2010/06/quake-2-bsp-quite-possibly-worst-format.html
 R.BuildSurfaceDisplayList = function(fa)
 {
+	fa.verts = [];
+	if (fa.numedges <= 2)
+		return;
 	var i, index, vec, vert, s, t;
 	var texinfo = R.currentmodel.texinfo[fa.texinfo];
 	var texture = R.currentmodel.textures[texinfo.texture];
-	fa.verts = [];
-	for (i = 0; i < 3; ++i)
+	for (i = 0; i < fa.numedges; ++i)
 	{
 		index = R.currentmodel.surfedges[fa.firstedge + i];
-		if (index >= 0)
+		if (index > 0)
 			vec = R.currentmodel.vertexes[R.currentmodel.edges[index][0]];
 		else
 			vec = R.currentmodel.vertexes[R.currentmodel.edges[-index][1]];
@@ -2053,31 +2057,13 @@ R.BuildSurfaceDisplayList = function(fa)
 		];
 		if (fa.turbulent !== true)
 		{
-			vert[5] = (s - fa.texturemins[0] + (fa.light_s << 4) + 8) / 16384.0;
-			vert[6] = (t - fa.texturemins[1] + (fa.light_t << 4) + 8) / 16384.0;
+			vert[5] = (s - fa.texturemins[0] + (fa.light_s << 4) + 8.0) / 16384.0;
+			vert[6] = (t - fa.texturemins[1] + (fa.light_t << 4) + 8.0) / 16384.0;
 		}
-		fa.verts[fa.verts.length] = vert;
-	}
-	for (i = 3; i < fa.numedges; ++i)
-	{
-		index = R.currentmodel.surfedges[fa.firstedge + i];
-		if (index >= 0)
-			vec = R.currentmodel.vertexes[R.currentmodel.edges[index][0]];
-		else
-			vec = R.currentmodel.vertexes[R.currentmodel.edges[-index][1]];
-		fa.verts[fa.verts.length] = fa.verts[0];
-		fa.verts[fa.verts.length] = fa.verts[fa.verts.length - 2];
-		s = Vec.DotProduct(vec, texinfo.vecs[0]) + texinfo.vecs[0][3];
-		t = Vec.DotProduct(vec, texinfo.vecs[1]) + texinfo.vecs[1][3];
-		vert = [
-			vec[0], vec[1], vec[2],
-			s / texture.width,
-			t / texture.height
-		];
-		if (fa.turbulent !== true)
+		if (i >= 3)
 		{
-			vert[5] = (s - fa.texturemins[0] + (fa.light_s << 4) + 8) / 16384.0;
-			vert[6] = (t - fa.texturemins[1] + (fa.light_t << 4) + 8) / 16384.0;
+			fa.verts[fa.verts.length] = fa.verts[0];
+			fa.verts[fa.verts.length] = fa.verts[fa.verts.length - 2];
 		}
 		fa.verts[fa.verts.length] = vert;
 	}

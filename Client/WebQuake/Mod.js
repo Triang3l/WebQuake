@@ -506,8 +506,7 @@ Mod.LoadFaces = function(buf)
 			numedges: view.getUint16(fileofs + 8, true),
 			texinfo: view.getUint16(fileofs + 10, true),
 			styles: [],
-			lightofs: view.getInt32(fileofs + 16, true),
-			planeback: (view.getUint16(fileofs + 2, true) !== 0)
+			lightofs: view.getInt32(fileofs + 16, true)
 		};
 		if (styles[0] !== 255)
 			out.styles[0] = styles[0];
