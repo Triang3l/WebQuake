@@ -249,7 +249,7 @@ S.StaticSound = function(sfx, origin, vol, attenuation)
 	ss.end = Host.realtime + sfx.cache.length;
 	S.Spatialize(ss);
 	ss.audio = sfx.cache.audio.cloneNode();
-	ss.audio.play();
+	ss.audio.pause();
 	S.static_channels[S.static_channels.length] = ss;
 };
 

@@ -1,6 +1,7 @@
 var Def = {};
 
-Def.webquake_version = 11;
+Def.webquake_version = 12;
+Def.timedate = 'Exe: 10:16:02 Feb 13 2013\n';
 
 Def.max_edicts = 600;
 
@@ -80,5 +81,3 @@ Def.hit = {
 	wetsuit: 33554432,
 	empathy_shields: 67108864
 };
-
-Def.timedate = 'Exe: 16:15:53 Feb 12 2013\n';
