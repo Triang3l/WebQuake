@@ -333,6 +333,7 @@ Host.Shutdown = function()
 	Host.isdown = true;
 	Host.WriteConfiguration();
 	CDAudio.Stop();
+	NET.Shutdown();
 	S.StopAllSounds();
 };
 

@@ -203,3 +203,10 @@ NET.Init = function()
 	for (NET.driverlevel = 0; NET.driverlevel < NET.drivers.length; ++NET.driverlevel)
 		NET.drivers[NET.driverlevel].initialized = NET.drivers[NET.driverlevel].Init();
 };
+
+NET.Shutdown = function()
+{
+	NET.time = Sys.FloatTime();
+	for (i = 0; i < NET.activeSockets.length; ++i)
+		NET.Close(NET.activeSockets[i]);
+};

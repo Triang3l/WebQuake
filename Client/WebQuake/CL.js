@@ -482,7 +482,7 @@ CL.Rcon_f = function()
 		return;
 	}
 	var to;
-	if (CL.cls.state === CL.active.connected)
+	if ((CL.cls.state === CL.active.connected) && (CL.cls.netcon != null))
 	{
 		if (CL.cls.netcon.driver !== 0)
 			to = CL.cls.netcon.address;
