@@ -256,6 +256,7 @@ COM.LoadFile = function(filename)
 					Draw.EndDisc();
 					return Q.strmem(xhr.responseText);
 				}
+				break;
 			}
 		}
 		xhr.open('GET', path, false);
@@ -318,7 +319,7 @@ COM.LoadPackFile = function(packfile)
 		{
 			pack[pack.length] =
 			{
-				name: Q.memstr(new Uint8Array(info, i << 6, 64)).toLowerCase(),
+				name: Q.memstr(new Uint8Array(info, i << 6, 56)).toLowerCase(),
 				filepos: (new DataView(info)).getUint32((i << 6) + 56, true),
 				filelen: (new DataView(info)).getUint32((i << 6) + 60, true)
 			}
