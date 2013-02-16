@@ -59,12 +59,11 @@ Loop.GetMessage = function(sock)
 	if (length > NET.message.data.byteLength)
 		Sys.Error('Loop.GetMessage: overflow');
 	NET.message.cursize = length;
-	var data = new Uint8Array(NET.message.data), i;
-	for (i = 0; i < length; ++i)
-		data[i] = sock.receiveMessage[i + 3];
+	(new Uint8Array(NET.message.data)).set(sock.receiveMessage.subarray(3, length + 3));
 	sock.receiveMessageLength -= length;
 	if (sock.receiveMessageLength >= 4)
 	{
+		var i;
 		for (i = 0; i < sock.receiveMessageLength; ++i)
 			sock.receiveMessage[i] = sock.receiveMessage[length + 3 + i];
 	}
