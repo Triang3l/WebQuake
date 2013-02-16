@@ -127,7 +127,7 @@ PF.normalize = function()
 
 PF.vlen = function()
 {
-	PR.globals_float[1] = Vec.Length([PR.globals_float[4], PR.globals_float[5], PR.globals_float[6]]);
+	PR.globals_float[1] = Math.sqrt(PR.globals_float[4] * PR.globals_float[4] + PR.globals_float[5] * PR.globals_float[5] + PR.globals_float[6] * PR.globals_float[6]);
 };
 
 PF.vectoyaw = function()

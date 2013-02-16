@@ -186,18 +186,7 @@ Mod.lump =
 	marksurfaces: 11,
 	edges: 12,
 	surfedges: 13,
-	models: 14,
-
-	lumps: 15
-};
-
-Mod.planetype = {
-	x: 0,
-	y: 1,
-	z: 2,
-	anyx: 3,
-	anyy: 4,
-	anyz: 5
+	models: 14
 };
 
 Mod.contents = {
@@ -396,14 +385,10 @@ Mod.LoadSubmodels = function(buf)
 			view.getFloat32(fileofs + 16, true) + 1.0,
 			view.getFloat32(fileofs + 20, true) + 1.0];
 		out.origin = [view.getFloat32(fileofs + 24, true), view.getFloat32(fileofs + 28, true), view.getFloat32(fileofs + 32, true)];
-		out.headnode = [
-			view.getUint32(fileofs + 36, true), view.getUint32(fileofs + 40, true),
-			view.getUint32(fileofs + 44, true)
-		];
 		out.hulls = [
 			{
 				clipnodes: clipnodes,
-				firstclipnode: out.headnode[0],
+				firstclipnode: view.getUint32(fileofs + 36, true),
 				lastclipnode: Mod.loadmodel.nodes.length - 1,
 				planes: Mod.loadmodel.planes,
 				clip_mins: [0.0, 0.0, 0.0],
@@ -411,7 +396,7 @@ Mod.LoadSubmodels = function(buf)
 			},
 			{
 				clipnodes: Mod.loadmodel.clipnodes,
-				firstclipnode: out.headnode[1],
+				firstclipnode: view.getUint32(fileofs + 40, true),
 				lastclipnode: Mod.loadmodel.clipnodes.length - 1,
 				planes: Mod.loadmodel.planes,
 				clip_mins: [-16.0, -16.0, -24.0],
@@ -419,7 +404,7 @@ Mod.LoadSubmodels = function(buf)
 			},
 			{
 				clipnodes: Mod.loadmodel.clipnodes,
-				firstclipnode: out.headnode[2],
+				firstclipnode: view.getUint32(fileofs + 44, true),
 				lastclipnode: Mod.loadmodel.clipnodes.length - 1,
 				planes: Mod.loadmodel.planes,
 				clip_mins: [-32.0, -32.0, -24.0],

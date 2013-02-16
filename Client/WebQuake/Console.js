@@ -106,9 +106,8 @@ Con.Print = function(msg)
 
 Con.DPrint = function(msg)
 {
-	if (Host.developer.value === 0)
-		return;
-	Con.Print(msg);
+	if (Host.developer.value !== 0)
+		Con.Print(msg);
 };
 
 Con.DrawInput = function()

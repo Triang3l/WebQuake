@@ -168,23 +168,6 @@ Host.WriteConfiguration = function()
 	COM.WriteTextFile('config.cfg', Key.WriteBindings() + Cvar.WriteVariables());
 };
 
-Host.FilterTime = function()
-{
-	Host.realtime = Sys.FloatTime();
-	Host.frametime = Host.realtime - Host.oldrealtime;
-	Host.oldrealtime = Host.realtime;
-	if (Host.framerate.value > 0)
-		Host.frametime = Host.framerate.value;
-	else
-	{
-		if (Host.frametime > 0.1)
-			Host.frametime = 0.1;
-		else if (Host.frametime < 0.001)
-			Host.frametime = 0.001;
-	}
-	return true;
-};
-
 Host.ServerFrame = function()
 {
 	PR.globals_float[PR.globalvars.frametime] = Host.frametime;
@@ -201,9 +184,18 @@ Host._Frame = function()
 {
 	Math.random();
 
-	if (Host.FilterTime() !== true)
-		return;
-
+	Host.realtime = Sys.FloatTime();
+	Host.frametime = Host.realtime - Host.oldrealtime;
+	Host.oldrealtime = Host.realtime;
+	if (Host.framerate.value > 0)
+		Host.frametime = Host.framerate.value;
+	else
+	{
+		if (Host.frametime > 0.1)
+			Host.frametime = 0.1;
+		else if (Host.frametime < 0.001)
+			Host.frametime = 0.001;
+	}
 
 	if (CL.cls.state === CL.active.connecting)
 	{
@@ -215,13 +207,9 @@ Host._Frame = function()
 
 	Cmd.Execute();
 
-	if (SV.server.active)
-		CL.SendCmd();
-
-	if (SV.server.active)
+	CL.SendCmd();
+	if (SV.server.active === true)
 		Host.ServerFrame();
-	else
-		CL.SendCmd();
 
 	if (CL.cls.state === CL.active.connected)
 		CL.ReadFromServer();

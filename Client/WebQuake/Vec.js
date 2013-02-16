@@ -2,17 +2,6 @@ var Vec = {};
 
 Vec.origin = [0.0, 0.0, 0.0];
 
-Vec.ProjectPointOnPlane = function(p, normal)
-{
-	var inv_denom = 1.0 / Vec.DotProduct(normal, normal);
-	var d = Vec.DotProduct(normal, p) * inv_denom;
-	return [
-		p[0] - d * normal[0] * inv_denom,
-		p[1] - d * normal[1] * inv_denom,
-		p[2] - d * normal[2] * inv_denom
-	];
-};
-
 Vec.Perpendicular = function(v)
 {
 	var pos = 0;
@@ -32,9 +21,15 @@ Vec.Perpendicular = function(v)
 		pos = 2;
 		minelem = Math.abs(v[2]);
 	}
-	var tempvec = [0, 0, 0];
-	tempvec[pos] = 1;
-	var dst = Vec.ProjectPointOnPlane(tempvec, v);
+	var tempvec = [0.0, 0.0, 0.0];
+	tempvec[pos] = 1.0;
+	var inv_denom = 1.0 / (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+	var d = (tempvec[0] * v[0] + tempvec[1] * v[1] + tempvec[2] * v[2]) * inv_denom;
+	var dst = [
+		tempvec[0] - d * v[0] * inv_denom,
+		tempvec[1] - d * v[1] * inv_denom,
+		tempvec[2] - d * v[2] * inv_denom
+	];
 	Vec.Normalize(dst);
 	return dst;
 };

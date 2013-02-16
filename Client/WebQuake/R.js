@@ -135,7 +135,7 @@ R.PushDlights = function()
 					continue;
 				if ((ent.model.type !== Mod.type.brush) || (ent.model.submodel !== true))
 					continue;
-				R.MarkLights(l, bit, CL.state.worldmodel.nodes[ent.model.headnode[0]]);
+				R.MarkLights(l, bit, CL.state.worldmodel.nodes[ent.model.hulls[0].firstclipnode]);
 			}
 		}
 		bit += bit;
@@ -730,7 +730,7 @@ R.SetFrustum = function()
 	for (i = 0; i <= 3; ++i)
 	{
 		out = R.frustum[i];
-		out.type = Mod.planetype.anyz;
+		out.type = 5;
 		out.dist = Vec.DotProduct(R.refdef.vieworg, out.normal);
 		out.signbits = 0;
 		if (out.normal[0] < 0.0)
