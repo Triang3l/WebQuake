@@ -16,10 +16,6 @@ NET.NewQSocket = function()
 		connecttime: NET.time,
 		lastMessageTime: NET.time,
 		driver: NET.driverlevel,
-		sendMessageLength: 0,
-		sendMessage: new Uint8Array(new ArrayBuffer(8192)),
-		receiveMessageLength: 0,
-		receiveMessage: new Uint8Array(new ArrayBuffer(8192)),
 		address: 'UNSET ADDRESS'
 	};
 	return NET.activeSockets[i];
@@ -45,10 +41,51 @@ NET.Connect = function(host)
 		if (ret === 0)
 		{
 			CL.cls.state = CL.active.connecting;
+			Con.Print('trying...\n');
+			NET.start_time = NET.time;
+			NET.reps = 0;
 			throw 'NET.Connect';
 		}
 		if (ret != null)
 			return ret;
+	}
+};
+
+NET.CheckForResend = function()
+{
+	NET.time = Sys.FloatTime();
+	var dfunc = NET.drivers[NET.newsocket.driver];
+	if (NET.reps <= 2)
+	{
+		if ((NET.time - NET.start_time) >= (2.5 * (NET.reps + 1)))
+		{
+			Con.Print('still trying...\n');
+			++NET.reps;
+		}
+	}
+	else if (NET.reps === 3)
+	{
+		if ((NET.time - NET.start_time) >= 10.0)
+		{
+			NET.Close(NET.newsocket);
+			CL.cls.state = CL.active.disconnected;
+			Con.Print('No Response\n');
+			Host.Error('NET.CheckForResend: connect failed\n');
+		}
+	}
+	var ret = dfunc.CheckForResend();
+	if (ret === 1)
+	{
+		NET.newsocket.disconnected = false;
+		CL.Connect(NET.newsocket);
+	}
+	else if (ret === -1)
+	{
+		NET.newsocket.disconnected = false;
+		NET.Close(NET.newsocket);
+		CL.cls.state = CL.active.disconnected;
+		Con.Print('Network Error\n');
+		Host.Error('NET.CheckForResend: connect failed\n');
 	}
 };
 
@@ -199,7 +236,7 @@ NET.Init = function()
 	NET.messagetimeout = Cvar.RegisterVariable('net_messagetimeout', '300');
 	NET.hostname = Cvar.RegisterVariable('hostname', 'UNNAMED');
 
-	NET.drivers = [Loop];
+	NET.drivers = [Loop, WEBS];
 	for (NET.driverlevel = 0; NET.driverlevel < NET.drivers.length; ++NET.driverlevel)
 		NET.drivers[NET.driverlevel].initialized = NET.drivers[NET.driverlevel].Init();
 };

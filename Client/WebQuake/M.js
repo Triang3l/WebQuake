@@ -390,7 +390,6 @@ M.multiplayer_cursor = 0;
 M.multiplayer_cursor_table = [56, 72, 96, 120, 156];
 M.multiplayer_joinname = '';
 M.multiplayer_items = 5;
-M.return_reason = '';
 
 M.Menu_MultiPlayer_f = function()
 {
@@ -435,8 +434,6 @@ M.MultiPlayer_Draw = function()
 
 	if (WEBS.available !== true)
 		M.PrintWhite(52, 172, 'No Communications Available');
-	else if (M.return_reason.length !== 0)
-		M.PrintWhite(64, 172, M.return_reason);
 };
 
 M.MultiPlayer_Key = function(k)
@@ -488,7 +485,10 @@ M.MultiPlayer_Key = function(k)
 				return;
 			Key.dest.value = Key.dest.game;
 			M.state.value = M.state.none;
-			Cmd.text += 'connect "' + multiplayer_joinname + '"\n';
+			Cmd.text += 'connect "';
+			if (M.multiplayer_joinname.substring(0, 3) !== 'ws:')
+				Cmd.text += 'ws://';
+			Cmd.text += M.multiplayer_joinname + '"\n';
 			return;
 		case 2:
 			S.LocalSound(M.sfx_menu3);

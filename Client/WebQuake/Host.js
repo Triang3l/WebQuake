@@ -199,6 +199,7 @@ Host._Frame = function()
 
 	if (CL.cls.state === CL.active.connecting)
 	{
+		NET.CheckForResend();
 		SCR.UpdateScreen();
 		return;
 	}

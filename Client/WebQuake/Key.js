@@ -362,6 +362,8 @@ Key.Init = function()
 
 Key.Event = function(key, down)
 {
+	if (CL.cls.state === CL.active.connecting)
+		return;
 	if ((key !== Key.k.backspace) && (down === true) && (Key.down[key] === true))
 		return;
 	Key.down[key] = down;

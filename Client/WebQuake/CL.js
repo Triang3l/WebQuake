@@ -602,18 +602,25 @@ CL.Disconnect = function()
 	CL.cls.signon = 0;
 };
 
+CL.Connect = function(sock)
+{
+	CL.cls.netcon = sock;
+	Con.DPrint('CL.Connect: connected to ' + CL.host + '\n');
+	CL.cls.demonum = -1;
+	CL.cls.state = CL.active.connected;
+	CL.cls.signon = 0;
+};
+
 CL.EstablishConnection = function(host)
 {
 	if (CL.cls.demoplayback === true)
 		return;
 	CL.Disconnect();
-	CL.cls.netcon = NET.Connect(host);
-	if (CL.cls.netcon == null)
-		Con.Print('CL.EstablishConnection: connect failed\n');
-	Con.DPrint('CL.EstablishConnection: connected to ' + host + '\n');
-	CL.cls.demonum = -1;
-	CL.cls.state = CL.active.connected;
-	CL.cls.signon = 0;
+	CL.host = host;
+	var sock = NET.Connect(host);
+	if (sock == null)
+		Host.Error('CL.EstablishConnection: connect failed\n');
+	CL.Connect(sock);
 };
 
 CL.SignonReply = function()
@@ -786,19 +793,24 @@ CL.RelinkEntities = function()
 	}
 
 	var bobjrotate = Vec.Anglemod(100.0 * CL.state.time);
-	var ent, oldorg, dl;
+	var ent, oldorg = [], dl;
 	for (i = 1; i < CL.entities.length; ++i)
 	{
 		ent = CL.entities[i];
 		if (ent.model == null)
 			continue;
 		if (ent.msgtime !== CL.state.mtime[0])
+		{
+			ent.model = null;
 			continue;
-		oldorg = [ent.origin[0], ent.origin[1], ent.origin[2]];
+		}
+		oldorg[0] = ent.origin[0];
+		oldorg[1] = ent.origin[1];
+		oldorg[2] = ent.origin[2];
 		if (ent.forcelink === true)
 		{
-			ent.origin = [ent.msg_origins[0][0], ent.msg_origins[0][1], ent.msg_origins[0][2]];
-			ent.angles = [ent.msg_angles[0][0], ent.msg_angles[0][1], ent.msg_angles[0][2]];
+			Vec.Copy(ent.msg_origins[0], ent.origin);
+			Vec.Copy(ent.msg_angles[0], ent.angles);
 		}
 		else
 		{
@@ -1087,7 +1099,7 @@ CL.KeepaliveMessage = function()
 			break;
 	}
 	NET.message.cursize = oldsize;
-	(new Uint8Array(NET.message.data, 0, oldsize)).set(olddata);
+	(new Uint8Array(NET.message.data, 0, oldsize)).set(olddata.subarray(0, oldsize));
 	var time = Sys.FloatTime();
 	if ((time - CL.lastmsg) < 5.0)
 		return;

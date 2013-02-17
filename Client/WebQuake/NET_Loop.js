@@ -15,19 +15,19 @@ Loop.Connect = function(host)
 	if (Loop.client == null)
 	{
 		Loop.client = NET.NewQSocket();
+		Loop.client.receiveMessage = new Uint8Array(new ArrayBuffer(8192));
 		Loop.client.address = 'localhost';
 	}
 	Loop.client.receiveMessageLength = 0;
-	Loop.client.sendMessageLength = 0;
 	Loop.client.canSend = true;
 
 	if (Loop.server == null)
 	{
 		Loop.server = NET.NewQSocket();
+		Loop.server.receiveMessage = new Uint8Array(new ArrayBuffer(8192));
 		Loop.server.address = 'LOCAL';
 	}
 	Loop.server.receiveMessageLength = 0;
-	Loop.server.sendMessageLength = 0;
 	Loop.server.canSend = true;
 
 	Loop.client.driverdata = Loop.server;
@@ -41,10 +41,8 @@ Loop.CheckNewConnections = function()
 	if (Loop.localconnectpending !== true)
 		return;
 	Loop.localconnectpending = false;
-	Loop.server.sendMessageLength = 0;
 	Loop.server.receiveMessageLength = 0;
 	Loop.server.canSend = true;
-	Loop.client.sendMessageLength = 0;
 	Loop.client.receiveMessageLength = 0;
 	Loop.client.canSend = true;
 	return Loop.server;
@@ -108,9 +106,8 @@ Loop.SendUnreliableMessage = function(sock, data)
 
 Loop.CanSendMessage = function(sock)
 {
-	if (sock.driverdata == null)
-		return;
-	return sock.canSend;
+	if (sock.driverdata != null)
+		return sock.canSend;
 };
 
 Loop.Close = function(sock)
@@ -118,7 +115,6 @@ Loop.Close = function(sock)
 	if (sock.driverdata != null)
 		sock.driverdata.driverdata = null;
 	sock.receiveMessageLength = 0;
-	sock.sendMessageLength = 0;
 	sock.canSend = false;
 	if (sock === Loop.client)
 		Loop.client = null;
