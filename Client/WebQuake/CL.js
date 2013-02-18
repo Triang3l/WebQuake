@@ -778,6 +778,7 @@ CL.RelinkEntities = function()
 
 	CL.state.velocity[0] = CL.state.mvelocity[1][0] + frac * (CL.state.mvelocity[0][0] - CL.state.mvelocity[1][0]);
 	CL.state.velocity[1] = CL.state.mvelocity[1][1] + frac * (CL.state.mvelocity[0][1] - CL.state.mvelocity[1][1]);
+	CL.state.velocity[2] = CL.state.mvelocity[1][2] + frac * (CL.state.mvelocity[0][2] - CL.state.mvelocity[1][2]);
 
 	if (CL.cls.demoplayback === true)
 	{
