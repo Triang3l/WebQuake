@@ -541,7 +541,7 @@ M.MultiPlayer_Key = function(k)
 
 // Options menu
 M.options_cursor = 0;
-M.options_items = 7;
+M.options_items = 11;
 
 M.Menu_Options_f = function()
 {
@@ -564,7 +564,15 @@ M.AdjustSliders = function(dir)
 			SCR.viewsize.value = 120;
 		Cvar.SetValue('viewsize', SCR.viewsize.value);
 		return;
-	case 4: // music volume
+	case 4: // mouse speed
+		CL.sensitivity.value += dir * 0.5;
+		if (CL.sensitivity.value < 1.0)
+			CL.sensitivity.value = 1.0;
+		else if (CL.sensitivity.value > 11.0)
+			CL.sensitivity.value = 11.0;
+		Cvar.SetValue('sensitivity', CL.sensitivity.value);
+		return;
+	case 5: // music volume
 		S.bgmvolume.value += dir * 0.1;
 		if (S.bgmvolume.value < 0.0)
 			S.bgmvolume.value = 0.0;
@@ -572,7 +580,7 @@ M.AdjustSliders = function(dir)
 			S.bgmvolume.value = 1.0;
 		Cvar.SetValue('bgmvolume', S.bgmvolume.value);
 		return;
-	case 5: // sfx volume
+	case 6: // sfx volume
 		S.volume.value += dir * 0.1;
 		if (S.volume.value < 0.0)
 			S.volume.value = 0.0;
@@ -580,7 +588,7 @@ M.AdjustSliders = function(dir)
 			S.volume.value = 1.0;
 		Cvar.SetValue('volume', S.volume.value);
 		return;
-	case 6: // allways run
+	case 7: // allways run
 		if (CL.forwardspeed.value > 200.0)
 		{
 			Cvar.SetValue('cl_forwardspeed', 200.0);
@@ -589,6 +597,15 @@ M.AdjustSliders = function(dir)
 		}
 		Cvar.SetValue('cl_forwardspeed', 400.0);
 		Cvar.SetValue('cl_backspeed', 400.0);
+		return;
+	case 8: // invert mouse
+		Cvar.SetValue('m_pitch', -CL.m_pitch.value);
+		return;
+	case 9: // lookspring
+		Cvar.SetValue('lookspring', (CL.lookspring.value !== 0) ? 0 : 1);
+		return;
+	case 10: // lookstrafe
+		Cvar.SetValue('lookstrafe', (CL.lookstrafe.value !== 0) ? 0 : 1);
 	}
 };
 
@@ -624,13 +641,20 @@ M.Options_Draw = function()
 	
 	M.Print(104, 56, 'Screen size');
 	M.DrawSlider(220, 56, (SCR.viewsize.value - 30) / 90);
-	M.Print(72, 64, 'CD Music Volume');
-	M.DrawSlider(220, 64, S.bgmvolume.value);
-	M.Print(96, 72, 'Sound Volume');
-	M.DrawSlider(220, 72, S.volume.value);
-
-	M.Print(112, 80, 'Always Run');
-	M.Print(220, 80, (CL.forwardspeed.value > 200.0) ? 'on' : 'off');
+	M.Print(104, 64, 'Mouse Speed');
+	M.DrawSlider(220, 72, (CL.sensitivity.value - 1) / 10);
+	M.Print(72, 72, 'CD Music Volume');
+	M.DrawSlider(220, 72, S.bgmvolume.value);
+	M.Print(96, 80, 'Sound Volume');
+	M.DrawSlider(220, 80, S.volume.value);
+	M.Print(112, 88, 'Always Run');
+	M.Print(220, 88, (CL.forwardspeed.value > 200.0) ? 'on' : 'off');
+	M.Print(96, 96, 'Invert Mouse');
+	M.Print(220, 96, (CL.m_pitch.value < 0.0) ? 'on' : 'off');
+	M.Print(112, 104, 'Lookspring');
+	M.Print(220, 104, (CL.lookspring.value !== 0) ? 'on' : 'off');
+	M.Print(112, 112, 'Lookstrafe');
+	M.Print(220, 112, (CL.lookstrafe.value !== 0) ? 'on' : 'off');
 	
 	M.DrawCharacter(200, 32 + (M.options_cursor << 3), 12 + ((Host.realtime * 4.0) & 1));
 };

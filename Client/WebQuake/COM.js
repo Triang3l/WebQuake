@@ -136,6 +136,7 @@ COM.InitArgv = function(argv)
 	{
 		COM.argv[COM.argv.length] = '-nosound';
 		COM.argv[COM.argv.length] = '-nocdaudio';
+		COM.argv[COM.argv.length] = '-nomouse';
 	}
 	if (COM.CheckParm('-rogue') != null)
 	{

@@ -307,6 +307,7 @@ Host.Init = function()
 	CDAudio.Init();
 	Sbar.Init();
 	CL.Init();
+	IN.Init();
 	Cmd.text = 'exec quake.rc\n' + Cmd.text;
 	Host.initialized = true;
 	Sys.Print('========Quake Initialized=========\n');
@@ -324,6 +325,7 @@ Host.Shutdown = function()
 	CDAudio.Stop();
 	NET.Shutdown();
 	S.StopAllSounds();
+	IN.Shutdown();
 };
 
 // Commands
@@ -1017,11 +1019,11 @@ Host.Spawn_f = function()
 
 	var i;
 
+	var ent = client.edict;
 	if (SV.server.loadgame === true)
 		SV.server.paused = false;
 	else
 	{
-		var ent = client.edict;
 		for (i = 0; i < PR.entityfields; ++i)
 			ent.v_int[i] = 0;
 		ent.v_float[PR.entvars.colormap] = ent.num;
@@ -1073,7 +1075,6 @@ Host.Spawn_f = function()
 	MSG.WriteByte(message, Def.stat.monsters);
 	MSG.WriteLong(message, PR.globals_float[PR.globalvars.killed_monsters]);
 	MSG.WriteByte(message, Protocol.svc.setangle);
-	ent = SV.server.edicts[1 + Host.client.num];
 	MSG.WriteAngle(message, ent.v_float[PR.entvars.angles]);
 	MSG.WriteAngle(message, ent.v_float[PR.entvars.angles1]);
 	MSG.WriteAngle(message, 0.0);

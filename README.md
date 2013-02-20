@@ -39,11 +39,13 @@ After that, create "media" folder in "id1" folder (or, for the mission pack musi
 
 The port has been tested in the following browsers:
 
-* Firefox (Windows) - **Perfect** - developed on it.
+* Firefox (Windows) - **Very Good** - developed in it, no mouse.
 * Chrome (Windows, Android) - **Very Good** - no "loading" image. On Android, a Windows-compatible keyboard is required for Esc and F1-F12 keys.
-* Firefox (Android) - **Okay** - very low performance (canvas is locked at 12 FPS). Keypresses are incorrect, not tested with Windows keyboard.
-* Opera (Windows) - **Not Good** - low performance, nothing is drawn in water (type *r_waterwarp 0* in the console).
-* Internet Explorer (Windows) - **Unsupported** - no WebGL, audio formats are not supported, XMLHttpRequest.overrideMimeType doesn't exist.
+* Firefox (Android) - **Okay** - very low performance (canvas is locked at 12 FPS), no mouse support. Keypresses are incorrect, not tested with Windows keyboard.
+* Opera (Windows) - **Not Good** - low performance, nothing is drawn in water (type *r_waterwarp 0* in the console), no mouse.
+* Internet Explorer (Windows) - **Unsupported** - no WebGL, audio formats are not supported, XMLHttpRequest.overrideMimeType doesn't exist, no mouse.
+
+Mouse support currently exists only in Chrome.
 
 # Tips
 
@@ -56,7 +58,6 @@ You can delete saved games by pressing Del in the load or save menus. This only 
 These features are intentionally left unimplemented in this build. Please don't make pull requests adding them.
 
 * Multiplayer - will be added when the dedicated server is done.
-* Mouse support - uses vendor prefixes, pointer lock works only in element fullscreen in Firefox. Element fullscreen is not going to be added because there's already browser-wide F11 fullscreen.
 * Gamepad support - uses vendor prefixes.
 
 # Contributing

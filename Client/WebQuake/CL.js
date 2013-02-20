@@ -925,6 +925,7 @@ CL.SendCmd = function()
 	if (CL.cls.signon === 4)
 	{
 		CL.BaseMove();
+		IN.Move();
 		CL.SendMove();
 	}
 

@@ -255,7 +255,7 @@ Sbar.SoloScoreboard = function()
 
 	var minutes = Math.floor(CL.state.time / 60.0);
 	var seconds = Math.floor(CL.state.time - 60 * minutes);
-	var tens = Math.floor(seconds * 0.1);
+	var tens = Math.floor(seconds / 10.0);
 	str = (seconds - 10 * tens).toString();
 	Sbar.DrawString(184, 4, 'Time :   :' + tens + str);
 	str = minutes.toString();
