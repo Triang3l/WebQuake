@@ -642,7 +642,7 @@ M.Options_Draw = function()
 	M.Print(104, 56, 'Screen size');
 	M.DrawSlider(220, 56, (SCR.viewsize.value - 30) / 90);
 	M.Print(104, 64, 'Mouse Speed');
-	M.DrawSlider(220, 72, (CL.sensitivity.value - 1) / 10);
+	M.DrawSlider(220, 64, (CL.sensitivity.value - 1) / 10);
 	M.Print(72, 72, 'CD Music Volume');
 	M.DrawSlider(220, 72, S.bgmvolume.value);
 	M.Print(96, 80, 'Sound Volume');
