@@ -12,15 +12,17 @@ IN.StartupMouse = function()
 		return;
 	if (VID.mainwindow.webkitRequestPointerLock != null)
 	{
-		IN.requestPointerLock = 'webkitRequestPointerLock';
-		IN.pointerLockElement = 'webkitPointerLockElement';
 		IN.movementX = 'webkitMovementX';
 		IN.movementY = 'webkitMovementY';
+		IN.pointerLockElement = 'webkitPointerLockElement';
+		IN.requestPointerLock = 'webkitRequestPointerLock';
+		IN.pointerlockchange = 'onwebkitpointerlockchange';
 	}
 	else
 		return;
 	VID.mainwindow.onclick = IN.onclick;
 	document.onmousemove = IN.onmousemove;
+	document[IN.pointerlockchange] = IN.onpointerlockchange;
 	IN.mouse_avail = true;
 };
 
@@ -31,8 +33,12 @@ IN.Init = function()
 
 IN.Shutdown = function()
 {
-	VID.mainwindow.onclick = null;
-	document.onmousemove = null;
+	if (IN.mouse_avail === true)
+	{
+		VID.mainwindow.onclick = null;
+		document.onmousemove = null;
+		document[IN.pointerlockchange] = null;
+	}
 };
 
 IN.MouseMove = function()
@@ -104,4 +110,12 @@ IN.onmousemove = function(e)
 		return;
 	IN.mouse_x += e[IN.movementX];
 	IN.mouse_y += e[IN.movementY];
+};
+
+IN.onpointerlockchange = function()
+{
+	if (document[IN.pointerLockElement] === VID.mainwindow)
+		return;
+	Key.Event(Key.k.escape, true);
+	Key.Event(Key.k.escape);
 };
