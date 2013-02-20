@@ -43,7 +43,7 @@ IN.Shutdown = function()
 
 IN.MouseMove = function()
 {
-	if (IN.mouse_avail == null)
+	if (IN.mouse_avail !== true)
 		return;
 
 	var mouse_x, mouse_y;
