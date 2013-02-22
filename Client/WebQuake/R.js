@@ -770,6 +770,11 @@ R.Perspective = function()
 		sr * cp,					-sp,		cr * cp
 	];
 
+	if (V.gamma.value < 0.5)
+		Cvar.SetValue('gamma', 0.5);
+	else if (V.gamma.value > 1.0)
+		Cvar.SetValue('gamma', 1.0);
+
 	GL.UnbindProgram();
 	var i, program;
 	for (i = 0; i < GL.programs.length; ++i)
@@ -782,6 +787,8 @@ R.Perspective = function()
 			gl.uniformMatrix3fv(program.uViewAngles, false, viewMatrix);
 		if (program.uPerspective != null)
 			gl.uniformMatrix4fv(program.uPerspective, false, R.perspective);
+		if (program.uGamma != null)
+			gl.uniform1f(program.uGamma, V.gamma.value);
 	}
 };
 
@@ -1111,22 +1118,22 @@ R.Init = function()
 	R.InitParticles();
 
 	GL.CreateProgram('Alias',
-		['uOrigin', 'uAngles', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uLightVec', 'uAmbientLight', 'uShadeLight'],
+		['uOrigin', 'uAngles', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uLightVec', 'uGamma', 'uAmbientLight', 'uShadeLight'],
 		['aPoint', 'aLightNormal', 'aTexCoord'],
 		['tTexture']);
 	GL.CreateProgram('Brush',
-		['uOrigin', 'uAngles', 'uViewOrigin', 'uViewAngles', 'uPerspective'],
+		['uOrigin', 'uAngles', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uGamma'],
 		['aPoint', 'aTexCoord', 'aLightStyle'],
 		['tTexture', 'tLightmap', 'tDlight', 'tLightStyle']);
-	GL.CreateProgram('Dlight', ['uOrigin', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uRadius'], ['aPoint'], []);
+	GL.CreateProgram('Dlight', ['uOrigin', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uRadius', 'uGamma'], ['aPoint'], []);
 	GL.CreateProgram('Player',
-		['uOrigin', 'uAngles', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uLightVec', 'uAmbientLight', 'uShadeLight', 'uTop', 'uBottom'],
+		['uOrigin', 'uAngles', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uLightVec', 'uGamma', 'uAmbientLight', 'uShadeLight', 'uTop', 'uBottom'],
 		['aPoint', 'aLightNormal', 'aTexCoord'],
 		['tTexture', 'tPlayer']);
-	GL.CreateProgram('Sprite', ['uRect', 'uOrigin', 'uViewOrigin', 'uViewAngles', 'uPerspective'], ['aPoint'], ['tTexture']);
-	GL.CreateProgram('SpriteOriented', ['uRect', 'uOrigin', 'uAngles', 'uViewOrigin', 'uViewAngles', 'uPerspective'], ['aPoint'], ['tTexture']);
+	GL.CreateProgram('Sprite', ['uRect', 'uOrigin', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uGamma'], ['aPoint'], ['tTexture']);
+	GL.CreateProgram('SpriteOriented', ['uRect', 'uOrigin', 'uAngles', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uGamma'], ['aPoint'], ['tTexture']);
 	GL.CreateProgram('Turbulent',
-		['uOrigin', 'uAngles', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uTime'],
+		['uOrigin', 'uAngles', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uGamma', 'uTime'],
 		['aPoint', 'aTexCoord'],
 		['tTexture']);
 	GL.CreateProgram('Warp', ['uRect', 'uOrtho', 'uTime'], ['aPoint'], ['tTexture']);
@@ -1236,7 +1243,7 @@ R.InitParticles = function()
 	for (i = 0; i <= 161; ++i)
 		R.avelocities[i] = [Math.random() * 2.56, Math.random() * 2.56, Math.random() * 2.56];
 
-	GL.CreateProgram('Particle', ['uOrigin', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uScale', 'uColor'], ['aPoint'], []);
+	GL.CreateProgram('Particle', ['uOrigin', 'uViewOrigin', 'uViewAngles', 'uPerspective', 'uScale', 'uGamma', 'uColor'], ['aPoint'], []);
 };
 
 R.EntityParticles = function(ent)
@@ -2167,7 +2174,7 @@ R.MakeSky = function()
 	}
 
 	GL.CreateProgram('Sky',
-		['uViewAngles', 'uPerspective', 'uScale', 'uTime'],
+		['uViewAngles', 'uPerspective', 'uScale', 'uGamma', 'uTime'],
 		['aPoint', 'aTexCoord'],
 		['tSolid', 'tAlpha']);
 
