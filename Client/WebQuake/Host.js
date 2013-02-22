@@ -135,7 +135,7 @@ Host.ShutdownServer = function(crash)
 		count = 0;
 		for (i = 0; i < SV.svs.maxclients; ++i)
 		{
-			Host.cliet = SV.svs.clients[i];
+			Host.client = SV.svs.clients[i];
 			if ((Host.client.active !== true) || (Host.client.message.cursize === 0))
 				continue;
 			if (NET.CanSendMessage(Host.client.netconnection) === true)
