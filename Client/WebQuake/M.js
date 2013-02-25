@@ -486,7 +486,7 @@ M.MultiPlayer_Key = function(k)
 			Key.dest.value = Key.dest.game;
 			M.state.value = M.state.none;
 			Cmd.text += 'connect "';
-			if (M.multiplayer_joinname.substring(0, 3) !== 'ws:')
+			if (M.multiplayer_joinname.substring(0, 5) !== 'ws://')
 				Cmd.text += 'ws://';
 			Cmd.text += M.multiplayer_joinname + '"\n';
 			return;

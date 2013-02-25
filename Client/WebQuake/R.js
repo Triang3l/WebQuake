@@ -821,12 +821,12 @@ R.RenderScene = function()
 	R.SetFrustum();
 	R.SetupGL();
 	R.MarkLeaves();
+	R.DrawSkyBox();
 	gl.enable(gl.CULL_FACE);
 	R.DrawViewModel();
 	R.DrawWorld();
 	R.DrawEntitiesOnList();
 	gl.disable(gl.CULL_FACE);
-	R.DrawSkyBox();
 	R.RenderDlights();
 	R.DrawParticles();
 };
@@ -915,7 +915,7 @@ R.MakeBrushModelDisplayLists = function(m)
 	for (i = 0; i < m.textures.length; ++i)
 	{
 		texture = m.textures[i];
-		if ((texture.sky === true) || (texture.turbulent !== true))
+		if (texture.turbulent !== true)
 			continue;
 		chain = [i, verts, 0];
 		for (j = 0; j < m.numfaces; ++j)
@@ -999,17 +999,51 @@ R.MakeWorldModelDisplayLists = function(m)
 			if (chain[2] !== 0)
 			{
 				leaf.cmds[leaf.cmds.length] = chain;
+				++leaf.skychain;
 				++leaf.waterchain;
 				verts += chain[2];
 			}
 		}
 	}
-	m.waterchain = verts * 44;
+	m.skychain = verts * 44;
 	verts = 0;
 	for (i = 0; i < m.textures.length; ++i)
 	{
 		texture = m.textures[i];
-		if ((texture.sky === true) || (texture.turbulent !== true))
+		if (texture.sky !== true)
+			continue;
+		for (j = 0; j < m.leafs.length; ++j)
+		{
+			leaf = m.leafs[j];
+			chain = [verts, 0];
+			for (k = 0; k < leaf.nummarksurfaces; ++k)
+			{
+				surf = m.faces[m.marksurfaces[leaf.firstmarksurface + k]];
+				if (surf.texture !== i)
+					continue;
+				chain[1] += surf.verts.length;
+				for (l = 0; l < surf.verts.length; ++l)
+				{
+					vert = surf.verts[l];
+					cmds[cmds.length] = vert[0];
+					cmds[cmds.length] = vert[1];
+					cmds[cmds.length] = vert[2];
+				}
+			}
+			if (chain[1] !== 0)
+			{
+				leaf.cmds[leaf.cmds.length] = chain;
+				++leaf.waterchain;
+				verts += chain[1];
+			}
+		}
+	}
+	m.waterchain = m.skychain + verts * 12;
+	verts = 0;
+	for (i = 0; i < m.textures.length; ++i)
+	{
+		texture = m.textures[i];
+		if (texture.turbulent !== true)
 			continue;
 		for (j = 0; j < m.leafs.length; ++j)
 		{
@@ -1885,7 +1919,7 @@ R.RecursiveWorldNode = function(node)
 		if (node.markvisframe !== R.visframecount)
 			return;
 		node.visframe = R.visframecount;
-		if (node.drawsky === true)
+		if (node.skychain !== node.waterchain)
 			R.drawsky = true;
 		return;
 	}
@@ -1914,15 +1948,15 @@ R.DrawWorld = function()
 	else
 		GL.Bind(program.tDlight, R.null_texture);
 	GL.Bind(program.tLightStyle, R.lightstyle_texture);
-	var i, j, leaf, cmds, texture;
+	var i, j, leaf, cmds;
 	for (i = 0; i < clmodel.leafs.length; ++i)
 	{
 		leaf = clmodel.leafs[i];
-		if ((leaf.visframe !== R.visframecount) || (leaf.waterchain === 0))
+		if ((leaf.visframe !== R.visframecount) || (leaf.skychain === 0))
 			continue;
 		if (R.CullBox(leaf.mins, leaf.maxs) === true)
 			continue;
-		for (j = 0; j < leaf.waterchain; ++j)
+		for (j = 0; j < leaf.skychain; ++j)
 		{
 			cmds = leaf.cmds[j];
 			R.c_brush_verts += cmds[2];
@@ -2055,17 +2089,18 @@ R.BuildSurfaceDisplayList = function(fa)
 			vec = R.currentmodel.vertexes[R.currentmodel.edges[index][0]];
 		else
 			vec = R.currentmodel.vertexes[R.currentmodel.edges[-index][1]];
-		s = Vec.DotProduct(vec, texinfo.vecs[0]) + texinfo.vecs[0][3];
-		t = Vec.DotProduct(vec, texinfo.vecs[1]) + texinfo.vecs[1][3];
-		vert = [
-			vec[0], vec[1], vec[2],
-			s / texture.width,
-			t / texture.height
-		];
-		if (fa.turbulent !== true)
+		vert = [vec[0], vec[1], vec[2]];
+		if (fa.sky !== true)
 		{
-			vert[5] = (s - fa.texturemins[0] + (fa.light_s << 4) + 8.0) / 16384.0;
-			vert[6] = (t - fa.texturemins[1] + (fa.light_t << 4) + 8.0) / 16384.0;
+			s = Vec.DotProduct(vec, texinfo.vecs[0]) + texinfo.vecs[0][3];
+			t = Vec.DotProduct(vec, texinfo.vecs[1]) + texinfo.vecs[1][3];
+			vert[3] = s / texture.width;
+			vert[4] = t / texture.height;
+			if (fa.turbulent !== true)
+			{
+				vert[5] = (s - fa.texturemins[0] + (fa.light_s << 4) + 8.0) / 16384.0;
+				vert[6] = (t - fa.texturemins[1] + (fa.light_t << 4) + 8.0) / 16384.0;
+			}
 		}
 		if (i >= 3)
 		{
@@ -2095,9 +2130,7 @@ R.BuildLightmaps = function()
 			for (j = 0; j < R.currentmodel.faces.length; ++j)
 			{
 				surf = R.currentmodel.faces[j];
-				if (surf.sky === true)
-					continue;
-				if (surf.turbulent !== true)
+				if ((surf.sky !== true) && (surf.turbulent !== true))
 				{
 					R.AllocBlock(surf);
 					if (R.currentmodel.lightdata != null)
@@ -2177,6 +2210,7 @@ R.MakeSky = function()
 		['uViewAngles', 'uPerspective', 'uScale', 'uGamma', 'uTime'],
 		['aPoint', 'aTexCoord'],
 		['tSolid', 'tAlpha']);
+	GL.CreateProgram('SkyChain', ['uViewOrigin', 'uViewAngles', 'uPerspective'], ['aPoint'], []);
 
 	R.skyvecs = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, R.skyvecs);
@@ -2188,7 +2222,31 @@ R.DrawSkyBox = function()
 	if (R.drawsky !== true)
 		return;
 
-	var program = GL.UseProgram('Sky');
+	gl.colorMask(false, false, false, false);
+	var clmodel = CL.state.worldmodel;
+	var program = GL.UseProgram('SkyChain');
+	gl.bindBuffer(gl.ARRAY_BUFFER, clmodel.cmds);
+	gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 12, clmodel.skychain);
+	var i, j, leaf, cmds;
+	for (i = 0; i < clmodel.leafs.length; ++i)
+	{
+		leaf = clmodel.leafs[i];
+		if ((leaf.visframe !== R.visframecount) || (leaf.skychain === leaf.waterchain))
+			continue;
+		if (R.CullBox(leaf.mins, leaf.maxs) === true)
+			continue;
+		for (j = leaf.skychain; j < leaf.waterchain; ++j)
+		{
+			cmds = leaf.cmds[j];
+			gl.drawArrays(gl.TRIANGLES, cmds[0], cmds[1]);
+		}
+	}
+	gl.colorMask(true, true, true, true);
+
+	gl.depthFunc(gl.GREATER);
+	gl.depthMask(false);
+
+	program = GL.UseProgram('Sky');
 	gl.uniform1f(program.uTime, Host.realtime);
 	GL.Bind(program.tSolid, R.solidskytexture);
 	GL.Bind(program.tAlpha, R.alphaskytexture);
@@ -2215,6 +2273,9 @@ R.DrawSkyBox = function()
 	gl.drawArrays(gl.TRIANGLES, 0, 180);
 	gl.uniform3f(program.uScale, -1.0, 1.0, -1.0);
 	gl.drawArrays(gl.TRIANGLES, 0, 180);
+
+	gl.depthMask(true);
+	gl.depthFunc(gl.LESS);
 };
 
 R.InitSky = function(src)

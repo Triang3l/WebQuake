@@ -484,8 +484,8 @@ CL.Rcon_f = function()
 	var to;
 	if ((CL.cls.state === CL.active.connected) && (CL.cls.netcon != null))
 	{
-		if (CL.cls.netcon.driver !== 0)
-			to = CL.cls.netcon.address;
+		if (NET.drivers[CL.cls.netcon.driver] === WEBS)
+			to = CL.cls.netcon.address.substring(5);
 	}
 	if (to == null)
 	{
@@ -496,14 +496,30 @@ CL.Rcon_f = function()
 		}
 		to = CL.rcon_address.string;
 	}
+	var pw;
+	try
+	{
+		pw = btoa('QUAKE:' + CL.rcon_password.string);
+	}
+	catch (e)
+	{
+		return;
+	}
 	var message = '', i;
 	for (i = 1; i < Cmd.argv.length; ++i)
 		message += Cmd.argv[i] + ' ';
+	try
+	{
+		message = encodeURIComponent(message);
+	}
+	catch (e)
+	{
+		return;
+	}
 	var xhr = new XMLHttpRequest();
-	xhr.open('POST', 'http://' + to);
-	xhr.send('command=rcon&password='
-		+ encodeURIComponent(CL.rcon_password.string)
-		+ '&message=' + encodeURIComponent(message));
+	xhr.open('POST', 'http://' + to + '/rcon');
+	xhr.setRequestHeader('Authorization', 'Basic ' + pw);
+	xhr.send(message);
 };
 
 CL.ClearState = function()

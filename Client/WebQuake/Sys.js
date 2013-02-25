@@ -100,9 +100,9 @@ window.onload = function()
 	COM.cmdline[COM.cmdline.length] = ' ';
 	COM.cmdline = COM.cmdline.join('');
 
-	var html = document.getElementsByTagName('html')[0];
-	VID.width = (html.clientWidth <= 320) ? 320 : html.clientWidth;
-	VID.height = (html.clientHeight <= 200) ? 200 : html.clientHeight;
+	var elem = document.documentElement;
+	VID.width = (elem.clientWidth <= 320) ? 320 : elem.clientWidth;
+	VID.height = (elem.clientHeight <= 200) ? 200 : elem.clientHeight;
 
 	Sys.scantokey = [];
 	Sys.scantokey[8] = Key.k.backspace;

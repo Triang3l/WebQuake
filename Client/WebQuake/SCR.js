@@ -275,9 +275,9 @@ SCR.UpdateScreen = function()
 		Con.Print('load failed.\n');
 	}
 
-	var html = document.getElementsByTagName('html')[0];
-	var width = (html.clientWidth <= 320) ? 320 : html.clientWidth;
-	var height = (html.clientHeight <= 200) ? 200 : html.clientHeight;
+	var elem = document.documentElement;
+	var width = (elem.clientWidth <= 320) ? 320 : elem.clientWidth;
+	var height = (elem.clientHeight <= 200) ? 200 : elem.clientHeight;
 	if ((VID.width != width) || (VID.height != height) || (Host.framecount === 0))
 	{
 		VID.width = width;

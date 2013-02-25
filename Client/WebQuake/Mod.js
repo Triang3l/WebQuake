@@ -609,16 +609,9 @@ Mod.LoadLeafs = function(buf)
 			nummarksurfaces: view.getUint16(fileofs + 22, true),
 			ambient_level: [view.getUint8(fileofs + 24), view.getUint8(fileofs + 25), view.getUint8(fileofs + 26), view.getUint8(fileofs + 27)],
 			cmds: [],
+			skychain: 0,
 			waterchain: 0
 		};
-		for (j = 0; j < out.nummarksurfaces; ++j)
-		{
-			if (Mod.loadmodel.faces[Mod.loadmodel.marksurfaces[out.firstmarksurface + j]].sky === true)
-			{
-				out.drawsky = true;
-				break;
-			}
-		}
 		Mod.loadmodel.leafs[i] = out;
 		fileofs += 28;
 	};

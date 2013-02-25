@@ -10,7 +10,7 @@ WEBS.Init = function()
 
 WEBS.Connect = function(host)
 {
-	if (host.substring(0, 3) !== 'ws:')
+	if (host.substring(0, 5) !== 'ws://')
 		return;
 	var sock = NET.NewQSocket();
 	sock.disconnected = true;
