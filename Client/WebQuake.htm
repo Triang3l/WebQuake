@@ -324,13 +324,12 @@ uniform mat3 uViewAngles;
 uniform mat4 uPerspective;
 uniform vec3 uScale;
 attribute vec3 aPoint;
-attribute vec2 aTexCoord;
 varying vec2 vTexCoord;
 void main(void)
 {
-	vec3 position = uViewAngles * (aPoint * uScale);
+	vec3 position = uViewAngles * (aPoint * uScale * 5792.0);
 	gl_Position = uPerspective * vec4(position.xz, -position.y, 1.0);
-	vTexCoord = aTexCoord * uScale.xy;
+	vTexCoord = aPoint.xy * uScale.xy * 1.5;
 }
 </script>
 <script type="x-shader/x-fragment" id="fshSky">

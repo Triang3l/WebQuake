@@ -747,8 +747,8 @@ R.SetFrustum = function()
 R.perspective = [
 	0.0, 0.0, 0.0, 0.0,
 	0.0, 0.0, 0.0, 0.0,
-	0.0, 0.0, -8196.0 / 8188.0, -1.0,
-	0.0, 0.0, -65536.0 / 8188.0, 0.0
+	0.0, 0.0, -16388.0 / 16380.0, -1.0,
+	0.0, 0.0, -131072.0 / 16380.0, 0.0
 ];
 
 R.Perspective = function()
@@ -2178,38 +2178,26 @@ R.MakeSky = function()
 	{
 		vecs = vecs.concat(
 		[
-			0.0, 0.0, 2048.0,
-			0.0, 0.0,
-			sin[i + 2] * 799.088, sin[6 - i] * 799.088, 2008.64,
-			sin[i + 2] * 0.58527, sin[6 - i] * 0.58527,
-			sin[i] * 799.088, sin[8 - i] * 799.088, 2008.64,
-			sin[i] * 0.58527, sin[8 - i] * 0.58527
+			0.0, 0.0, 1.0,
+			sin[i + 2] * 0.19509, sin[6 - i] * 0.19509, 0.980785,
+			sin[i] * 0.19509, sin[8 - i] * 0.19509, 0.980785
 		]);
 		for (j = 0; j < 7; ++j)
 		{
 			vecs = vecs.concat(
 			[
-				sin[i] * sin[8 - j] * 4096.0, sin[8 - i] * sin[8 - j] * 4096.0, sin[j] * 2048.0,
-				sin[i] * sin[8 - j] * 3.0, sin[8 - i] * sin[8 - j] * 3.0,
-				sin[i] * sin[7 - j] * 4096.0, sin[8 - i] * sin[7 - j] * 4096.0, sin[j + 1] * 2048.0,
-				sin[i] * sin[7 - j] * 3.0, sin[8 - i] * sin[7 - j] * 3.0,
-				sin[i + 2] * sin[7 - j] * 4096.0, sin[6 - i] * sin[7 - j] * 4096.0, sin[j + 1] * 2048.0,
-				sin[i + 2] * sin[7 - j] * 3.0, sin[6 - i] * sin[7 - j] * 3.0,
+				sin[i] * sin[8 - j], sin[8 - i] * sin[8 - j], sin[j],
+				sin[i] * sin[7 - j], sin[8 - i] * sin[7 - j], sin[j + 1],
+				sin[i + 2] * sin[7 - j], sin[6 - i] * sin[7 - j], sin[j + 1],
 
-				sin[i] * sin[8 - j] * 4096.0, sin[8 - i] * sin[8 - j] * 4096.0, sin[j] * 2048.0,
-				sin[i] * sin[8 - j] * 3.0, sin[8 - i] * sin[8 - j] * 3.0,
-				sin[i + 2] * sin[7 - j] * 4096.0, sin[6 - i] * sin[7 - j] * 4096.0, sin[j + 1] * 2048.0,
-				sin[i + 2] * sin[7 - j] * 3.0, sin[6 - i] * sin[7 - j] * 3.0,
-				sin[i + 2] * sin[8 - j] * 4096.0, sin[6 - i] * sin[8 - j] * 4096.0, sin[j] * 2048.0,
-				sin[i + 2] * sin[8 - j] * 3.0, sin[6 - i] * sin[8 - j] * 3.0
+				sin[i] * sin[8 - j], sin[8 - i] * sin[8 - j], sin[j],
+				sin[i + 2] * sin[7 - j], sin[6 - i] * sin[7 - j], sin[j + 1],
+				sin[i + 2] * sin[8 - j], sin[6 - i] * sin[8 - j], sin[j]
 			]);
 		}
 	}
 
-	GL.CreateProgram('Sky',
-		['uViewAngles', 'uPerspective', 'uScale', 'uGamma', 'uTime'],
-		['aPoint', 'aTexCoord'],
-		['tSolid', 'tAlpha']);
+	GL.CreateProgram('Sky', ['uViewAngles', 'uPerspective', 'uScale', 'uGamma', 'uTime'], ['aPoint'], ['tSolid', 'tAlpha']);
 	GL.CreateProgram('SkyChain', ['uViewOrigin', 'uViewAngles', 'uPerspective'], ['aPoint'], []);
 
 	R.skyvecs = gl.createBuffer();
@@ -2251,27 +2239,26 @@ R.DrawSkyBox = function()
 	GL.Bind(program.tSolid, R.solidskytexture);
 	GL.Bind(program.tAlpha, R.alphaskytexture);
 	gl.bindBuffer(gl.ARRAY_BUFFER, R.skyvecs);
-	gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 20, 0);
-	gl.vertexAttribPointer(program.aTexCoord, 2, gl.FLOAT, false, 20, 12);
+	gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 12, 0);
 
-	gl.uniform3f(program.uScale, 1.0, -1.0, 1.0);
+	gl.uniform3f(program.uScale, 2.0, -2.0, 1.0);
 	gl.drawArrays(gl.TRIANGLES, 0, 180);
-	gl.uniform3f(program.uScale, 1.0, -1.0, -1.0);
-	gl.drawArrays(gl.TRIANGLES, 0, 180);
-
-	gl.uniform3f(program.uScale, 1.0, 1.0, 1.0);
-	gl.drawArrays(gl.TRIANGLES, 0, 180);
-	gl.uniform3f(program.uScale, 1.0, 1.0, -1.0);
+	gl.uniform3f(program.uScale, 2.0, -2.0, -1.0);
 	gl.drawArrays(gl.TRIANGLES, 0, 180);
 
-	gl.uniform3f(program.uScale, -1.0, -1.0, 1.0);
+	gl.uniform3f(program.uScale, 2.0, 2.0, 1.0);
 	gl.drawArrays(gl.TRIANGLES, 0, 180);
-	gl.uniform3f(program.uScale, -1.0, -1.0, -1.0);
+	gl.uniform3f(program.uScale, 2.0, 2.0, -1.0);
 	gl.drawArrays(gl.TRIANGLES, 0, 180);
 
-	gl.uniform3f(program.uScale, -1.0, 1.0, 1.0);
+	gl.uniform3f(program.uScale, -2.0, -2.0, 1.0);
 	gl.drawArrays(gl.TRIANGLES, 0, 180);
-	gl.uniform3f(program.uScale, -1.0, 1.0, -1.0);
+	gl.uniform3f(program.uScale, -2.0, -2.0, -1.0);
+	gl.drawArrays(gl.TRIANGLES, 0, 180);
+
+	gl.uniform3f(program.uScale, -2.0, 2.0, 1.0);
+	gl.drawArrays(gl.TRIANGLES, 0, 180);
+	gl.uniform3f(program.uScale, -2.0, 2.0, -1.0);
 	gl.drawArrays(gl.TRIANGLES, 0, 180);
 
 	gl.depthMask(true);
