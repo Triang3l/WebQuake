@@ -238,12 +238,12 @@ V.CalcBlend = function()
 V.CalcIntermissionRefdef = function()
 {
 	var ent = CL.entities[CL.state.viewentity];
-	R.refdef.vieworg = [ent.origin[0], ent.origin[1], ent.origin[2]];
-	R.refdef.viewangles = [
-		ent.angles[0] + Math.sin(CL.state.time * V.ipitch_cycle.value) * V.ipitch_level.value,
-		ent.angles[1] + Math.sin(CL.state.time * V.iyaw_cycle.value) * V.iyaw_level.value,
-		ent.angles[2] + Math.sin(CL.state.time * V.iroll_cycle.value) * V.iroll_level.value
-	];
+	R.refdef.vieworg[0] = ent.origin[0];
+	R.refdef.vieworg[1] = ent.origin[1];
+	R.refdef.vieworg[2] = ent.origin[2];
+	R.refdef.viewangles[0] = ent.angles[0] + Math.sin(CL.state.time * V.ipitch_cycle.value) * V.ipitch_level.value;
+	R.refdef.viewangles[0] = ent.angles[1] + Math.sin(CL.state.time * V.iyaw_cycle.value) * V.iyaw_level.value;
+	R.refdef.viewangles[0] = ent.angles[2] + Math.sin(CL.state.time * V.iroll_cycle.value) * V.iroll_level.value;
 	CL.state.viewent.model = null;
 };
 
@@ -255,32 +255,32 @@ V.CalcRefdef = function()
 	var ent = CL.entities[CL.state.viewentity];
 	var bob = V.CalcBob();
 
-	R.refdef.vieworg = [ent.origin[0], ent.origin[1], ent.origin[2] + CL.state.viewheight + bob];
-	R.refdef.vieworg[0] += 0.03125;
-	R.refdef.vieworg[1] += 0.03125;
-	R.refdef.vieworg[2] += 0.03125;
+	R.refdef.vieworg[0] = ent.origin[0] + 0.03125;
+	R.refdef.vieworg[1] = ent.origin[1] + 0.03125;
+	R.refdef.vieworg[2] = ent.origin[2] + CL.state.viewheight + bob + 0.03125;
 
-	R.refdef.viewangles = [CL.state.viewangles[0], CL.state.viewangles[1], CL.state.viewangles[2]];
+	R.refdef.viewangles[0] = CL.state.viewangles[0];
+	R.refdef.viewangles[1] = CL.state.viewangles[1];
+	R.refdef.viewangles[2] = CL.state.viewangles[2] + V.CalcRoll(CL.entities[CL.state.viewentity].angles, CL.state.velocity);
 
-	R.refdef.viewangles[2] += V.CalcRoll(CL.entities[CL.state.viewentity].angles, CL.state.velocity);
 	if (V.dmg_time > 0.0)
 	{
 		if (V.kicktime.value !== 0.0)
 		{
 			R.refdef.viewangles[2] += (V.dmg_time / V.kicktime.value) * V.dmg_roll;
-			R.refdef.viewangles[0] += (V.dmg_time / V.kicktime.value) * V.dmg_pitch;
+			R.refdef.viewangles[0] -= (V.dmg_time / V.kicktime.value) * V.dmg_pitch;
 		}
 		V.dmg_time -= Host.frametime;
 	}
 	if (CL.state.stats[Def.stat.health] <= 0)
 		R.refdef.viewangles[2] = 80.0;
-	
-	R.refdef.viewangles[0] += V.idlescale.value * Math.sin(CL.state.time * V.ipitch_cycle.value) * V.ipitch_level.value
-		+ CL.state.punchangle[0];
-	R.refdef.viewangles[1] += V.idlescale.value * Math.sin(CL.state.time * V.iyaw_cycle.value) * V.iyaw_level.value
-		+ CL.state.punchangle[1];
-	R.refdef.viewangles[2] += V.idlescale.value * Math.sin(CL.state.time * V.iroll_cycle.value) * V.iroll_level.value
-		+ CL.state.punchangle[2];
+
+	var ipitch = V.idlescale.value * Math.sin(CL.state.time * V.ipitch_cycle.value) * V.ipitch_level.value;
+	var iyaw = V.idlescale.value * Math.sin(CL.state.time * V.iyaw_cycle.value) * V.iyaw_level.value;
+	var iroll = V.idlescale.value * Math.sin(CL.state.time * V.iroll_cycle.value) * V.iroll_level.value;
+	R.refdef.viewangles[0] += ipitch + CL.state.punchangle[0];
+	R.refdef.viewangles[1] += iyaw + CL.state.punchangle[1];
+	R.refdef.viewangles[2] += iroll + CL.state.punchangle[2];
 
 	var forward = [], right = [], up = [];
 	Vec.AngleVectors([-ent.angles[0], ent.angles[1], ent.angles[2]], forward, right, up);
@@ -302,12 +302,12 @@ V.CalcRefdef = function()
 		R.refdef.vieworg[2] = ent.origin[2] + 30.0;
 
 	var view = CL.state.viewent;
-	view.angles = [-CL.state.viewangles[0], CL.state.viewangles[1], CL.state.viewangles[2]];
-	view.origin = [
-		ent.origin[0] + forward[0] * bob * 0.4,
-		ent.origin[1] + forward[1] * bob * 0.4,
-		ent.origin[2] + CL.state.viewheight + bob + forward[2] * bob * 0.4
-	];
+	view.angles[0] = -R.refdef.viewangles[0] - ipitch;
+	view.angles[1] = R.refdef.viewangles[1] - iyaw;
+	view.angles[2] = CL.state.viewangles[2] - iroll;
+	view.origin[0] = ent.origin[0] + forward[0] * bob * 0.4;
+	view.origin[1] = ent.origin[1] + forward[1] * bob * 0.4;
+	view.origin[2] = ent.origin[2] + CL.state.viewheight + forward[2] * bob * 0.4 + bob;
 	switch (SCR.viewsize.value)
 	{
 	case 110:
@@ -346,7 +346,7 @@ V.RenderView = function()
 {
 	if (Con.forcedup === true)
 		return;
-	if (CL.state.maxclients > 1)
+	if (CL.state.maxclients >= 2)
 	{
 		Cvar.Set('scr_ofsx', '0');
 		Cvar.Set('scr_ofsy', '0');

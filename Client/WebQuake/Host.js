@@ -174,7 +174,7 @@ Host.ServerFrame = function()
 	SV.server.datagram.cursize = 0;
 	SV.CheckForNewClients();
 	SV.RunClients();
-	if ((SV.server.paused !== true) && ((SV.svs.maxclients > 1) || (Key.dest.value === Key.dest.game)))
+	if ((SV.server.paused !== true) && ((SV.svs.maxclients >= 2) || (Key.dest.value === Key.dest.game)))
 		SV.Physics();
 	SV.SendClientMessages();
 };

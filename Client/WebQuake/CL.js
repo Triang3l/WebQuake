@@ -571,7 +571,7 @@ CL.ClearState = function()
 		last_received_message: 0.0,
 		viewentity: 0,
 		num_statics: 0,
-		viewent: {skinnum: 0},
+		viewent: {num: -1, origin: [0.0, 0.0, 0.0], angles: [0.0, 0.0, 0.0], skinnum: 0},
 		cdtrack: 0,
 		looptrack: 0
 	};
@@ -904,9 +904,8 @@ CL.RelinkEntities = function()
 			R.RocketTrail(oldorg, ent.origin, 6);
 
 		ent.forcelink = false;
-		if ((i === CL.state.viewentity) && (Chase.active.value === 0))
-			continue;
-		CL.visedicts[CL.numvisedicts++] = ent;
+		if ((i !== CL.state.viewentity) || (Chase.active.value !== 0))
+			CL.visedicts[CL.numvisedicts++] = ent;
 	}
 };
 

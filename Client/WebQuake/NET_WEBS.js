@@ -24,9 +24,10 @@ WEBS.Connect = function(host)
 	{
 		return;
 	}
+	sock.driverdata.data_socket = sock;
 	sock.driverdata.binaryType = 'arraybuffer';
-	sock.driverdata.onerror = (function() {NET.Close(sock);});
-	sock.driverdata.onmessage = (function(message) {WEBS.OnMessage(sock, message);});
+	sock.driverdata.onerror = WEBS.OnError;
+	sock.driverdata.onmessage = WEBS.OnMessage;
 	NET.newsocket = sock;
 	return 0;
 };
@@ -97,17 +98,17 @@ WEBS.CheckForResend = function()
 		return -1;
 };
 
-WEBS.OnError = function(sock)
+WEBS.OnError = function()
 {
-	NET.Close(sock);
+	NET.Close(this.data_socket);
 };
 
-WEBS.OnMessage = function(sock, message)
+WEBS.OnMessage = function(message)
 {
 	var data = message.data;
 	if (typeof(data) === 'string')
 		return;
 	if (data.byteLength > 8000)
 		return;
-	sock.receiveMessage.push(new Uint8Array(data));
+	this.data_socket.receiveMessage.push(new Uint8Array(data));
 };
