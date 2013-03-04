@@ -1233,8 +1233,8 @@ CL.ParseUpdate = function(bits)
 	ent.skinnum = ((bits & Protocol.u.skin) !== 0) ? MSG.ReadByte() : ent.baseline.skin;
 	ent.effects = ((bits & Protocol.u.effects) !== 0) ? MSG.ReadByte() : ent.baseline.effects;
 
-	ent.msg_origins[1] = [ent.msg_origins[0][0], ent.msg_origins[0][1], ent.msg_origins[0][2]];
-	ent.msg_angles[1] = [ent.msg_angles[0][0], ent.msg_angles[0][1], ent.msg_angles[0][2]];
+	Vec.Copy(ent.msg_origins[0], ent.msg_origins[1]);
+	Vec.Copy(ent.msg_angles[0], ent.msg_angles[1]);
 	ent.msg_origins[0][0] = ((bits & Protocol.u.origin1) !== 0) ? MSG.ReadCoord() : ent.baseline.origin[0];
 	ent.msg_angles[0][0] = ((bits & Protocol.u.angle1) !== 0) ? MSG.ReadAngle() : ent.baseline.angles[0];
 	ent.msg_origins[0][1] = ((bits & Protocol.u.origin2) !== 0) ? MSG.ReadCoord() : ent.baseline.origin[1];
@@ -1247,10 +1247,10 @@ CL.ParseUpdate = function(bits)
 
 	if (forcelink === true)
 	{
-		ent.msg_origins[1] = [ent.msg_origins[0][0], ent.msg_origins[0][1], ent.msg_origins[0][2]];
-		ent.origin = [ent.msg_origins[0][0], ent.msg_origins[0][1], ent.msg_origins[0][2]];
-		ent.msg_angles[1] = [ent.msg_angles[0][0], ent.msg_angles[0][1], ent.msg_angles[0][2]];
-		ent.angles = [ent.msg_angles[0][0], ent.msg_angles[0][1], ent.msg_angles[0][2]];
+		Vec.Copy(ent.msg_origins[0], ent.origin);
+		Vec.Copy(ent.origin, ent.msg_origins[1]);
+		Vec.Copy(ent.msg_angles[0], ent.angles);
+		Vec.Copy(ent.angles, ent.msg_angles[1]);
 		ent.forcelink = true;
 	}
 };

@@ -242,8 +242,8 @@ V.CalcIntermissionRefdef = function()
 	R.refdef.vieworg[1] = ent.origin[1];
 	R.refdef.vieworg[2] = ent.origin[2];
 	R.refdef.viewangles[0] = ent.angles[0] + Math.sin(CL.state.time * V.ipitch_cycle.value) * V.ipitch_level.value;
-	R.refdef.viewangles[0] = ent.angles[1] + Math.sin(CL.state.time * V.iyaw_cycle.value) * V.iyaw_level.value;
-	R.refdef.viewangles[0] = ent.angles[2] + Math.sin(CL.state.time * V.iroll_cycle.value) * V.iroll_level.value;
+	R.refdef.viewangles[1] = ent.angles[1] + Math.sin(CL.state.time * V.iyaw_cycle.value) * V.iyaw_level.value;
+	R.refdef.viewangles[2] = ent.angles[2] + Math.sin(CL.state.time * V.iroll_cycle.value) * V.iroll_level.value;
 	CL.state.viewent.model = null;
 };
 
