@@ -621,7 +621,7 @@ R.DrawEntitiesOnList = function()
 		for (j = 0; j < R.currententity.leafs.length; ++j)
 		{
 			leaf = R.currententity.leafs[j];
-			if ((vis[leaf >> 3] & (1 << (leaf & 7))) !== 0)
+			if ((leaf < 0) || ((vis[leaf >> 3] & (1 << (leaf & 7))) !== 0))
 				break;
 		}
 		if (j === R.currententity.leafs.length)
