@@ -8,7 +8,7 @@ R.SplitEntityOnNode = function(node)
 		return;
 	if (node.contents < 0)
 	{
-		R.currententity.leafs[R.currententity.leafs.length] = node.num;
+		R.currententity.leafs[R.currententity.leafs.length] = node.num - 1;
 		return;
 	}
 	var sides = Vec.BoxOnPlaneSide(R.emins, R.emaxs, node.plane);
