@@ -278,9 +278,9 @@ V.CalcRefdef = function()
 	var ipitch = V.idlescale.value * Math.sin(CL.state.time * V.ipitch_cycle.value) * V.ipitch_level.value;
 	var iyaw = V.idlescale.value * Math.sin(CL.state.time * V.iyaw_cycle.value) * V.iyaw_level.value;
 	var iroll = V.idlescale.value * Math.sin(CL.state.time * V.iroll_cycle.value) * V.iroll_level.value;
-	R.refdef.viewangles[0] += ipitch + CL.state.punchangle[0];
-	R.refdef.viewangles[1] += iyaw + CL.state.punchangle[1];
-	R.refdef.viewangles[2] += iroll + CL.state.punchangle[2];
+	R.refdef.viewangles[0] += ipitch;
+	R.refdef.viewangles[1] += iyaw;
+	R.refdef.viewangles[2] += iroll;
 
 	var forward = [], right = [], up = [];
 	Vec.AngleVectors([-ent.angles[0], ent.angles[1], ent.angles[2]], forward, right, up);
@@ -322,6 +322,10 @@ V.CalcRefdef = function()
 	}
 	view.model = CL.state.model_precache[CL.state.stats[Def.stat.weapon]];
 	view.frame = CL.state.stats[Def.stat.weaponframe];
+
+	R.refdef.viewangles[0] += CL.state.punchangle[0];
+	R.refdef.viewangles[1] += CL.state.punchangle[1];
+	R.refdef.viewangles[2] += CL.state.punchangle[2];
 
 	if ((CL.state.onground === true) && ((ent.origin[2] - V.oldz) > 0.0))
 	{
