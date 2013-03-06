@@ -126,13 +126,18 @@ NET.GetMessage = function(sock)
 	}
 	NET.time = Sys.FloatTime();
 	var ret = NET.drivers[sock.driver].GetMessage(sock);
-	if ((ret === 0) && (sock.driver !== 0))
+	if (sock.driver !== 0)
 	{
-		if ((NET.time - sock.lastMessageTime) > NET.messagetimeout.value)
+		if (ret === 0)
 		{
-			NET.Close(sock);
-			return -1;
+			if ((NET.time - sock.lastMessageTime) > NET.messagetimeout.value)
+			{
+				NET.Close(sock);
+				return -1;
+			}
 		}
+		else if (ret > 0)
+			sock.lastMessageTime = NET.time;
 	}
 	return ret;
 };
