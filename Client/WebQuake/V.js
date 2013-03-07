@@ -107,6 +107,10 @@ V.DriftPitch = function()
 };
 
 V.cshift_empty = [130.0, 80.0, 50.0, 0.0];
+V.cshift_water = [130.0, 80.0, 50.0, 128.0];
+V.cshift_slime = [0.0, 25.0, 5.0, 150.0];
+V.cshift_lava = [255.0, 80.0, 0.0, 150.0];
+
 V.blend = [0.0, 0.0, 0.0, 0.0];
 
 V.ParseDamage = function()
@@ -130,18 +134,18 @@ V.ParseDamage = function()
 
 	if (armor > blood)
 	{
-		cshift[0] = 200;
-		cshift[1] = cshift[2] = 100;
+		cshift[0] = 200.0;
+		cshift[1] = cshift[2] = 100.0;
 	}
 	else if (armor !== 0)
 	{
-		cshift[0] = 220;
-		cshift[1] = cshift[2] = 50;
+		cshift[0] = 220.0;
+		cshift[1] = cshift[2] = 50.0;
 	}
 	else
 	{
-		cshift[0] = 255;
-		cshift[1] = cshift[2] = 0;
+		cshift[0] = 255.0;
+		cshift[1] = cshift[2] = 0.0;
 	}
 
 	var forward = [], right = [];
@@ -153,15 +157,20 @@ V.ParseDamage = function()
 
 V.cshift_f = function()
 {
-	var i;
-	V.cshift_empty[0] = Q.atoi(Cmd.argv[1]);
-	V.cshift_empty[1] = Q.atoi(Cmd.argv[2]);
-	V.cshift_empty[2] = Q.atoi(Cmd.argv[3]);
+	var cshift = V.cshift_empty;
+	cshift[0] = Q.atoi(Cmd.argv[1]);
+	cshift[1] = Q.atoi(Cmd.argv[2]);
+	cshift[2] = Q.atoi(Cmd.argv[3]);
+	cshift[3] = Q.atoi(Cmd.argv[4]);
 };
 
 V.BonusFlash_f = function()
 {
-	CL.state.cshifts[CL.cshift.bonus] = [215.0, 186.0, 69.0, 50.0];
+	var cshift = CL.state.cshifts[CL.cshift.bonus];
+	cshift[0] = 215.0;
+	cshift[1] = 186.0;
+	cshift[2] = 69.0;
+	cshift[3] = 50.0;
 };
 
 V.SetContentsColor = function(contents)
@@ -173,27 +182,48 @@ V.SetContentsColor = function(contents)
 		CL.state.cshifts[CL.cshift.contents] = V.cshift_empty;
 		return;
 	case Mod.contents.lava:
-		CL.state.cshifts[CL.cshift.contents] = [255.0, 80.0, 0.0, 150.0];
+		CL.state.cshifts[CL.cshift.contents] = V.cshift_lava;
 		return;
 	case Mod.contents.slime:
-		CL.state.cshifts[CL.cshift.contents] = [0.0, 25.0, 5.0, 150.0];
+		CL.state.cshifts[CL.cshift.contents] = V.cshift_slime;
 		return;
 	}
-	CL.state.cshifts[CL.cshift.contents] = [130.0, 80.0, 50.0, 128.0];
+	CL.state.cshifts[CL.cshift.contents] = V.cshift_water;
 };
 
 V.CalcBlend = function()
 {
+	var cshift = CL.state.cshifts[CL.cshift.powerup];
 	if ((CL.state.items & Def.it.quad) !== 0)
-		CL.state.cshifts[CL.cshift.powerup] = [0.0, 0.0, 255.0, 30.0];
+	{
+		cshift[0] = 0.0;
+		cshift[1] = 0.0;
+		cshift[2] = 255.0;
+		cshift[3] = 30.0;
+	}
 	else if ((CL.state.items & Def.it.suit) !== 0)
-		CL.state.cshifts[CL.cshift.powerup] = [0.0, 255.0, 0.0, 20.0];
+	{
+		cshift[0] = 0.0;
+		cshift[1] = 255.0;
+		cshift[2] = 0.0;
+		cshift[3] = 20.0;
+	}
 	else if ((CL.state.items & Def.it.invisibility) !== 0)
-		CL.state.cshifts[CL.cshift.powerup] = [100.0, 100.0, 100.0, 100.0];
+	{
+		cshift[0] = 100.0;
+		cshift[1] = 100.0;
+		cshift[2] = 100.0;
+		cshift[3] = 100.0;
+	}
 	else if ((CL.state.items & Def.it.invulnerability) !== 0)
-		CL.state.cshifts[CL.cshift.powerup] = [255.0, 255.0, 0.0, 30.0];
+	{
+		cshift[0] = 255.0;
+		cshift[1] = 255.0;
+		cshift[2] = 0.0;
+		cshift[3] = 30.0;
+	}
 	else
-		CL.state.cshifts[CL.cshift.powerup][3] = 0.0;
+		cshift[3] = 0.0;
 
 	CL.state.cshifts[CL.cshift.damage][3] -= Host.frametime * 150.0;
 	if (CL.state.cshifts[CL.cshift.damage][3] < 0.0)
@@ -296,8 +326,8 @@ V.CalcRefdef = function()
 		R.refdef.vieworg[1] = ent.origin[1] - 14.0;
 	else if (R.refdef.vieworg[1] > (ent.origin[1] + 14.0))
 		R.refdef.vieworg[1] = ent.origin[1] + 14.0;
-	if (R.refdef.vieworg[2] < (ent.origin[2] - 30.0))
-		R.refdef.vieworg[2] = ent.origin[2] - 30.0;
+	if (R.refdef.vieworg[2] < (ent.origin[2] - 22.0))
+		R.refdef.vieworg[2] = ent.origin[2] - 22.0;
 	else if (R.refdef.vieworg[2] > (ent.origin[2] + 30.0))
 		R.refdef.vieworg[2] = ent.origin[2] + 30.0;
 

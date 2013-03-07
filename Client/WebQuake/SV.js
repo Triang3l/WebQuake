@@ -326,7 +326,7 @@ SV.WriteEntitiesToClient = function(clent, msg)
 			bits += Protocol.u.angle2;
 		if (ent.v_float[PR.entvars.angles2] !== ent.baseline.angles[2])
 			bits += Protocol.u.angle3;
-		if (ent.v_float[PR.entvars.movetype] !== SV.movetype.step)
+		if (ent.v_float[PR.entvars.movetype] === SV.movetype.step)
 			bits += Protocol.u.nolerp;
 		if (ent.baseline.colormap !== ent.v_float[PR.entvars.colormap])
 			bits += Protocol.u.colormap;

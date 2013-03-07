@@ -142,14 +142,14 @@ Vec.AngleVectors = function(angles, forward, right, up)
 	}
 	if (right != null)
 	{
-		right[0] = (-sr * sp * cy) + (cr * sy);
-		right[1] = (-sr * sp * sy) - (cr * cy);
+		right[0] = cr * sy - sr * sp * cy;
+		right[1] = -sr * sp * sy - cr * cy;
 		right[2] = -sr * cp;
 	}
 	if (up != null)
 	{
-		up[0] = (cr * sp * cy) + (sr * sy);
-		up[1] = (cr * sp * sy) - (sr * cy);
+		up[0] = cr * sp * cy + sr * sy;
+		up[1] = cr * sp * sy - sr * cy;
 		up[2] = cr * cp;
 	}
 };
