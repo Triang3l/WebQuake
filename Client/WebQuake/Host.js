@@ -30,6 +30,7 @@ Host.Error = function(error)
 Host.FindMaxClients = function()
 {
 	SV.svs.maxclients = SV.svs.maxclientslimit = 1;
+	CL.cls.state = CL.active.disconnected;
 	SV.svs.clients = [{
 		num: 0,
 		message: {data: new ArrayBuffer(8000), cursize: 0, allowoverflow: true},
@@ -543,9 +544,8 @@ Host.Changelevel_f = function()
 
 Host.Restart_f = function()
 {
-	if ((CL.cls.demoplayback === true) || (SV.server.active !== true) || (Cmd.client === true))
-		return;
-	SV.SpawnServer(PR.GetString(PR.globals_int[PR.globalvars.mapname]));
+	if ((CL.cls.demoplayback !== true) && (SV.server.active === true) && (Cmd.client !== true))
+		SV.SpawnServer(PR.GetString(PR.globals_int[PR.globalvars.mapname]));
 };
 
 Host.Reconnect_f = function()
@@ -914,23 +914,16 @@ Host.Color_f = function()
 
 	var top, bottom;
 	if (Cmd.argv.length === 2)
-		top = bottom = Q.atoi(Cmd.argv[1]);
+		top = bottom = (Q.atoi(Cmd.argv[1]) & 15) >>> 0;
 	else
 	{
-		top = Q.atoi(Cmd.argv[1]);
-		bottom = Q.atoi(Cmd.argv[2]);
+		top = (Q.atoi(Cmd.argv[1]) & 15) >>> 0;
+		bottom = (Q.atoi(Cmd.argv[2]) & 15) >>> 0;
 	}
-
-	if (top < 0)
-		top = 0;
-	else if (top >= 14)
+	if (top >= 14)
 		top = 13;
-
-	if (bottom < 0)
-		bottom = 0;
-	else if (bottom >= 14)
+	if (bottom >= 14)
 		bottom = 13;
-
 	var playercolor = (top << 4) + bottom;
 
 	if (Cmd.client !== true)
@@ -1140,7 +1133,11 @@ Host.Kick_f = function()
 	if (Cmd.client !== true)
 		who = CL.name.string;
 	else
+	{
+		if (Host.client === save)
+			return;
 		who = SV.GetClientName(save);
+	}
 	var message;
 	if (Cmd.argv.length >= 3)
 		message = COM.Parse(Cmd.args);

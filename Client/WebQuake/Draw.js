@@ -27,7 +27,7 @@ Draw.Init = function()
 	for (i = 0; i < 16384; ++i)
 	{
 		if (Draw.chars[i] !== 0)
-			trans32[i] = COM.LittleLong(VID.d_8to24table[Draw.chars[i]]);
+			trans32[i] = COM.LittleLong(VID.d_8to24table[Draw.chars[i]] + 0xff000000);
 	}
 	Draw.char_texture = gl.createTexture();
 	GL.Bind(0, Draw.char_texture);
@@ -149,9 +149,9 @@ Draw.PicTranslate = function(x, y, pic, top, bottom)
 	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
 	gl.vertexAttribPointer(program.aPoint, 2, gl.FLOAT, false, 0, 0);
 	gl.uniform4f(program.uRect, x, y, pic.width, pic.height);
-	var p = VID.d_8to24table[top] & 0xffffff;
+	var p = VID.d_8to24table[top];
 	gl.uniform3f(program.uTop, p & 0xff, (p >> 8) & 0xff, p >> 16);
-	p = VID.d_8to24table[bottom] & 0xffffff;
+	p = VID.d_8to24table[bottom];
 	gl.uniform3f(program.uBottom, p & 0xff, (p >> 8) & 0xff, p >> 16);
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 };
@@ -172,7 +172,7 @@ Draw.Fill = function(x, y, w, h, c)
 	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
 	gl.vertexAttribPointer(program.aPoint, 2, gl.FLOAT, false, 0, 0);
 	gl.uniform4f(program.uRect, x, y, w, h);
-	var color = VID.d_8to24table[c] & 0xffffff;
+	var color = VID.d_8to24table[c];
 	gl.uniform4f(program.uColor, color & 0xff, (color >> 8) & 0xff, color >> 16, 1.0);
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 };
@@ -213,7 +213,7 @@ Draw.PicToDataURL = function(pic)
 	var trans32 = new Uint32Array(trans);
 	var i;
 	for (i = 0; i < pic.data.length; ++i)
-		trans32[i] = COM.LittleLong(VID.d_8to24table[pic.data[i]]);
+		trans32[i] = COM.LittleLong(VID.d_8to24table[pic.data[i]] + 0xff000000);
 	data.data.set(new Uint8Array(trans));
 	ctx.putImageData(data, 0, 0);
 	return canvas.toDataURL();

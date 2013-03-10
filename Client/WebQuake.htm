@@ -273,7 +273,7 @@ void main(void)
 {
 	vec4 texture = texture2D(tTexture, vTexCoord);
 	vec4 trans = texture2D(tTrans, vTexCoord);
-	gl_FragColor = vec4(mix(mix(texture.rgb, uTop * (1.0 / 255.0) * trans.x, trans.y), uBottom * (1.0 / 255.0) * trans.z, trans.w), texture.a);
+	gl_FragColor = vec4(mix(mix(texture.rgb, uTop * (1.0 / 191.25) * trans.x, trans.y), uBottom * (1.0 / 191.25) * trans.z, trans.w), texture.a);
 }
 </script>
 <script type="x-shader/x-vertex" id="vshPlayer">
@@ -312,7 +312,7 @@ void main(void)
 	vec4 texture = texture2D(tTexture, vTexCoord);
 	vec4 player = texture2D(tPlayer, vTexCoord);
 	gl_FragColor = vec4(
-		mix(mix(texture.rgb, uTop * (1.0 / 255.0) * player.x, player.y), uBottom * (1.0 / 255.0) * player.z, player.w)
+		mix(mix(texture.rgb, uTop * (1.0 / 191.25) * player.x, player.y), uBottom * (1.0 / 191.25) * player.z, player.w)
 		* mix(1.0, vLightDot * uShadeLight + uAmbientLight, texture.a), 1.0);
 	gl_FragColor.r = pow(gl_FragColor.r, uGamma);
 	gl_FragColor.g = pow(gl_FragColor.g, uGamma);

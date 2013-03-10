@@ -503,14 +503,14 @@ R.DrawAliasModel = function(e)
 	if ((e.colormap !== 0) && (clmodel.player === true) && (R.nocolors.value === 0))
 	{
 		program = GL.UseProgram('Player');
-		var top = CL.state.scores[e.colormap - 1].colors & 0xf0;
-		var bottom = (CL.state.scores[e.colormap - 1].colors & 0xf) << 4;
+		var top = (CL.state.scores[e.colormap - 1].colors & 0xf0) + 4;
+		var bottom = ((CL.state.scores[e.colormap - 1].colors & 0xf) << 4) + 4;
 		if (top <= 127)
-			top += 15;
+			top += 7;
 		if (bottom <= 127)
-			bottom += 15;
-		top = VID.d_8to24table[top] & 0xffffff;
-		bottom = VID.d_8to24table[bottom] & 0xffffff;
+			bottom += 7;
+		top = VID.d_8to24table[top];
+		bottom = VID.d_8to24table[bottom];
 		gl.uniform3f(program.uTop, top & 0xff, (top >> 8) & 0xff, top >> 16);
 		gl.uniform3f(program.uBottom, bottom & 0xff, (bottom >> 8) & 0xff, bottom >> 16);
 	}
@@ -1614,7 +1614,7 @@ R.DrawParticles = function()
 		if (p.die < CL.state.time)
 			continue;
 
-		color = VID.d_8to24table[p.color] & 0xffffff;
+		color = VID.d_8to24table[p.color];
 		gl.uniform3f(program.uColor, color & 0xff, (color >> 8) & 0xff, color >> 16);
 		gl.uniform3fv(program.uOrigin, p.org);
 		scale = (p.org[0] - R.refdef.vieworg[0]) * R.vpn[0]
@@ -2274,7 +2274,7 @@ R.InitSky = function(src)
 	for (i = 0; i < 128; ++i)
 	{
 		for (j = 0; j < 128; ++j)
-			trans32[(i << 7) + j] = COM.LittleLong(VID.d_8to24table[src[(i << 8) + j + 128]]);
+			trans32[(i << 7) + j] = COM.LittleLong(VID.d_8to24table[src[(i << 8) + j + 128]] + 0xff000000);
 	}
 	GL.Bind(0, R.solidskytexture);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(trans));
@@ -2286,7 +2286,7 @@ R.InitSky = function(src)
 		{
 			p = (i << 8) + j;
 			if (src[p] !== 0)
-				trans32[(i << 7) + j] = COM.LittleLong(VID.d_8to24table[src[p]]);
+				trans32[(i << 7) + j] = COM.LittleLong(VID.d_8to24table[src[p]] + 0xff000000);
 			else
 				trans32[(i << 7) + j] = 0;
 		}

@@ -34,7 +34,7 @@ Mod.Init = function()
 	Mod.filledcolor = 0;
 	for (i = 0; i <= 255; ++i)
 	{
-		if ((VID.d_8to24table[i] & 0xffffff) === 0)
+		if (VID.d_8to24table[i] === 0)
 		{
 			Mod.filledcolor = i;
 			break;
@@ -1186,7 +1186,7 @@ Mod.LoadSpriteFrame = function(identifier, buffer, inframe, frame)
 	for (i = 0; i < size; ++i)
 	{
 		if (data[i] !== 255)
-			trans32[i] = COM.LittleLong(VID.d_8to24table[data[i]]);
+			trans32[i] = COM.LittleLong(VID.d_8to24table[data[i]] + 0xff000000);
 	}
 
 	glt = {texnum: gl.createTexture(), identifier: identifier, width: frame.width, height: frame.height};

@@ -8,9 +8,12 @@ VID.SetPalette = function()
 	if (palette == null)
 		Sys.Error('Couldn\'t load gfx/palette.lmp');
 	var pal = new Uint8Array(palette);
-	var i;
+	var i, src = 0;
 	for (i = 0; i < 256; ++i)
-		VID.d_8to24table[i] = pal[i * 3] + (pal[i * 3 + 1] << 8) + (pal[i * 3 + 2] << 16) + 0xff000000;
+	{
+		VID.d_8to24table[i] = pal[src] + (pal[src + 1] << 8) + (pal[src + 2] << 16);
+		src += 3;
+	}
 };
 
 VID.Init = function()

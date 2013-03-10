@@ -422,8 +422,8 @@ M.MultiPlayer_Draw = function()
 
 	M.DrawPic(160, 80, M.bigbox);
 	M.DrawPicTranslate(172, 88, M.menuplyr,
-		(M.multiplayer_top << 4) + (M.multiplayer_top >= 8 ? 0 : 15),
-		(M.multiplayer_bottom << 4) + (M.multiplayer_bottom >= 8 ? 0 : 15));
+		(M.multiplayer_top << 4) + (M.multiplayer_top >= 8 ? 4 : 11),
+		(M.multiplayer_bottom << 4) + (M.multiplayer_bottom >= 8 ? 4 : 11));
 
 	M.DrawCharacter(56, M.multiplayer_cursor_table[M.multiplayer_cursor], 12 + ((Host.realtime * 4.0) & 1));
 
