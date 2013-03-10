@@ -69,7 +69,7 @@ Cmd.StuffCmds_f = function()
 		}
 	}
 	if (build.length !== 0)
-		Cmd.text += (build + '\n');
+		Cmd.text = build + '\n' + Cmd.text;
 };
 
 Cmd.Exec_f = function()
