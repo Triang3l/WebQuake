@@ -283,6 +283,8 @@ V.CalcRefdef = function()
 	V.DriftPitch();
 
 	var ent = CL.entities[CL.state.viewentity];
+	ent.angles[1] = CL.state.viewangles[1];
+	ent.angles[0] = -CL.state.viewangles[0];
 	var bob = V.CalcBob();
 
 	R.refdef.vieworg[0] = ent.origin[0] + 0.03125;
