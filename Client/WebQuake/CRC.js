@@ -1,4 +1,4 @@
-var CRC = {};
+CRC = {};
 
 CRC.table =
 [

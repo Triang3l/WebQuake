@@ -1,4 +1,4 @@
-var S = {};
+S = {};
 
 S.channels = [];
 S.static_channels = [];

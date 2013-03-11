@@ -1,4 +1,4 @@
-var SCR = {};
+SCR = {};
 
 SCR.con_current = 0;
 

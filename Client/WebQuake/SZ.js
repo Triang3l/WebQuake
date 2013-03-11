@@ -1,4 +1,4 @@
-var SZ = {};
+SZ = {};
 
 SZ.GetSpace = function(buf, length)
 {

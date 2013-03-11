@@ -1,4 +1,4 @@
-var Loop = {};
+Loop = {};
 
 Loop.Init = function()
 {

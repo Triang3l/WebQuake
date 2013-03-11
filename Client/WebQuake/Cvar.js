@@ -1,4 +1,4 @@
-var Cvar = {};
+Cvar = {};
 
 Cvar.vars = [];
 

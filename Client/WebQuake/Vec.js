@@ -1,4 +1,4 @@
-var Vec = {};
+Vec = {};
 
 Vec.origin = [0.0, 0.0, 0.0];
 

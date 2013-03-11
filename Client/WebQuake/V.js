@@ -1,4 +1,4 @@
-var V = {};
+V = {};
 
 V.dmg_time = 0.0;
 

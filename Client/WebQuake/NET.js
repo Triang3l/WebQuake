@@ -1,4 +1,4 @@
-var NET = {};
+NET = {};
 
 NET.activeSockets = [];
 NET.message = {data: new ArrayBuffer(8192), cursize: 0};

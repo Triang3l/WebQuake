@@ -1,4 +1,4 @@
-var Q = {};
+Q = {};
 
 Q.memstr = function(src)
 {

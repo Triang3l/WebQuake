@@ -1,4 +1,4 @@
-var IN = {};
+IN = {};
 
 IN.mouse_x = 0.0;
 IN.mouse_y = 0.0;

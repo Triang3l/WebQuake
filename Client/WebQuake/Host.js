@@ -1,4 +1,4 @@
-var Host = {};
+Host = {};
 
 Host.framecount = 0;
 

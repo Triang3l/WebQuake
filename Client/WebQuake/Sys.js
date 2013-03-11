@@ -1,4 +1,4 @@
-var Sys = {};
+Sys = {};
 
 Sys.Quit = function()
 {

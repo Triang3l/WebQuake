@@ -1,4 +1,4 @@
-var Chase = {};
+Chase = {};
 
 Chase.Init = function()
 {

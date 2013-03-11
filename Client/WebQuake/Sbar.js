@@ -1,4 +1,4 @@
-var Sbar = {};
+Sbar = {};
 
 Sbar.ShowScores = function()
 {

@@ -1,4 +1,4 @@
-var Mod = {};
+Mod = {};
 
 Mod.effects = {
 	brightfield: 1,

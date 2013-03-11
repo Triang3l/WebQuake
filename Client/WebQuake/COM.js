@@ -1,4 +1,4 @@
-var COM = {};
+COM = {};
 
 COM.argv = [];
 

@@ -1,4 +1,4 @@
-var Def = {};
+Def = {};
 
 Def.webquake_version = 29;
 Def.timedate = 'Exe: 20:37:25 Mar 10 2013\n';

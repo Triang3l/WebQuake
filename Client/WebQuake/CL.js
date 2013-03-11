@@ -1,4 +1,4 @@
-var CL = {};
+CL = {};
 
 CL.cshift = {
 	contents: 0,

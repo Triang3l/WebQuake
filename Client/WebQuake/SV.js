@@ -1,4 +1,4 @@
-var SV = {};
+SV = {};
 
 SV.movetype = {
 	none: 0,

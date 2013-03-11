@@ -1,4 +1,4 @@
-var WEBS = {};
+WEBS = {};
 
 WEBS.Init = function()
 {

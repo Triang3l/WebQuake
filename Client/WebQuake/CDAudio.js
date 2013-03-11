@@ -1,4 +1,4 @@
-var CDAudio = {};
+CDAudio = {};
 
 CDAudio.known = [];
 

@@ -1,4 +1,4 @@
-var PF = {};
+PF = {};
 
 PF.VarString = function(first)
 {

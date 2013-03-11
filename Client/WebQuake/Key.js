@@ -1,4 +1,4 @@
-var Key = {};
+Key = {};
 
 Key.k = {
 	tab: 9,

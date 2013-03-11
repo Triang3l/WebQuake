@@ -1,4 +1,4 @@
-var MSG = {};
+MSG = {};
 
 MSG.WriteChar = function(sb, c)
 {

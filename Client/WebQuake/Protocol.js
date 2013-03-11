@@ -1,4 +1,4 @@
-var Protocol = {};
+Protocol = {};
 
 Protocol.version = 15;
 

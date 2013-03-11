@@ -1,4 +1,4 @@
-var ED = {};
+ED = {};
 
 ED.ClearEdict = function(e)
 {

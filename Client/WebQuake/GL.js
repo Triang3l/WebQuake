@@ -1,4 +1,4 @@
-var GL = {};
+GL = {};
 
 GL.textures = [];
 GL.currenttextures = [];

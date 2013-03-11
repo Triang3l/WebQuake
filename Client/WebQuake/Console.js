@@ -1,4 +1,4 @@
-var Con = {};
+Con = {};
 
 Con.backscroll = 0;
 Con.current = 0;

@@ -1,4 +1,4 @@
-var PR = {};
+PR = {};
 
 PR.etype = {
 	ev_void: 0,
