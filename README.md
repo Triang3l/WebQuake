@@ -35,7 +35,7 @@ You cannot join multiplayer games if the client is installed on https:// protoco
 
 If you want to create a server, first, install the dedicated server by completing the following steps.
 
-1. Install Node.js.
+1. Install [Node.js](http://nodejs.org).
 2. Download the "Server" folder from the repository.
 3. Put Quake resource files into the downloaded Server folder.
 3. Open Node.js command prompt.
