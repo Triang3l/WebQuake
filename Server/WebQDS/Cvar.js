@@ -12,18 +12,6 @@ Cvar.FindVar = function(name)
 	}
 };
 
-Cvar.CompleteVariable = function(partial)
-{
-	if (partial.length === 0)
-		return;
-	var i;
-	for (i = 0; i < Cvar.vars.length; ++i)
-	{
-		if (Cvar.vars[i].name.substring(0, partial.length) === partial)
-			return Cvar.vars[i].name;
-	}
-};
-
 Cvar.Set = function(name, value)
 {
 	var i, v, changed;

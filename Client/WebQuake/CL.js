@@ -499,7 +499,7 @@ CL.Rcon_f = function()
 	var pw;
 	try
 	{
-		pw = btoa('QUAKE:' + CL.rcon_password.string);
+		pw = btoa('quake:' + CL.rcon_password.string);
 	}
 	catch (e)
 	{
@@ -517,9 +517,9 @@ CL.Rcon_f = function()
 		return;
 	}
 	var xhr = new XMLHttpRequest();
-	xhr.open('POST', 'http://' + to + '/rcon');
+	xhr.open('HEAD', 'http://' + to + '/rcon/' + message);
 	xhr.setRequestHeader('Authorization', 'Basic ' + pw);
-	xhr.send(message);
+	xhr.send();
 };
 
 CL.ClearState = function()

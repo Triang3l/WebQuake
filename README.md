@@ -2,7 +2,7 @@
 
 **WebQuake** is an HTML5 WebGL port of the game Quake by id Software.
 
-The current development stage is **Public Singleplayer Beta**.
+The current development stage is **Public Beta**.
 
 [Online demo by SpiritQuaddicted](http://quaddicted.com/forum/viewtopic.php?pid=438).
 
@@ -25,11 +25,52 @@ For Scourge of Armagon, add *-hipnotic* command line argument. For Dissolution o
 
 To launch mods, copy the mod folder into the folder containing WebQuake.htm and add *-game MOD_NAME_HERE* command line argument. Ensure step 6 of the installing instructions for the mod folder.
 
+# Playing multiplayer
+
+If you want to join a multiplayer game, do one of the following steps, go to Multiplayer menu in the main menu, type the IP in "Join game at" field and press Enter, or type *connect ws://ip:port* in the console.
+
+Currently there is no way to play with native Quake players, but it's in development.
+
+You cannot join multiplayer games if the client is installed on https:// protocol, however.
+
+If you want to create a server, first, install the dedicated server by completing the following steps.
+
+1. Install Node.js.
+2. Download the "Server" folder from the repository.
+3. Put Quake resource files into the downloaded Server folder.
+3. Open Node.js command prompt.
+4. Go (cd) to the Server folder.
+5. Type *npm install websocket* (for more information, see [Worlize/WebSocket-Node](https://github.com/Worlize/WebSocket-Node) repository).
+
+Then, to launch a server, open Node.js command prompt, go to the Server folder and type *node WebQDS.js*.
+
+## Remote console
+
+To execute console commands on the server from the client or the web, set *rcon_password* in the server console. If you have spaces in the password, surround it with quotes.
+
+Don't tell the password to anyone except for the server admins. **Don't put the password in the command line, as everybody on the web can see your command line on your server's /rule_info page!**
+
+Then, you have 4 ways to execute server commands:
+
+* In the game, when not connected, in the console, type *rcon_address ip:port* (without ws://), *rcon_password server_RCON_password* (surround the password with quotes if you have spaces in it), and then execute the commands by typing *rcon your_command_here*.
+* In the game, when connected to the server, do the same as in the previous way except for settings *rcon_address*.
+* Go to the server IP in the browser (for example, if your server is at *ws://192.168.0.2:26000*, go to *http://192.168.0.2:26000*). On the Rcon line, enter your command in the left field and the password in the right field and press Send.
+* Go to *http://ip:port/rcon/your_command_here* in the browser. Login as "quake" with your RCON password.
+
+## Server info API
+
+You can retrieve some server information in JSON format by going to special addresses on your server IP.
+
+* */server_info* - returns an object containing the server name (*hostName*), current level name (*levelName*), number of connected players (*currentPlayers*), maximum number of players (*maxPlayers*) and API version (*protocolVersion*). Gives 503 if server is off.
+* */player_info/#* - returns an object with the info about a player, where # is player number starting from 0. Contains name (*name*), shirt/pants color (*colors*, shirt color is upper 4 bits, pants color is lower 4 bits), number of kills (*frags*), time since connected (*connectTime*) and IP address (*address*). Gives 503 if server is off or 404 if the player is not found.
+* */rule_info* - returns an array of all server console variables (like movement variables), in *{rule:"variable name",value:"variable value"}* format.
+* */rule_info/variable_name* - returns single server console variable in the same format. 404 if the variable is not there.
+
 # Adding game music
 
 To add music to WebQuake, you need to get the music off the Quake CD and convert it into .ogg format ([Audacity](http://audacity.sourceforge.net/) is great for this).
 
-The .ogg files should be named **quake(track number - 1).ogg** with trailing 0, so the main theme is named **quake01.ogg** and the last track on the Quake disc is **quake10.ogg**.
+The .ogg files should be called *quake##.ogg*, where ## is CD track number minus 1 trailing 0, so the main theme is named *quake01.ogg* and the last track on the Quake disc is *quake10.ogg*.
 
 Then you should configure the server to return audio/ogg MIME type for .ogg files.
 
@@ -53,11 +94,12 @@ If the sound randomly doesn't play, go to console (press ~ or Options > Go to co
 
 You can delete saved games by pressing Del in the load or save menus. This only works for the saved games created in WebQuake.
 
+# Server API
+
 # Intentionally unimplemented features
 
 These features are intentionally left unimplemented in this build. Please don't make pull requests adding them.
 
-* Multiplayer - will be added when the dedicated server is done.
 * Gamepad support - uses vendor prefixes.
 
 # Contributing
