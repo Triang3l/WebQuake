@@ -176,7 +176,7 @@ WEBS.HTTPOnRequest = function(request, response)
 	var path = '';
 	if (pathname.length >= 2)
 		path = pathname[1].toLowerCase();
-	var i;
+	var i, text;
 	if (path.length === 0)
 	{
 		if (SV.server.active !== true)
@@ -267,7 +267,7 @@ WEBS.HTTPOnRequest = function(request, response)
 				levelName: PR.GetString(PR.globals_int[PR.globalvars.mapname]),
 				currentPlayers: NET.activeconnections,
 				maxPlayers: SV.svs.maxclients,
-				protocolVersion: 1
+				protocolVersion: 2
 			}));
 		}
 		return;
@@ -280,9 +280,32 @@ WEBS.HTTPOnRequest = function(request, response)
 			response.end();
 			return;
 		}
+		var client;
+		if ((pathname.length <= 2) || (pathname[2] === ''))
+		{
+			response.statusCode = 200;
+			response.setHeader('Content-Type', 'application/json; charset=UTF-8');
+			response.write('[');
+			text = [];
+			for (i = 0; i < SV.svs.maxclients; ++i)
+			{
+				client = SV.svs.clients[i];
+				if (client.active !== true)
+					continue;
+				text[text.length] = JSON.stringify({
+					name: SV.GetClientName(client),
+					colors: client.colors,
+					frags: (client.edict.v_float[PR.entvars.frags]) >> 0,
+					connectTime: Sys.FloatTime() - client.netconnection.connecttime,
+					address: client.netconnection.address
+				});
+			}
+			response.write(text.join(','));
+			response.end(']');
+			return;
+		}
 		var playerNumber = Q.atoi(pathname[2]);
 		var activeNumber = -1;
-		var client;
 		for (i = 0; i < SV.svs.maxclients; ++i)
 		{
 			client = SV.svs.clients[i];
@@ -291,16 +314,16 @@ WEBS.HTTPOnRequest = function(request, response)
 			if (++activeNumber === playerNumber)
 				break;
 		}
+		if (i === SV.svs.maxclients)
+		{
+			response.statusCode = 404;
+			response.end();
+			return;
+		}
 		response.statusCode = 200;
 		response.setHeader('Content-Type', 'application/json; charset=UTF-8');
 		if (head === true)
 		{
-			response.end();
-			return;
-		}
-		if (i === SV.svs.maxclients)
-		{
-			response.statusCode = 404;
 			response.end();
 			return;
 		}
@@ -349,13 +372,12 @@ WEBS.HTTPOnRequest = function(request, response)
 			return;
 		}
 		response.write('[');
-		var text = [];
+		text = [];
 		for (i = 0; i < Cvar.vars.length; ++i)
 		{
 			v = Cvar.vars[i];
-			if (v.server !== true)
-				continue;
-			text.push(JSON.stringify({rule: v.name, value: v.string}));
+			if (v.server === true)
+				text[text.length] = JSON.stringify({rule: v.name, value: v.string});
 		}
 		response.write(text.join(','));
 		response.end(']');

@@ -44,6 +44,8 @@ If you want to create a server, first, install the dedicated server by completin
 
 Then, to launch a server, open Node.js command prompt, go to the Server folder and type *node WebQDS.js*.
 
+To change maximum number of players, use *-maxplayers* command line argument.
+
 ## Remote console
 
 To execute console commands on the server from the client or the web, set *rcon_password* in the server console. If you have spaces in the password, surround it with quotes.
@@ -62,7 +64,8 @@ Then, you have 4 ways to execute server commands:
 You can retrieve some server information in JSON format by going to special addresses on your server IP.
 
 * */server_info* - returns an object containing the server name (*hostName*), current level name (*levelName*), number of connected players (*currentPlayers*), maximum number of players (*maxPlayers*) and API version (*protocolVersion*). Gives 503 if server is off.
-* */player_info/#* - returns an object with the info about a player, where # is player number starting from 0. Contains name (*name*), shirt/pants color (*colors*, shirt color is upper 4 bits, pants color is lower 4 bits), number of kills (*frags*), time since connected (*connectTime*) and IP address (*address*). Gives 503 if server is off or 404 if the player is not found.
+* */player_info* - returns an array of objects with the info about a player, where # is player number starting from 0. Contains name (*name*), shirt/pants color (*colors*, shirt color is upper 4 bits, pants color is lower 4 bits), number of kills (*frags*), time since connected (*connectTime*) and IP address (*address*). Gives 503 if server is off or 404 if the player is not found.
+* */player_info/#* - returns single player info object for the player under the number #.
 * */rule_info* - returns an array of all server console variables (like movement variables), in *{rule:"variable name",value:"variable value"}* format.
 * */rule_info/variable_name* - returns single server console variable in the same format. 404 if the variable is not there.
 
