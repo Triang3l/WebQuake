@@ -15,7 +15,7 @@ Follow these steps to install WebQuake:
 3. Get Quake resource files. The demo version containing only the first episode is enough.
 4. Copy "id1" folder from the Quake folder to the folder where you put WebQuake.htm.
 5. If you have Quake mission packs, repeat step 4 for "hipnotic" and/or "rogue" folders.
-6. If you're running a system with case-sensitive names (such as Linux), make sure that all game files \(**not** including code files) have lowercase names.
+6. If you're running a system with case-sensitive names (such as Linux), make sure that all game files **except for code files** have lowercase names.
 
 To launch WebQuake, go to WebQuake.htm on your server in your browser.
 
@@ -63,8 +63,8 @@ Then, you have 4 ways to execute server commands:
 
 You can retrieve some server information in JSON format by going to special addresses on your server IP.
 
-* */server_info* - returns an object containing the server name \(*hostName*), current level name \(*levelName*), number of connected players \(*currentPlayers*), maximum number of players \(*maxPlayers*) and API version \(*protocolVersion*). Gives 503 if server is off.
-* */player_info* - returns an array of objects with the info about a player, where # is player number starting from 0. Contains name \(*name*), shirt/pants color \(*colors*, shirt color is upper 4 bits, pants color is lower 4 bits), number of kills \(*frags*), time since connected \(*connectTime*) and IP address \(*address*). Gives 503 if server is off or 404 if the player is not found.
+* */server_info* - returns an object containing the server name *hostName*, current level name *levelName*, number of connected players *currentPlayers*, maximum number of players *maxPlayers* and API version *protocolVersion*. Gives 503 if server is off.
+* */player_info* - returns an array of objects with the info about a player, where # is player number starting from 0. Contains name *name*, shirt/pants color *colors*, shirt color is upper 4 bits, pants color is lower 4 bits), number of kills *frags*, time since connected *connectTime* and IP address *address*. Gives 503 if server is off or 404 if the player is not found.
 * */player_info/#* - returns single player info object for the player under the number #.
 * */rule_info* - returns an array of all server console variables (like movement variables), in *{rule:"variable name",value:"variable value"}* format.
 * */rule_info/variable_name* - returns single server console variable in the same format. 404 if the variable is not there.
