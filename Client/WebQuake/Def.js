@@ -1,7 +1,7 @@
 Def = {};
 
-Def.webquake_version = 31;
-Def.timedate = 'Exe: 15:29:15 Mar 13 2013\n';
+Def.webquake_version = 32;
+Def.timedate = 'Exe: 12:40:15 Mar 17 2013\n';
 
 Def.max_edicts = 600;
 

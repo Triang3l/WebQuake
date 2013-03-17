@@ -1,17 +1,14 @@
 Sys = {};
 
+Sys.events = ['onbeforeunload', 'oncontextmenu', 'onfocus', 'onkeydown', 'onkeyup', 'onmousedown', 'onmouseup', 'onmousewheel', 'onunload', 'onwheel'];
+
 Sys.Quit = function()
 {
 	if (Sys.frame != null)
 		clearInterval(Sys.frame);
-	window.onbeforeunload = null;
-	window.oncontextmenu = null;
-	window.onfocus = null;
-	window.onkeydown = null;
-	window.onkeyup = null;
-	window.onmousedown = null;
-	window.onmouseup = null;
-	window.onunload = null;
+	var i;
+	for (i = 0; i < Sys.events.length; ++i)
+		window[Sys.events[i]] = null;
 	Host.Shutdown();
 	document.body.style.cursor = 'auto';
 	VID.mainwindow.style.display = 'none';
@@ -32,18 +29,13 @@ Sys.Error = function(text)
 {
 	if (Sys.frame != null)
 		clearInterval(Sys.frame);
-	window.onbeforeunload = null;
-	window.oncontextmenu = null;
-	window.onfocus = null;
-	window.onkeydown = null;
-	window.onkeyup = null;
-	window.onmousedown = null;
-	window.onmouseup = null;
-	window.onunload = null;
+	var i;
+	for (i = 0; i < Sys.events.length; ++i)
+		window[Sys.events[i]] = null;
 	if (Host.initialized === true)
 		Host.Shutdown();
 	document.body.style.cursor = 'auto';
-	var i = Con.text.length - 25;
+	i = Con.text.length - 25;
 	if (i < 0)
 		i = 0;
 	if (window.console != null)
@@ -146,14 +138,8 @@ window.onload = function()
 	Sys.Print('Host.Init\n');
 	Host.Init();
 
-	window.onbeforeunload = Sys.onbeforeunload;
-	window.oncontextmenu = Sys.oncontextmenu;
-	window.onfocus = Sys.onfocus;
-	window.onkeydown = Sys.onkeydown;
-	window.onkeyup = Sys.onkeyup;
-	window.onmousedown = Sys.onmousedown;
-	window.onmouseup = Sys.onmouseup;
-	window.onunload = Sys.onunload;
+	for (i = 0; i < Sys.events.length; ++i)
+		window[Sys.events[i]] = Sys[Sys.events[i]];
 
 	Sys.frame = setInterval(Host.Frame, 1000.0 / 60.0);
 };
@@ -238,7 +224,23 @@ Sys.onmouseup = function(e)
 	e.preventDefault();
 };
 
+Sys.onmousewheel = function(e)
+{
+	var key = e.wheelDeltaY > 0 ? Key.k.mwheelup : Key.k.mwheeldown;
+	Key.Event(key, true);
+	Key.Event(key);
+	e.preventDefault();
+};
+
 Sys.onunload = function()
 {
 	Host.Shutdown();
+};
+
+Sys.onwheel = function(e)
+{
+	var key = e.deltaY < 0 ? Key.k.mwheelup : Key.k.mwheeldown;
+	Key.Event(key, true);
+	Key.Event(key);
+	e.preventDefault();
 };

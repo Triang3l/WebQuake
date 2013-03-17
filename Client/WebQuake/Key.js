@@ -38,7 +38,10 @@ Key.k = {
 	
 	mouse1: 200,
 	mouse2: 201,
-	mouse3: 202
+	mouse3: 202,
+
+	mwheelup: 239,
+	mwheeldown: 240
 };
 
 Key.lines = [''];
@@ -94,6 +97,8 @@ Key.names = [
 	{name: 'MOUSE2', keynum: Key.k.mouse2},
 	{name: 'MOUSE3', keynum: Key.k.mouse3},
 	{name: 'PAUSE', keynum: Key.k.pause},
+	{name: 'MWHEELUP', keynum: Key.k.mwheelup},
+	{name: 'MWHEELDOWN', keynum: Key.k.mwheeldown},
 	{name: 'SEMICOLON', keynum: 59}
 ];
 
@@ -257,7 +262,7 @@ Key.Unbind_f = function()
 		Con.Print('"' + Cmd.argv[1] + '" isn\'t a valid key\n');
 		return;
 	}
-	delete Key.bindings[b];
+	Key.bindings[b] = null;
 };
 
 Key.Unbindall_f = function()
@@ -364,8 +369,13 @@ Key.Event = function(key, down)
 {
 	if (CL.cls.state === CL.active.connecting)
 		return;
-	if ((key !== Key.k.backspace) && (down === true) && (Key.down[key] === true))
-		return;
+	if (down === true)
+	{
+		if ((key !== Key.k.backspace) && (key !== Key.k.pause) && (Key.down[key] === true))
+			return;
+		if ((key >= 200) && (Key.bindings[key] == null))
+			Con.Print(Key.KeynumToString(key) + ' is unbound, hit F4 to set.\n');
+	}
 	Key.down[key] = down;
 
 	if (key === Key.k.shift)
