@@ -27,7 +27,14 @@ S.Init = function()
 
 	S.started = true;
 
-	var i, ambient_sfx = ['water1', 'wind2'], ch;
+	if (window.AudioContext != null)
+		S.context = new AudioContext();
+	else if (window.mozAudioContext != null)
+		S.context = new mozAudioContext();
+	else if (window.webkitAudioContext != null)
+		S.context = new webkitAudioContext();
+
+	var i, ambient_sfx = ['water1', 'wind2'], ch, nodes;
 	for (i = 0; i < ambient_sfx.length; ++i)
 	{
 		ch = {sfx: S.PrecacheSound('ambience/' + ambient_sfx[i] + '.wav'), end: 0.0, master_vol: 0.0};
@@ -39,7 +46,22 @@ S.Init = function()
 			Con.Print('Sound ambience/' + sfx.name + '.wav not looped\n');
 			continue;
 		}
-		ch.audio = ch.sfx.cache.audio.cloneNode();
+		if (S.context != null)
+		{
+			nodes = {
+				source: S.context.createBufferSource(),
+				gain: S.context.createGain()
+			};
+			ch.nodes = nodes;
+			nodes.source.buffer = ch.sfx.cache.data;
+			nodes.source.loop = true;
+			nodes.source.loopStart = ch.sfx.cache.loopstart;
+			nodes.source.loopEnd = nodes.source.buffer.length;
+			nodes.source.connect(nodes.gain);
+			nodes.gain.connect(S.context.destination);
+		}
+		else
+			ch.audio = ch.sfx.cache.data.cloneNode();
 	}
 
 	Con.sfx_talk = S.PrecacheSound('misc/talk.wav');
@@ -82,7 +104,12 @@ S.PickChannel = function(entnum, entchannel)
 			if ((channel.entnum === entnum) && ((channel.entchannel === entchannel) || (entchannel === -1)))
 			{
 				channel.sfx = null;
-				if (channel.audio != null)
+				if (channel.nodes != null)
+				{
+					channel.nodes.source.stop(0.0);
+					channel.nodes = null;
+				}
+				else if (channel.audio != null)
 				{
 					channel.audio.pause();
 					channel.audio = null;
@@ -168,13 +195,73 @@ S.StartSound = function(entnum, entchannel, sfx, origin, vol, attenuation)
 	}
 
 	target_chan.sfx = sfx;
+	target_chan.pos = 0.0;
 	target_chan.end = Host.realtime + sfx.cache.length;
-	target_chan.audio = sfx.cache.audio.cloneNode();
-	var volume = (target_chan.leftvol + target_chan.rightvol) * 0.5;
-	if (volume > 1.0)
-		volume = 1.0;
-	target_chan.audio.volume = volume * S.volume.value;
-	target_chan.audio.play();
+	var volume;
+	if (S.context != null)
+	{
+		var nodes = {
+			source: S.context.createBufferSource(),
+			merger1: S.context.createChannelMerger(2),
+			splitter: S.context.createChannelSplitter(2),
+			gain0: S.context.createGain(),
+			gain1: S.context.createGain(),
+			merger2: S.context.createChannelMerger(2)
+		};
+		target_chan.nodes = nodes;
+		nodes.source.buffer = sfx.cache.data;
+		if (sfx.cache.loopstart != null)
+		{
+			nodes.source.loop = true;
+			nodes.source.loopStart = sfx.cache.loopstart;
+			nodes.source.loopEnd = nodes.source.buffer.length;
+		}
+		nodes.source.connect(nodes.merger1);
+		nodes.source.connect(nodes.merger1, 0, 1);
+		nodes.merger1.connect(nodes.splitter);
+		nodes.splitter.connect(nodes.gain0, 0);
+		nodes.splitter.connect(nodes.gain1, 1);
+		volume = target_chan.leftvol;
+		if (volume > 1.0)
+			volume = 1.0;
+		nodes.gain0.gain.value = volume * S.volume.value;
+		nodes.gain0.connect(nodes.merger2, 0, 0);
+		volume = target_chan.rightvol;
+		if (volume > 1.0)
+			volume = 1.0;
+		nodes.gain1.gain.value = volume * S.volume.value;
+		nodes.gain1.connect(nodes.merger2, 0, 1);
+		nodes.merger2.connect(S.context.destination);
+		var i, check, skip;
+		for (i = 0; i < S.channels.length; ++i)
+		{
+			check = S.channels[i];
+			if (check === target_chan)
+				continue;
+			if ((check.sfx !== sfx) || (check.pos !== 0.0))
+				continue;
+			skip = Math.random() * 0.1;
+			if (skip >= sfx.cache.length)
+			{
+				nodes.source.start(0.0);
+				break;
+			}
+			target_chan.pos += skip;
+			target_chan.end -= skip;
+			nodes.source.start(0.0, skip);
+			break;
+		}
+		nodes.source.start(0.0);
+	}
+	else
+	{
+		target_chan.audio = sfx.cache.data.cloneNode();
+		volume = (target_chan.leftvol + target_chan.rightvol) * 0.5;
+		if (volume > 1.0)
+			volume = 1.0;
+		target_chan.audio.volume = volume * S.volume.value;
+		target_chan.audio.play();
+	}
 };
 
 S.StopSound = function(entnum, entchannel)
@@ -191,7 +278,12 @@ S.StopSound = function(entnum, entchannel)
 		{
 			ch.end = 0.0;
 			ch.sfx = null;
-			if (ch.audio != null)
+			if (ch.nodes != null)
+			{
+				ch.nodes.source.stop(0.0);
+				ch.nodes = null;
+			}
+			else if (ch.audio != null)
 			{
 				ch.audio.pause();
 				ch.audio = null;
@@ -212,7 +304,10 @@ S.StopAllSounds = function()
 	{
 		ch = S.ambient_channels[i];
 		ch.master_vol = 0.0;
-		ch.audio.pause();
+		if (ch.nodes != null)
+			ch.nodes.source.stop(0.0);
+		else if (ch.audio != null)
+			ch.audio.pause();
 	}
 
 	for (i = 0; i < S.channels.length; ++i)
@@ -220,13 +315,23 @@ S.StopAllSounds = function()
 		ch = S.channels[i];
 		if (ch == null)
 			continue;
-		if (ch.audio != null)
+		if (ch.nodes != null)
+			ch.nodes.source.stop(0.0);
+		else if (ch.audio != null)
 			ch.audio.pause();
 	}
 	S.channels = [];
 
-	for (i = 0; i < S.static_channels.length; ++i)
-		S.static_channels[i].audio.pause();
+	if (S.context != null)
+	{
+		for (i = 0; i < S.static_channels.length; ++i)
+			S.static_channels[i].nodes.source.stop(0.0);
+	}
+	else
+	{
+		for (i = 0; i < S.static_channels.length; ++i)
+			S.static_channels[i].audio.pause();
+	}
 	S.static_channels = [];
 };
 
@@ -241,16 +346,43 @@ S.StaticSound = function(sfx, origin, vol, attenuation)
 		Con.Print('Sound ' + sfx.name + ' not looped\n');
 		return;
 	}
-	var ss = {};
-	ss.sfx = sfx;
-	ss.origin = [origin[0], origin[1], origin[2]];
-	ss.master_vol = vol;
-	ss.dist_mult = attenuation * 0.000015625;
-	ss.end = Host.realtime + sfx.cache.length;
-	S.Spatialize(ss);
-	ss.audio = sfx.cache.audio.cloneNode();
-	ss.audio.pause();
+	var ss = {
+		sfx: sfx,
+		origin: [origin[0], origin[1], origin[2]],
+		master_vol: vol,
+		dist_mult: attenuation * 0.000015625,
+		end: Host.realtime + sfx.cache.length
+	};
 	S.static_channels[S.static_channels.length] = ss;
+	if (S.context != null)
+	{
+		var nodes = {
+			source: S.context.createBufferSource(),
+			merger1: S.context.createChannelMerger(2),
+			splitter: S.context.createChannelSplitter(2),
+			gain0: S.context.createGain(),
+			gain1: S.context.createGain(),
+			merger2: S.context.createChannelMerger(2)
+		};
+		ss.nodes = nodes;
+		nodes.source.buffer = sfx.cache.data;
+		nodes.source.loop = true;
+		nodes.source.loopStart = sfx.cache.loopstart;
+		nodes.source.loopEnd = nodes.source.buffer.length;
+		nodes.source.connect(nodes.merger1);
+		nodes.source.connect(nodes.merger1, 0, 1);
+		nodes.merger1.connect(nodes.splitter);
+		nodes.splitter.connect(nodes.gain0, 0);
+		nodes.splitter.connect(nodes.gain1, 1);
+		nodes.gain0.connect(nodes.merger2, 0, 0);
+		nodes.gain1.connect(nodes.merger2, 0, 1);
+		nodes.merger2.connect(S.context.destination);
+	}
+	else
+	{
+		ss.audio = sfx.cache.data.cloneNode();
+		ss.audio.pause();
+	}
 };
 
 S.SoundList = function()
@@ -262,9 +394,8 @@ S.SoundList = function()
 		sc = sfx.cache;
 		if (sc == null)
 			continue;
-		size = sc.audio.src.length;
-		total += size;
-		size = size.toString();
+		size = sc.size.toString();
+		total += sc.size;
 		for (; size.length <= 5; )
 			size = ' ' + size;
 		if (sc.loopstart != null)
@@ -294,11 +425,17 @@ S.UpdateAmbientSounds = function()
 		for (i = 0; i < S.ambient_channels.length; ++i)
 		{
 			ch = S.ambient_channels[i];
-			if (ch.audio == null)
-				continue;
 			ch.master_vol = 0.0;
-			if (ch.audio.paused !== true)
-				ch.audio.pause();
+			if (ch.nodes != null)
+			{
+				if (ch.nodes.source.playbackState !== 0)
+					ch.nodes.source.stop(0.0);
+			}
+			else if (ch.audio != null)
+			{
+				if (ch.audio.paused !== true)
+					ch.audio.pause();
+			}
 		}
 		return;
 	}
@@ -306,6 +443,8 @@ S.UpdateAmbientSounds = function()
 	for (i = 0; i < S.ambient_channels.length; ++i)
 	{
 		ch = S.ambient_channels[i];
+		if ((ch.nodes == null) && (ch.audio == null))
+			continue;
 		vol = S.ambient_level.value * l.ambient_level[i];
 		if (vol < 8.0)
 			vol = 0.0;
@@ -325,30 +464,49 @@ S.UpdateAmbientSounds = function()
 
 		if (ch.master_vol === 0.0)
 		{
-			if (ch.audio.paused !== true)
-				ch.audio.pause();
-			continue;
-		}
-		ch.audio.volume = ch.master_vol * S.volume.value;
-		sc = ch.sfx.cache;
-		if (ch.audio.paused === true)
-		{
-			ch.audio.play();
-			ch.end = Host.realtime + sc.length;
-			continue;
-		}
-		if (Host.realtime >= ch.end)
-		{
-			try
+			if (S.context != null)
 			{
-				ch.audio.currentTime = sc.loopstart;
+				if (ch.nodes.source.playbackState !== 0)
+					ch.nodes.source.stop(0.0);
 			}
-			catch (e)
+			else
 			{
-				ch.end = Host.realtime;
+				if (ch.audio.paused !== true)
+					ch.audio.pause();
+			}
+			continue;
+		}
+		if (ch.master_vol > 1.0)
+			ch.master_vol = 1.0;
+		if (S.context != null)
+		{
+			ch.nodes.gain.gain.value = ch.master_vol * S.volume.value;
+			if (ch.nodes.source.playbackState === 0)
+				ch.nodes.source.start(0.0);
+		}
+		else
+		{
+			ch.audio.volume = ch.master_vol * S.volume.value;
+			sc = ch.sfx.cache;
+			if (ch.audio.paused === true)
+			{
+				ch.audio.play();
+				ch.end = Host.realtime + sc.length;
 				continue;
 			}
-			ch.end = Host.realtime + sc.length - sc.loopstart;
+			if (Host.realtime >= ch.end)
+			{
+				try
+				{
+					ch.audio.currentTime = sc.loopstart;
+				}
+				catch (e)
+				{
+					ch.end = Host.realtime;
+					continue;
+				}
+				ch.end = Host.realtime + sc.length - sc.loopstart;
+			}
 		}
 	}
 };
@@ -368,29 +526,45 @@ S.UpdateDynamicSounds = function()
 			sc = ch.sfx.cache;
 			if (sc.loopstart != null)
 			{
-				try
+				if (S.context == null)
 				{
-					ch.audio.currentTime = sc.loopstart;
-				}
-				catch (e)
-				{
-					ch.end = Host.realtime;
-					continue;
+					try
+					{
+						ch.audio.currentTime = sc.loopstart;
+					}
+					catch (e)
+					{
+						ch.end = Host.realtime;
+						continue;
+					}
 				}
 				ch.end = Host.realtime + sc.length - sc.loopstart;
 			}
 			else
 			{
 				ch.sfx = null;
+				ch.nodes = null;
 				ch.audio = null;
 				continue;
 			}
 		}
 		S.Spatialize(ch);
-		volume = (ch.leftvol + ch.rightvol) * 0.5;
-		if (volume > 1.0)
-			volume = 1.0;
-		ch.audio.volume = volume * S.volume.value;
+		if (S.context != null)
+		{
+			if (ch.leftvol > 1.0)
+				ch.leftvol = 1.0;
+			if (ch.rightvol > 1.0)
+				ch.rightvol = 1.0;
+			ch.nodes.gain0.gain.volume = ch.leftvol * S.volume.value;
+			ch.nodes.gain1.gain.volume = ch.rightvol * S.volume.value;
+		}
+		else
+		{
+			volume = (ch.leftvol + ch.rightvol) * 0.5;
+			if (volume > 1.0)
+				volume = 1.0;
+			ch.audio.volume = volume * S.volume.value;
+		}
 	}
 };
 
@@ -420,36 +594,60 @@ S.UpdateStaticSounds = function()
 		}
 	}
 
-	for (i = 0; i < S.static_channels.length; ++i)
+	if (S.context != null)
 	{
-		ch = S.static_channels[i];
-		volume = (ch.leftvol + ch.rightvol) * 0.5;
-		if (volume > 1.0)
-			volume = 1.0;
-		if (volume === 0.0)
+		for (i = 0; i < S.static_channels.length; ++i)
 		{
-			if (ch.audio.paused !== true)
-				ch.audio.pause();
-			continue;
-		}
-		ch.audio.volume = volume * S.volume.value;
-		sc = ch.sfx.cache;
-		if (ch.audio.paused === true)
-		{
-			ch.audio.play();
-			ch.end = Host.realtime + sc.length;
-			continue;
-		}
-		if (Host.realtime >= ch.end)
-		{
-			try
+			ch = S.static_channels[i];
+			if ((ch.leftvol === 0.0) && (ch.rightvol === 0.0))
 			{
-				ch.audio.currentTime = sc.loopstart;
-			}
-			catch (e)
-			{
-				ch.end = Host.realtime;
+				if (ch.nodes.source.playbackState !== 0)
+					ch.nodes.source.stop(0.0);
 				continue;
+			}
+			if (ch.leftvol > 1.0)
+				ch.leftvol = 1.0;
+			if (ch.rightvol > 1.0)
+				ch.rightvol = 1.0;
+			ch.nodes.gain0.gain.value = ch.leftvol * S.volume.value;
+			ch.nodes.gain1.gain.value = ch.rightvol * S.volume.value;
+			if (ch.nodes.source.playbackState === 0)
+				ch.nodes.source.start(0.0);
+		}
+	}
+	else
+	{
+		for (i = 0; i < S.static_channels.length; ++i)
+		{
+			ch = S.static_channels[i];
+			volume = (ch.leftvol + ch.rightvol) * 0.5;
+			if (volume > 1.0)
+				volume = 1.0;
+			if (volume === 0.0)
+			{
+				if (ch.audio.paused !== true)
+					ch.audio.pause();
+				continue;
+			}
+			ch.audio.volume = volume * S.volume.value;
+			sc = ch.sfx.cache;
+			if (ch.audio.paused === true)
+			{
+				ch.audio.play();
+				ch.end = Host.realtime + sc.length;
+				continue;
+			}
+			if (Host.realtime >= ch.end)
+			{
+				try
+				{
+					ch.audio.currentTime = sc.loopstart;
+				}
+				catch (e)
+				{
+					ch.end = Host.realtime;
+					continue;
+				}
 			}
 		}
 	}
@@ -459,6 +657,7 @@ S.Update = function(origin, forward, right, up)
 {
 	if (S.nosound.value !== 0)
 		return;
+
 	S.listener_origin[0] = origin[0];
 	S.listener_origin[1] = origin[1];
 	S.listener_origin[2] = origin[2];
@@ -471,6 +670,11 @@ S.Update = function(origin, forward, right, up)
 	S.listener_up[0] = up[0];
 	S.listener_up[1] = up[1];
 	S.listener_up[2] = up[2];
+
+	if (S.volume.value < 0.0)
+		Cvar.SetValue('volume', 0.0);
+	else if (S.volume.value > 1.0)
+		Cvar.SetValue('volume', 1.0);
 
 	S.UpdateAmbientSounds();
 	S.UpdateDynamicSounds();
@@ -582,13 +786,13 @@ S.LoadSound = function(s)
 	else
 		sc.length = datalen / fmt.avgBytesPerSec;
 
-	var outcount = datalen + 44;
-	if ((outcount & 1) !== 0)
-		++outcount;
-	var out = new ArrayBuffer(outcount);
+	sc.size = datalen + 44;
+	if ((sc.size & 1) !== 0)
+		++sc.size;
+	var out = new ArrayBuffer(sc.size);
 	view = new DataView(out);
 	view.setUint32(0, 0x46464952, true); // RIFF
-	view.setUint32(4, outcount - 8, true);
+	view.setUint32(4, sc.size - 8, true);
 	view.setUint32(8, 0x45564157, true); // WAVE
 	view.setUint32(12, 0x20746d66, true); // fmt
 	view.setUint32(16, 16, true);
@@ -601,7 +805,10 @@ S.LoadSound = function(s)
 	view.setUint32(36, 0x61746164, true); // data
 	view.setUint32(40, datalen, true);
 	(new Uint8Array(out, 44, datalen)).set(new Uint8Array(data, dataofs, datalen));
-	sc.audio = new Audio('data:audio/wav;base64,' + Q.btoa(new Uint8Array(out)));
+	if (S.context != null)
+		sc.data = S.context.createBuffer(out, true);
+	else
+		sc.data = new Audio('data:audio/wav;base64,' + Q.btoa(new Uint8Array(out)));
 
 	s.cache = sc;
 	return true;
