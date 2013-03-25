@@ -861,7 +861,7 @@ R.MakeBrushModelDisplayLists = function(m)
 		gl.deleteBuffer(m.cmds);
 	var i, j, k;
 	var cmds = [];
-	var texture, chain, leaf, surf, vert, styles;
+	var texture, chain, leaf, surf, vert, styles = [0.0, 0.0, 0.0, 0.0];
 	var verts = 0;
 	m.chains = [];
 	for (i = 0; i < m.textures.length; ++i)
@@ -875,7 +875,7 @@ R.MakeBrushModelDisplayLists = function(m)
 			surf = m.faces[m.firstface + j];
 			if (surf.texture !== i)
 				continue;
-			styles = [0.0, 0.0, 0.0, 0.0];
+			styles[0] = styles[1] = styles[2] = styles[3] = 0.0;
 			switch (surf.styles.length)
 			{
 			case 4:
@@ -951,7 +951,7 @@ R.MakeWorldModelDisplayLists = function(m)
 		return;
 	var i, j, k, l;
 	var cmds = [];
-	var texture, leaf, chain, surf, vert, styles;
+	var texture, leaf, chain, surf, vert, styles = [0.0, 0.0, 0.0, 0.0];
 	var verts = 0;
 	for (i = 0; i < m.textures.length; ++i)
 	{
@@ -967,7 +967,7 @@ R.MakeWorldModelDisplayLists = function(m)
 				surf = m.faces[m.marksurfaces[leaf.firstmarksurface + k]];
 				if (surf.texture !== i)
 					continue;
-				styles = [0.0, 0.0, 0.0, 0.0];
+				styles[0] = styles[1] = styles[2] = styles[3] = 0.0;
 				switch (surf.styles.length)
 				{
 				case 4:
