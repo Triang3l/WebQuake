@@ -29,7 +29,7 @@ To launch mods, copy the mod folder into the folder containing WebQuake.htm and 
 
 If you want to join a multiplayer game, do one of the following steps, go to Multiplayer menu in the main menu, type the IP in "Join game at" field and press Enter, or type *connect ws://ip:port* in the console.
 
-Currently there is no way to play with native Quake players, but it's in development.
+You can also play WebQuake games in a native Quake (not QuakeWorld) client such as WinQuake or GLQuake. Choose TCP/IP in the Join Game menu.
 
 You cannot join multiplayer games if the client is installed on https:// protocol, however.
 

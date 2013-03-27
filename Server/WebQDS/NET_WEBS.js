@@ -119,8 +119,10 @@ WEBS.Close = function(sock)
 {
 	if (sock.driverdata == null)
 		return;
-	if (sock.driverdata.closeReasonCode === -1)
-		sock.driverdata.drop(1000);
+	if (sock.driverdata.closeReasonCode !== -1)
+		return;
+	sock.driverdata.drop(1000);
+	sock.driverdata = null;
 };
 
 WEBS.ConnectionOnMessage = function(message)
@@ -456,6 +458,19 @@ WEBS.ServerOnRequest = function(request)
 	{
 		request.reject();
 		return;
+	}
+	var i, s;
+	for (i = 0; i < NET.activeSockets.length; ++i)
+	{
+		s = NET.activeSockets[i];
+		if (s.disconnected === true)
+			continue;
+		if (NET.drivers[s.driver] !== WEBS)
+			continue;
+		if (request.remoteAddress !== s.address)
+			continue;
+		NET.Close(s);
+		break;
 	}
 	WEBS.acceptsockets.push(request.accept('quake', request.origin));
 };

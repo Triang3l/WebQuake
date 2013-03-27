@@ -243,12 +243,15 @@ NET.Init = function()
 	NET.time = Sys.FloatTime();
 
 	NET.messagetimeout = Cvar.RegisterVariable('net_messagetimeout', '300');
-	NET.hostname = Cvar.RegisterVariable('hostname', 'UNNAMED');
+	var buff = Node.os.hostname().substring(0, 15), local = [];
+	for (i = 0; i < buff.length; ++i)
+		local[i] = String.fromCharCode(buff.charCodeAt(i) & 255);
+	NET.hostname = Cvar.RegisterVariable('hostname', local.join(''));
 	Cmd.AddCommand('listen', NET.Listen_f);
 	Cmd.AddCommand('maxplayers', NET.MaxPlayers_f);
 	Cmd.AddCommand('port', NET.Port_f);
 
-	NET.drivers = [WEBS];
+	NET.drivers = [Datagram, WEBS];
 	var dfunc;
 	for (NET.driverlevel = 0; NET.driverlevel < NET.drivers.length; ++NET.driverlevel)
 	{

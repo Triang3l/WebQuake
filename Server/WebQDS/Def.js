@@ -1,6 +1,6 @@
 Def = {};
 
-Def.timedate = 'Exe: 21:10:48 Mar 13 2013\n';
+Def.timedate = 'Exe: 12:53:41 Mar 27 2013\n';
 
 Def.max_edicts = 600;
 

@@ -2,6 +2,7 @@ Node = {
 	dgram: require('dgram'),
 	fs: require('fs'),
 	http: require('http'),
+	os: require('os'),
 	url: require('url'),
 	websocket: require('websocket')
 };
@@ -16,6 +17,7 @@ require('./WebQDS/Host.js');
 require('./WebQDS/Mod.js');
 require('./WebQDS/MSG.js');
 require('./WebQDS/NET.js');
+require('./WebQDS/NET_Datagram.js');
 require('./WebQDS/NET_WEBS.js');
 require('./WebQDS/PF.js');
 require('./WebQDS/PR.js');
