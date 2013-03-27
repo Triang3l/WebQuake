@@ -84,8 +84,9 @@ After that, create "media" folder in "id1" folder (or, for the mission pack musi
 The port has been tested in the following browsers:
 
 * Firefox (Windows) - **Very Good** - developed in it, no mouse.
-* Chrome (Windows, Android) - **Very Good** - no "loading" image. On Android, a Windows-compatible keyboard is required for Esc and F1-F12 keys.
+* Chrome (Windows) - **Very Good** - no "loading" image.
 * Firefox (Android) - **Okay** - very low performance (canvas is locked at 12 FPS), no mouse support. Keypresses are incorrect, not tested with Windows keyboard.
+* Chrome (Android) - **Not Good** - no "loading" image, sound is broken (launch with *?-nosound -nocdaudio*), no mouse. Requires Windows-compatible keyboard for Esc and F1-F12 keys.
 * Opera (Windows) - **Not Good** - low performance, nothing is drawn in water (type *r_waterwarp 0* in the console), no mouse.
 * Internet Explorer (Windows) - **Unsupported** - no WebGL, audio formats are not supported, XMLHttpRequest.overrideMimeType doesn't exist, no mouse.
 
