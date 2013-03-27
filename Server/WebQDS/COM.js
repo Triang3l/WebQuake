@@ -150,12 +150,13 @@ COM.searchpaths = [];
 COM.LoadFile = function(filename)
 {
 	filename = filename.toLowerCase();
-	var src, i, j, k, pak, file, fd;
+	var src, i, j, k, search, pak, file, fd;
 	for (i = COM.searchpaths.length - 1; i >= 0; --i)
 	{
-		for (j = COM.searchpaths[i].pack.length - 1; j >= 0; --j)
+		search = COM.searchpaths[i];
+		for (j = search.pack.length - 1; j >= 0; --j)
 		{
-			pak = COM.searchpaths[i].pack[j];
+			pak = search.pack[j];
 			for (k = 0; k < pak.length; ++k)
 			{
 				file = pak[k];
@@ -165,12 +166,13 @@ COM.LoadFile = function(filename)
 					return new ArrayBuffer(0);
 				try
 				{
-					fd = Node.fs.openSync(COM.searchpaths[i].filename + '/' + 'pak' + j + '.pak', 'r');
+					fd = Node.fs.openSync(search.filename + '/pak' + j + '.pak', 'r');
 				}
 				catch (e)
 				{
 					break;
 				}
+				Sys.Print('PackFile: ' + search.filename + '/pak' + j + '.pak : ' + filename + '\n')
 				src = new Buffer(file.filelen);
 				Node.fs.readSync(fd, src, 0, file.filelen, file.filepos);
 				Node.fs.closeSync(fd);
@@ -181,7 +183,8 @@ COM.LoadFile = function(filename)
 			break;
 		try
 		{
-			src = Node.fs.readFileSync(COM.searchpaths[i].filename + '/' + filename);
+			src = Node.fs.readFileSync(search.filename + '/' + filename);
+			Sys.Print('FindFile: ' + search.filename + '/' + filename + '\n');
 			break;
 		}
 		catch (e)
@@ -189,7 +192,10 @@ COM.LoadFile = function(filename)
 		}
 	}
 	if (src == null)
+	{
+		Sys.Print('FindFile: can\'t find ' + filename + '\n');
 		return;
+	}
 	var size = src.length;
 	var dest = new ArrayBuffer(size), view = new DataView(dest);
 	var count = size >> 2;
