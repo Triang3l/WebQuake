@@ -1727,20 +1727,21 @@ SV.SetIdealPitch = function()
 	var sinval = Math.sin(angleval);
 	var cosval = Math.cos(angleval);
 	var top = [0.0, 0.0, ent.v_float[PR.entvars.origin2] + ent.v_float[PR.entvars.view_ofs2]];
+	var bottom = [0.0, 0.0, top[2] - 160.0];
 	var i, tr, z = [];
-	for (i = 0; i <= 6; ++i)
+	for (i = 0; i < 6; ++i)
 	{
-		top[0] = ent.v_float[PR.entvars.origin] + cosval * (i + 3) * 12.0;
-		top[1] = ent.v_float[PR.entvars.origin1] + sinval * (i + 3) * 12.0;
-		tr = SV.Move(top, Vec.origin, Vec.origin, [top[0], top[1], top[2] - 160.0], 1, ent);
+		top[0] = bottom[0] = ent.v_float[PR.entvars.origin] + cosval * (i + 3) * 12.0;
+		top[1] = bottom[1] = ent.v_float[PR.entvars.origin1] + sinval * (i + 3) * 12.0;
+		tr = SV.Move(top, Vec.origin, Vec.origin, bottom, 1, ent);
 		if ((tr.allsolid === true) || (tr.fraction === 1.0))
 			return;
 		z[i] = top[2] - tr.fraction * 160.0;
 	}
-	var j, dir = 0.0, step, steps = 0;
-	for (j = 1; j < i; ++j)
+	var dir = 0.0, step, steps = 0;
+	for (i = 1; i < 6; ++i)
 	{
-		step = z[j] - z[j - 1];
+		step = z[i] - z[i - 1];
 		if ((step > -0.1) && (step < 0.1))
 			continue;
 		if ((dir !== 0.0) && (((step - dir) > 0.1) || ((step - dir) < -0.1)))
