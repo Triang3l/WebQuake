@@ -225,30 +225,27 @@ M.load_cursor = 0;
 M.max_savegames = 12;
 M.filenames = [];
 M.loadable = [];
-M.loadpaths = [];
+M.removable = [];
 
 M.ScanSaves = function()
 {
-	var i, j, path, f, version, name, j, c;
+	var searchpaths = COM.searchpaths, i, j, search = 'Quake.' + COM.gamedir[0].filename + '/s', f, version, name, j, c;
+	COM.searchpaths = COM.gamedir;
 	for (i = 0; i < M.max_savegames; ++i)
 	{
-		M.loadpaths[i] = null;
-		for (j = COM.searchpaths.length - 1; j >= 0; --j)
+		f = localStorage.getItem(search + i + '.sav');
+		if (f != null)
+			M.removable[i] = true;
+		else
 		{
-			path = 'Quake.' + COM.searchpaths[j].filename + '/s' + i + '.sav';
-			f = localStorage.getItem(path);
-			if (f == null)
-				continue;
-			M.loadpaths[i] = path;
-			break;
-		}
-		if (j < 0)
+			M.removable[i] = false;
 			f = COM.LoadTextFile('s' + i + '.sav');
-		if (f == null)
-		{
-			M.filenames[i] = '--- UNUSED SLOT ---';
-			M.loadable[i] = false;
-			continue;
+			if (f == null)
+			{
+				M.filenames[i] = '--- UNUSED SLOT ---';
+				M.loadable[i] = false;
+				continue;
+			}
 		}
 		for (version = 0; version < f.length; ++version)
 		{
@@ -273,6 +270,7 @@ M.ScanSaves = function()
 		M.filenames[i] = name.join('');
 		M.loadable[i] = true;
 	}
+	COM.searchpaths = searchpaths;
 };
 
 M.Menu_Load_f = function()
@@ -340,13 +338,12 @@ M.Load_Key = function(k)
 			M.load_cursor = 0;
 		return;
 	case Key.k.del:
-		if (M.loadpaths[M.load_cursor] == null)
+		if (M.removable[M.load_cursor] !== true)
 			return;
-		if (confirm('Delete selected game?') === true)
-		{
-			localStorage.removeItem(M.loadpaths[M.load_cursor]);
-			M.ScanSaves();
-		}
+		if (confirm('Delete selected game?') !== true)
+			return;
+		localStorage.removeItem('Quake.' + COM.gamedir[0].filename + '/s' + M.load_cursor + '.sav');
+		M.ScanSaves();
 	}
 };
 
@@ -375,13 +372,12 @@ M.Save_Key = function(k)
 			M.load_cursor = 0;
 		return;
 	case Key.k.del:
-		if (M.loadpaths[M.load_cursor] == null)
+		if (M.removable[M.load_cursor] !== true)
 			return;
-		if (confirm('Delete selected game?') === true)
-		{
-			localStorage.removeItem(M.loadpaths[M.load_cursor]);
-			M.ScanSaves();
-		}
+		if (confirm('Delete selected game?') !== true)
+			return;
+		localStorage.removeItem('Quake.' + COM.gamedir[0].filename + '/s' + M.load_cursor + '.sav');
+		M.ScanSaves();
 	}
 };
 

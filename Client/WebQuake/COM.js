@@ -353,16 +353,13 @@ COM.AddGameDirectory = function(dir)
 
 COM.InitFilesystem = function()
 {
-	var i;
-	var search;
+	var i, search;
 	
 	i = COM.CheckParm('-basedir');
 	if (i != null)
-	{
 		search = COM.argv[i + 1];
-		if (search != null)
-			COM.AddGameDirectory(search);
-	}
+	if (search != null)
+		COM.AddGameDirectory(search);
 	else
 		COM.AddGameDirectory('id1');
 		
@@ -381,4 +378,6 @@ COM.InitFilesystem = function()
 			COM.AddGameDirectory(search);
 		}
 	}
+
+	COM.gamedir = [COM.searchpaths[COM.searchpaths.length - 1]];
 };
