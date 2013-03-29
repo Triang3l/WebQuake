@@ -1038,12 +1038,12 @@ SV.CheckVelocity = function(ent)
 	for (i = 0; i <= 2; ++i)
 	{
 		velocity = ent.v_float[PR.entvars.velocity + i];
-		if (isNaN(velocity) === true)
+		if (Number.isNaN(velocity) === true)
 		{
 			Con.Print('Got a NaN velocity on ' + PR.GetString(ent.v_int[PR.entvars.classname]) + '\n');
 			velocity = 0.0;
 		}
-		if (isNaN(ent.v_float[PR.entvars.origin + i]) === true)
+		if (Number.isNaN(ent.v_float[PR.entvars.origin + i]) === true)
 		{
 			Con.Print('Got a NaN origin on ' + PR.GetString(ent.v_int[PR.entvars.classname]) + '\n');
 			ent.v_float[PR.entvars.origin + i] = 0.0;

@@ -203,7 +203,7 @@ PR.progheader_crc = 5927;
 PR.CheckEmptyString = function(s)
 {
 	var c = s.charCodeAt(0);
-	if ((isNaN(c) === true) || (c <= 32))
+	if ((Number.isNaN(c) === true) || (c <= 32))
 		PR.RunError('Bad string');
 };
 

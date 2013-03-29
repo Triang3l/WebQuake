@@ -57,14 +57,14 @@ Q.atoi = function(str)
 	}
 	if (c === 39)
 	{
-		if (isNaN(c2) === true)
+		if (Number.isNaN(c2) === true)
 			return 0;
 		return sign * c2;
 	}
 	for (;;)
 	{
 		c = str.charCodeAt(ptr++);
-		if ((isNaN(c) === true) || (c <= 47) || (c >= 58))
+		if ((Number.isNaN(c) === true) || (c <= 47) || (c >= 58))
 			return val * sign;
 		val = val * 10 + c - 48;
 	}
@@ -107,12 +107,12 @@ Q.atof = function(str)
 	}
 	if (c === 39)
 	{
-		if (isNaN(c2) === true)
+		if (Number.isNaN(c2) === true)
 			return 0.0;
 		return sign * c2;
 	}
 	val = parseFloat(str);
-	if (isNaN(val) === true)
+	if (Number.isNaN(val) === true)
 		return 0.0;
 	return val;
 };
