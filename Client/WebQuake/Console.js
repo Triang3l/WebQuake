@@ -6,12 +6,7 @@ Con.text = [];
 
 Con.ToggleConsole_f = function()
 {
-	SCR.disabled_for_loading = false;
-	var i = Con.text.length - 4;
-	if (i < 0)
-		i = 0;
-	for (; i < Con.text.length; ++i)
-		Con.text[i].time = 0.0;
+	SCR.EndLoadingPlaque();
 	if (Key.dest.value === Key.dest.console)
 	{
 		if (CL.cls.state !== CL.active.connected)
@@ -32,6 +27,15 @@ Con.Clear_f = function()
 	Con.backscroll = 0;
 	Con.current = 0;
 	Con.text = [];
+};
+
+Con.ClearNotify = function()
+{
+	var i = Con.text.length - 4;
+	if (i < 0)
+		i = 0;
+	for (; i < Con.text.length; ++i)
+		Con.text[i].time = 0.0;
 };
 
 Con.MessageMode_f = function()

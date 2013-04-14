@@ -265,6 +265,12 @@ SCR.BeginLoadingPlaque = function()
 	SCR.disabled_time = Host.realtime + 60.0;
 };
 
+SCR.EndLoadingPlaque = function()
+{
+	SCR.disabled_for_loading = false;
+	Con.ClearNotify();
+};
+
 SCR.UpdateScreen = function()
 {
 	if (SCR.disabled_for_loading === true)

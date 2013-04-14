@@ -661,7 +661,7 @@ CL.SignonReply = function()
 		MSG.WriteString(CL.cls.message, 'begin');
 		return;
 	case 4:
-		SCR.disabled_for_loading = false;
+		SCR.EndLoadingPlaque();
 	}
 };
 

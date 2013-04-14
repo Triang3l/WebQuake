@@ -17,7 +17,7 @@ Host.Error = function(error)
 	if (Host.inerror === true)
 		Sys.Error('Host.Error: recursively entered');
 	Host.inerror = true;
-	SCR.disabled_for_loading = false;
+	SCR.EndLoadingPlaque();
 	Con.Print('Host.Error: ' + error + '\n');
 	if (SV.server.active === true)
 		Host.ShutdownServer();
