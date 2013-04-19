@@ -821,8 +821,8 @@ R.RenderScene = function()
 	R.SetFrustum();
 	R.SetupGL();
 	R.MarkLeaves();
-	R.DrawSkyBox();
 	gl.enable(gl.CULL_FACE);
+	R.DrawSkyBox();
 	R.DrawViewModel();
 	R.DrawWorld();
 	R.DrawEntitiesOnList();
@@ -2233,6 +2233,7 @@ R.DrawSkyBox = function()
 
 	gl.depthFunc(gl.GREATER);
 	gl.depthMask(false);
+	gl.disable(gl.CULL_FACE);
 
 	program = GL.UseProgram('Sky');
 	gl.uniform1f(program.uTime, Host.realtime);
@@ -2261,6 +2262,7 @@ R.DrawSkyBox = function()
 	gl.uniform3f(program.uScale, -2.0, 2.0, -1.0);
 	gl.drawArrays(gl.TRIANGLES, 0, 180);
 
+	gl.enable(gl.CULL_FACE);
 	gl.depthMask(true);
 	gl.depthFunc(gl.LESS);
 };
