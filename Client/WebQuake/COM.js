@@ -164,6 +164,7 @@ COM.Init = function()
 		COM.LittleLong = (function(l) {return l;});
 	else
 		COM.LittleLong = (function(l) {return (l >>> 24) + ((l & 0xff0000) >>> 8) + (((l & 0xff00) << 8) >>> 0) + ((l << 24) >>> 0);});
+
 	COM.registered = Cvar.RegisterVariable('registered', '0');
 	Cvar.RegisterVariable('cmdline', COM.cmdline, false, true);
 	Cmd.AddCommand('path', COM.Path_f);

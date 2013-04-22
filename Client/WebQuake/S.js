@@ -50,7 +50,7 @@ S.Init = function()
 		{
 			nodes = {
 				source: S.context.createBufferSource(),
-				gain: S.context.createGain()
+				gain: S.context.createGainNode()
 			};
 			ch.nodes = nodes;
 			nodes.source.buffer = ch.sfx.cache.data;
@@ -106,7 +106,7 @@ S.PickChannel = function(entnum, entchannel)
 				channel.sfx = null;
 				if (channel.nodes != null)
 				{
-					channel.nodes.source.stop(0.0);
+					channel.nodes.source.noteOff(0.0);
 					channel.nodes = null;
 				}
 				else if (channel.audio != null)
@@ -204,8 +204,8 @@ S.StartSound = function(entnum, entchannel, sfx, origin, vol, attenuation)
 			source: S.context.createBufferSource(),
 			merger1: S.context.createChannelMerger(2),
 			splitter: S.context.createChannelSplitter(2),
-			gain0: S.context.createGain(),
-			gain1: S.context.createGain(),
+			gain0: S.context.createGainNode(),
+			gain1: S.context.createGainNode(),
 			merger2: S.context.createChannelMerger(2)
 		};
 		target_chan.nodes = nodes;
@@ -243,15 +243,15 @@ S.StartSound = function(entnum, entchannel, sfx, origin, vol, attenuation)
 			skip = Math.random() * 0.1;
 			if (skip >= sfx.cache.length)
 			{
-				nodes.source.start(0.0);
+				nodes.source.noteOn(0.0);
 				break;
 			}
 			target_chan.pos += skip;
 			target_chan.end -= skip;
-			nodes.source.start(0.0, skip);
+			nodes.source.noteGrainOn(0.0, skip, nodes.source.buffer.length - skip);
 			break;
 		}
-		nodes.source.start(0.0);
+		nodes.source.noteOn(0.0);
 	}
 	else
 	{
@@ -280,7 +280,7 @@ S.StopSound = function(entnum, entchannel)
 			ch.sfx = null;
 			if (ch.nodes != null)
 			{
-				ch.nodes.source.stop(0.0);
+				ch.nodes.source.noteOff(0.0);
 				ch.nodes = null;
 			}
 			else if (ch.audio != null)
@@ -305,7 +305,7 @@ S.StopAllSounds = function()
 		ch = S.ambient_channels[i];
 		ch.master_vol = 0.0;
 		if (ch.nodes != null)
-			ch.nodes.source.stop(0.0);
+			ch.nodes.source.noteOff(0.0);
 		else if (ch.audio != null)
 			ch.audio.pause();
 	}
@@ -316,7 +316,7 @@ S.StopAllSounds = function()
 		if (ch == null)
 			continue;
 		if (ch.nodes != null)
-			ch.nodes.source.stop(0.0);
+			ch.nodes.source.noteOff(0.0);
 		else if (ch.audio != null)
 			ch.audio.pause();
 	}
@@ -325,7 +325,7 @@ S.StopAllSounds = function()
 	if (S.context != null)
 	{
 		for (i = 0; i < S.static_channels.length; ++i)
-			S.static_channels[i].nodes.source.stop(0.0);
+			S.static_channels[i].nodes.source.noteOff(0.0);
 	}
 	else
 	{
@@ -360,8 +360,8 @@ S.StaticSound = function(sfx, origin, vol, attenuation)
 			source: S.context.createBufferSource(),
 			merger1: S.context.createChannelMerger(2),
 			splitter: S.context.createChannelSplitter(2),
-			gain0: S.context.createGain(),
-			gain1: S.context.createGain(),
+			gain0: S.context.createGainNode(),
+			gain1: S.context.createGainNode(),
 			merger2: S.context.createChannelMerger(2)
 		};
 		ss.nodes = nodes;
@@ -429,7 +429,7 @@ S.UpdateAmbientSounds = function()
 			if (ch.nodes != null)
 			{
 				if (ch.nodes.source.playbackState !== 0)
-					ch.nodes.source.stop(0.0);
+					ch.nodes.source.noteOff(0.0);
 			}
 			else if (ch.audio != null)
 			{
@@ -467,7 +467,7 @@ S.UpdateAmbientSounds = function()
 			if (S.context != null)
 			{
 				if (ch.nodes.source.playbackState !== 0)
-					ch.nodes.source.stop(0.0);
+					ch.nodes.source.noteOff(0.0);
 			}
 			else
 			{
@@ -482,7 +482,7 @@ S.UpdateAmbientSounds = function()
 		{
 			ch.nodes.gain.gain.value = ch.master_vol * S.volume.value;
 			if (ch.nodes.source.playbackState === 0)
-				ch.nodes.source.start(0.0);
+				ch.nodes.source.noteOn(0.0);
 		}
 		else
 		{
@@ -602,7 +602,7 @@ S.UpdateStaticSounds = function()
 			if ((ch.leftvol === 0.0) && (ch.rightvol === 0.0))
 			{
 				if (ch.nodes.source.playbackState !== 0)
-					ch.nodes.source.stop(0.0);
+					ch.nodes.source.noteOff(0.0);
 				continue;
 			}
 			if (ch.leftvol > 1.0)
@@ -612,7 +612,7 @@ S.UpdateStaticSounds = function()
 			ch.nodes.gain0.gain.value = ch.leftvol * S.volume.value;
 			ch.nodes.gain1.gain.value = ch.rightvol * S.volume.value;
 			if (ch.nodes.source.playbackState === 0)
-				ch.nodes.source.start(0.0);
+				ch.nodes.source.noteOn(0.0);
 		}
 	}
 	else
