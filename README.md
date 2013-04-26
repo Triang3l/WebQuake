@@ -23,6 +23,8 @@ For Scourge of Armagon, add *-hipnotic* command line argument. For Dissolution o
 
 To launch mods, copy the mod folder into the folder containing WebQuake.htm and add *-game MOD_NAME_HERE* command line argument. Ensure step 6 of the installing instructions for the mod folder.
 
+To use browser hotkeys (such as F5, Ctrl+T and Ctrl+W), click the address bar, and when you're done, click the game.
+
 # Playing multiplayer
 
 If you want to join a multiplayer game, do one of the following steps, go to Multiplayer menu in the main menu, type the IP in "Join game at" field and press Enter, or type *connect ws://ip:port* in the console.
