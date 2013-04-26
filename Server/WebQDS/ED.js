@@ -349,7 +349,7 @@ ED.LoadFromFile = function(data)
 		}
 		else if (((Host.current_skill === 0) && ((spawnflags & 256) !== 0))
 			|| ((Host.current_skill === 1) && ((spawnflags & 512) !== 0))
-			|| ((Host.current_skill === 2) && ((spawnflags & 1024) !== 0)))
+			|| ((Host.current_skill >= 2) && ((spawnflags & 1024) !== 0)))
 		{
 			ED.Free(ent);
 			++inhibit;
