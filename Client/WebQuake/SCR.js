@@ -135,8 +135,8 @@ SCR.CalcRefdef = function()
 	GL.ortho[0] = 2.0 / VID.width;
 	GL.ortho[5] = -2.0 / VID.height;
 
-	R.warpwidth = vrect.width;
-	R.warpheight = vrect.height;
+	R.warpwidth = (vrect.width * SCR.devicePixelRatio) >> 0;
+	R.warpheight = (vrect.height * SCR.devicePixelRatio) >> 0;
 	if (R.warpwidth > 2048)
 		R.warpwidth = 2048;
 	if (R.warpheight > 2048)
@@ -284,12 +284,20 @@ SCR.UpdateScreen = function()
 	var elem = document.documentElement;
 	var width = (elem.clientWidth <= 320) ? 320 : elem.clientWidth;
 	var height = (elem.clientHeight <= 200) ? 200 : elem.clientHeight;
-	if ((VID.width != width) || (VID.height != height) || (Host.framecount === 0))
+	var pixelRatio;
+	if (window.devicePixelRatio >= 1.0)
+		pixelRatio = window.devicePixelRatio;
+	else
+		pixelRatio = 1.0;
+	if ((VID.width !== width) || (VID.height !== height) || (SCR.devicePixelRatio !== pixelRatio) || (Host.framecount === 0))
 	{
 		VID.width = width;
 		VID.height = height;
-		VID.mainwindow.width = width;
-		VID.mainwindow.height = height;
+		VID.mainwindow.width = (width * pixelRatio) >> 0;
+		VID.mainwindow.height = (height * pixelRatio) >> 0;
+		VID.mainwindow.style.width = width + 'px';
+		VID.mainwindow.style.height = height + 'px';
+		SCR.devicePixelRatio = pixelRatio;
 		SCR.recalc_refdef = true;
 	}
 

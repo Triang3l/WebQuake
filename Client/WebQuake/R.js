@@ -794,7 +794,6 @@ R.Perspective = function()
 
 R.SetupGL = function()
 {
-	var vrect = R.refdef.vrect;
 	if (R.dowarp === true)
 	{
 		gl.bindFramebuffer(gl.FRAMEBUFFER, R.warpbuffer);
@@ -802,7 +801,11 @@ R.SetupGL = function()
 		gl.viewport(0, 0, R.warpwidth, R.warpheight);
 	}
 	else
-		gl.viewport(vrect.x, VID.height - vrect.height - vrect.y, vrect.width, vrect.height);
+	{
+		var vrect = R.refdef.vrect;
+		var pixelRatio = SCR.devicePixelRatio;
+		gl.viewport((vrect.x * pixelRatio) >> 0, ((VID.height - vrect.height - vrect.y) * pixelRatio) >> 0, (vrect.width * pixelRatio) >> 0, (vrect.height * pixelRatio) >> 0);
+	}
 	R.Perspective();
 	gl.enable(gl.DEPTH_TEST);
 };

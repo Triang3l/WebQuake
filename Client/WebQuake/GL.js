@@ -64,7 +64,7 @@ GL.ortho = [
 
 GL.Set2D = function()
 {
-	gl.viewport(0, 0, VID.width, VID.height);
+	gl.viewport(0, 0, (VID.width * SCR.devicePixelRatio) >> 0, (VID.height * SCR.devicePixelRatio) >> 0);
 	GL.UnbindProgram();
 	var i, program;
 	for (i = 0; i < GL.programs.length; ++i)
