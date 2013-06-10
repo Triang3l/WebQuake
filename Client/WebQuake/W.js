@@ -18,7 +18,7 @@ W.LoadWadFile = function(filename)
 		size = view.getUint32(infotableofs + 4, true);
 		lump = new ArrayBuffer(size);
 		(new Uint8Array(lump)).set(new Uint8Array(base, view.getUint32(infotableofs, true), size));
-		W.lumps[Q.memstr(new Uint8Array(base, infotableofs + 16, 16)).toLowerCase()] = lump;
+		W.lumps[Q.memstr(new Uint8Array(base, infotableofs + 16, 16)).toUpperCase()] = lump;
 		infotableofs += 32;
 	}
 };

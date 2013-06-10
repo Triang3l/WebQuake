@@ -20,7 +20,7 @@ Draw.Init = function()
 {
 	var i;
 
-	Draw.chars = new Uint8Array(W.GetLumpName('conchars'));
+	Draw.chars = new Uint8Array(W.GetLumpName('CONCHARS'));
 	
 	var trans = new ArrayBuffer(65536);
 	var trans32 = new Uint32Array(trans);
@@ -32,8 +32,8 @@ Draw.Init = function()
 	Draw.char_texture = gl.createTexture();
 	GL.Bind(0, Draw.char_texture);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 128, 128, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(trans));
-	gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-	gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
 	Draw.conback = {};
 	var cb = COM.LoadFile('gfx/conback.lmp');
@@ -51,7 +51,7 @@ Draw.Init = function()
 	Draw.loadingElem = document.getElementById('loading');
 	Draw.loadingElem.src = Draw.PicToDataURL(Draw.loading);
 
-	document.body.style.backgroundImage = 'url("' + Draw.PicToDataURL(Draw.PicFromWad('backtile')) + '")';
+	document.body.style.backgroundImage = 'url("' + Draw.PicToDataURL(Draw.PicFromWad('BACKTILE')) + '")';
 
 	GL.CreateProgram('Character', ['uCharacter', 'uDest', 'uOrtho'], ['aPoint'], ['tTexture']);
 	GL.CreateProgram('Fill', ['uRect', 'uOrtho', 'uColor'], ['aPoint'], []);

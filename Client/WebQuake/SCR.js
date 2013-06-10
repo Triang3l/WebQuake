@@ -177,8 +177,8 @@ SCR.Init = function()
 	Cmd.AddCommand('screenshot', SCR.ScreenShot_f);
 	Cmd.AddCommand('sizeup', SCR.SizeUp_f);
 	Cmd.AddCommand('sizedown', SCR.SizeDown_f);
-	SCR.net = Draw.PicFromWad('net');
-	SCR.turtle = Draw.PicFromWad('turtle');
+	SCR.net = Draw.PicFromWad('NET');
+	SCR.turtle = Draw.PicFromWad('TURTLE');
 	SCR.pause = Draw.CachePic('pause');
 };
 
