@@ -27,10 +27,8 @@ S.Init = function()
 
 	S.started = true;
 
-	if (window.AudioContext != null)
+	if ((window.AudioContext != null) && (navigator.userAgent.indexOf('Gecko') < 0))
 		S.context = new AudioContext();
-	else if (window.mozAudioContext != null)
-		S.context = new mozAudioContext();
 	else if (window.webkitAudioContext != null)
 		S.context = new webkitAudioContext();
 
