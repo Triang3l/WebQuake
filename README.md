@@ -77,7 +77,7 @@ The .ogg files should be called *quake##.ogg*, where ## is CD track number minus
 
 Then you should configure the server to return audio/ogg MIME type for .ogg files.
 
-After that, create "media" folder in "id1" folder (or, for the mission pack music, "hipnotic" or "rogue") and put the .ogg files into it.
+After that, create "media" folder in the "id1" folder (or, for the mission pack music, "hipnotic" or "rogue") and put the .ogg files into it.
 
 # Browser support
 
