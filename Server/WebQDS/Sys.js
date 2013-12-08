@@ -1,5 +1,10 @@
 Sys = {};
 
+Sys.Quit = function()
+{
+	process.exit(0);
+};
+
 Sys.Print = function(text)
 {
 	process.stdout.write(text);
@@ -40,5 +45,5 @@ Sys.main = function()
 
 Sys.StdinOnData = function(data)
 {
-	Sys.cmd += Q.memstr(data.slice(0, data.length - 2)) + '\n';
+	Sys.cmd += Q.memstr(data);
 };
