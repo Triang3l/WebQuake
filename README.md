@@ -19,15 +19,15 @@ To launch WebQuake, go to WebQuake.htm on your server in your browser.
 
 To launch the game with command line arguments, add ? after the address and put the arguments after it in the same format as you use for Quake.
 
-For Scourge of Armagon, add *-hipnotic* command line argument. For Dissolution of Eternity, add *-rogue*.
+For Scourge of Armagon, add `-hipnotic` command line argument. For Dissolution of Eternity, add `-rogue`.
 
-To launch mods, copy the mod folder into the folder containing WebQuake.htm and add *-game MOD_NAME_HERE* command line argument. Ensure step 6 of the installing instructions for the mod folder.
+To launch mods, copy the mod folder into the folder containing WebQuake.htm and add `-game MOD_NAME_HERE` command line argument. Ensure step 6 of the installing instructions for the mod folder.
 
 To use browser hotkeys (such as F5, Ctrl+T and Ctrl+W), click the address bar, and when you're done, click the game.
 
 # Playing multiplayer
 
-If you want to join a multiplayer game, do one of the following steps, go to Multiplayer menu in the main menu, type the IP in "Join game at" field and press Enter, or type *connect ws://ip:port* in the console.
+If you want to join a multiplayer game, do one of the following steps, go to Multiplayer menu in the main menu, type the IP in "Join game at" field and press Enter, or type `connect ws://ip:port` in the console.
 
 You can also play WebQuake games in a native Quake (not QuakeWorld) client such as WinQuake or GLQuake. Choose TCP/IP in the Join Game menu.
 
@@ -40,40 +40,40 @@ If you want to create a server, first, install the dedicated server by completin
 3. Put Quake resource files into the downloaded Server folder.
 3. Open Node.js command prompt.
 4. Go (cd) to the Server folder.
-5. Type *npm install websocket* (for more information, see [Worlize/WebSocket-Node](https://github.com/Worlize/WebSocket-Node) repository).
+5. Type `npm install websocket` (for more information, see [Worlize/WebSocket-Node](https://github.com/Worlize/WebSocket-Node) repository).
 
-Then, to launch a server, open Node.js command prompt, go to the Server folder and type *node WebQDS.js*.
+Then, to launch a server, open Node.js command prompt, go to the Server folder and type `node WebQDS.js`.
 
-To change maximum number of players, use *-maxplayers* command line argument.
+To change maximum number of players, use `-maxplayers` command line argument.
 
 ## Remote console
 
-To execute console commands on the server from the client or the web, set *rcon_password* in the server console. If you have spaces in the password, surround it with quotes.
+To execute console commands on the server from the client or the web, set `rcon_password` in the server console. If you have spaces in the password, surround it with quotes.
 
-Don't tell the password to anyone except for the server admins. **Don't put the password in the command line, as everybody on the web can see your command line on your server's /rule_info page!**
+Don't tell the password to anyone except for the server admins. **Don't put the password in the command line, as everybody on the web can see your command line on your server's `/rule_info` page!**
 
 Then, you have 4 ways to execute server commands:
 
-* In the game, when not connected, in the console, type *rcon_address ip:port* (without ws://), *rcon_password server_RCON_password* (surround the password with quotes if you have spaces in it), and then execute the commands by typing *rcon your_command_here*.
-* In the game, when connected to the server, do the same as in the previous way except for settings *rcon_address*.
-* Go to the server IP in the browser (for example, if your server is at *ws://192.168.0.2:26000*, go to *http://192.168.0.2:26000*). On the Rcon line, enter your command in the left field and the password in the right field and press Send.
-* Go to *http://ip:port/rcon/your_command_here* in the browser. Login as "quake" with your RCON password.
+* In the game, when not connected, in the console, type `rcon_address ip:port` (without ws://), `rcon_password server_RCON_password` (surround the password with quotes if you have spaces in it), and then execute the commands by typing `rcon your_command_here`.
+* In the game, when connected to the server, do the same as in the previous way except for settings `rcon_address`.
+* Go to the server IP in the browser (for example, if your server is at `ws://192.168.0.2:26000`, go to `http://192.168.0.2:26000`). On the Rcon line, enter your command in the left field and the password in the right field and press Send.
+* Go to `http://ip:port/rcon/your_command_here` in the browser. Login as "quake" with your RCON password.
 
 ## Server info API
 
 You can retrieve some server information in JSON format by going to special addresses on your server IP.
 
-* */server_info* - returns an object containing the server name *hostName*, current level name *levelName*, number of connected players *currentPlayers*, maximum number of players *maxPlayers* and API version *protocolVersion*. Gives 503 if server is off.
-* */player_info* - returns an array of objects with the info about a player, where # is player number starting from 0. Contains name *name*, shirt/pants color *colors*, shirt color is upper 4 bits, pants color is lower 4 bits), number of kills *frags*, time since connected *connectTime* and IP address *address*. Gives 503 if server is off or 404 if the player is not found.
-* */player_info/#* - returns single player info object for the player under the number #.
-* */rule_info* - returns an array of all server console variables (like movement variables), in *{rule:"variable name",value:"variable value"}* format.
-* */rule_info/variable_name* - returns single server console variable in the same format. 404 if the variable is not there.
+* `/server_info` - returns an object containing the server name `hostName`, current level name `levelName`, number of connected players `currentPlayers`, maximum number of players `maxPlayers` and API version `protocolVersion`. Gives 503 when server is off.
+* `/player_info` - returns an array of objects with the info about a player, where # is player number starting from 0. Contains name `name`, shirt/pants color `colors`, shirt color is upper 4 bits, pants color is lower 4 bits), number of kills `frags`, time since connected `connectTime` and IP address `address`. Gives 503 when server is off or 404 if the player is not found.
+* `/player_info/#` - returns single player info object for the player under the number #.
+* `/rule_info` - returns an array of all server console variables (like movement variables), in `{rule:"variable name",value:"variable value"}` format.
+* `/rule_info/variable_name` - returns single server console variable in the same format. 404 if the variable doesn't exist.
 
 # Adding game music
 
 To add music to WebQuake, you need to get the music off the Quake CD and convert it into .ogg format ([Audacity](http://audacity.sourceforge.net/) is great for this).
 
-The .ogg files should be called *quake##.ogg*, where ## is CD track number minus 1 trailing 0, so the main theme is named *quake01.ogg* and the last track on the Quake disc is *quake10.ogg*.
+The .ogg files should be called `quake##.ogg`, where ## is CD track number minus 1 trailing 0, so the main theme is named `quake01.ogg` and the last track on the Quake disc is `quake10.ogg`.
 
 Then you should configure the server to return audio/ogg MIME type for .ogg files.
 
@@ -83,18 +83,18 @@ After that, create "media" folder in the "id1" folder (or, for the mission pack 
 
 The port has been tested on the following browsers:
 
-* Firefox (Windows) - **Very Good** - developed on it.
-* Chrome (Windows) - **Very Good** - no "loading" image.
+* Firefox (Windows) - **Very good** - developed on it.
+* Chrome (Windows) - **Very good** - no "loading" image.
 * Firefox (Android) - **Okay** - very low performance (canvas is locked at 12 FPS), no mouse support. Keypresses are incorrect, not tested with Windows keyboard.
-* Chrome (Android) - **Not Good** - no "loading" image, sound is broken (launch with *?-nosound -nocdaudio*), no mouse. Requires Windows-compatible keyboard for Esc and F1-F12 keys.
-* Opera (Windows) - **Not Good** - low performance, nothing is drawn in water (type *r_waterwarp 0* in the console), no mouse.
+* Chrome (Android) - **Not Good** - no "loading" image, sound is broken (launch with `?-nosound -nocdaudio`), no mouse. Requires Windows-compatible keyboard for Esc and F1-F12 keys.
+* Opera (Windows) - **Not Good** - low performance, nothing is drawn in water (type `r_waterwarp 0` in the console), no mouse.
 * Internet Explorer (Windows) - **Unsupported** - bad TypedArray support, but likely many more issues.
 
 Mouse support is currently available only on Chrome and Firefox. Stereo positional audio is supported on Chrome and Safari.
 
 # Tips
 
-If the sound randomly doesn't play, go to console (press ~ or Options > Go to console in main menu), type *stopsound* and press Enter.
+If the sound randomly doesn't play, go to console (press ~ or Options > Go to console in main menu), type `stopsound` and press Enter.
 
 You can delete saved games by pressing Del in the load or save menus. This only works for the saved games created in WebQuake.
 
