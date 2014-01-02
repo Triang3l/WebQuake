@@ -1898,7 +1898,7 @@ R.DrawBrushModel = function(e)
 	program = GL.UseProgram('Turbulent');
 	gl.uniform3f(program.uOrigin, 0.0, 0.0, 0.0);
 	gl.uniformMatrix3fv(program.uAngles, false, viewMatrix);
-	gl.uniform1f(program.uTime, Host.realtime);
+	gl.uniform1f(program.uTime, Host.realtime % (Math.PI * 2.0));
 	gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 20, e.model.waterchain);
 	gl.vertexAttribPointer(program.aTexCoord, 2, gl.FLOAT, false, 20, e.model.waterchain + 12);
 	for (i = 0; i < clmodel.chains.length; ++i)
@@ -2162,7 +2162,7 @@ R.WarpScreen = function()
 	var program = GL.UseProgram('Warp');
 	var vrect = R.refdef.vrect;
 	gl.uniform4f(program.uRect, vrect.x, vrect.y, vrect.width, vrect.height);
-	gl.uniform1f(program.uTime, Host.realtime);
+	gl.uniform1f(program.uTime, Host.realtime % (Math.PI * 2.0));
 	GL.Bind(program.tTexture, R.warptexture);
 	gl.clear(gl.COLOR_BUFFER_BIT);
 	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
@@ -2239,7 +2239,7 @@ R.DrawSkyBox = function()
 	gl.disable(gl.CULL_FACE);
 
 	program = GL.UseProgram('Sky');
-	gl.uniform1f(program.uTime, Host.realtime);
+	gl.uniform2f(program.uTime, (Host.realtime * 0.125) % 1.0, (Host.realtime * 0.03125) % 1.0);
 	GL.Bind(program.tSolid, R.solidskytexture);
 	GL.Bind(program.tAlpha, R.alphaskytexture);
 	gl.bindBuffer(gl.ARRAY_BUFFER, R.skyvecs);

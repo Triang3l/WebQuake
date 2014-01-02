@@ -351,7 +351,7 @@ GL.Init = function()
 
 	gl.clearColor(0.0, 0.0, 0.0, 0.0);
 	gl.cullFace(gl.FRONT);
-	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+	gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
 
 	GL.modes = [
 		['GL_NEAREST', gl.NEAREST, gl.NEAREST],
