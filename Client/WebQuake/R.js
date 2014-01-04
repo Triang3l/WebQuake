@@ -1971,7 +1971,7 @@ R.DrawWorld = function()
 	program = GL.UseProgram('Turbulent');
 	gl.uniform3f(program.uOrigin, 0.0, 0.0, 0.0);
 	gl.uniformMatrix3fv(program.uAngles, false, GL.identity);
-	gl.uniform1f(program.uTime, Host.realtime);
+	gl.uniform1f(program.uTime, Host.realtime % (Math.PI * 2.0));
 	gl.vertexAttribPointer(program.aPoint, 3, gl.FLOAT, false, 20, clmodel.waterchain);
 	gl.vertexAttribPointer(program.aTexCoord, 2, gl.FLOAT, false, 20, clmodel.waterchain + 12);
 	for (i = 0; i < clmodel.leafs.length; ++i)
