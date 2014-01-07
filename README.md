@@ -11,8 +11,8 @@ Follow these steps to install WebQuake:
 1. Install a web server with HTTP 1.1 Range support. The project was developed and tested on [Abyss Web Server](http://www.aprelium.com/abyssws/) on Windows, so it's guaranteed to work on it.
 2. Download entire contents of the Client folder (WebQuake.htm and WebQuake/ folder) from the Code tab and put it somewhere on your server.
 3. Get Quake resource files. The demo version containing only the first episode is enough.
-4. Copy "id1" folder from the Quake folder to the folder where you put WebQuake.htm.
-5. If you have Quake mission packs, repeat step 4 for "hipnotic" and/or "rogue" folders.
+4. Copy the `id1` folder from the Quake folder to the folder where you put WebQuake.htm.
+5. If you have Quake mission packs, repeat step 4 for `hipnotic` and/or `rogue` folders.
 6. If you're running a system with case-sensitive names (such as Linux), make sure that all game files **except for code files** have lowercase names.
 
 To launch WebQuake, go to WebQuake.htm on your server in your browser.
