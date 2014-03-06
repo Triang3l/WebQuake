@@ -308,7 +308,7 @@ Sbar.DrawInventory = function()
 				}
 				else if (i === 3)
 				{
-					if ((CL.items & Def.it.grenade_launcher) !== 0)
+					if ((CL.state.items & Def.it.grenade_launcher) !== 0)
 					{
 						if (grenadeflashing !== true)
 							Sbar.DrawPic(96, -16, Sbar.h_weapons[flashon][3]);
