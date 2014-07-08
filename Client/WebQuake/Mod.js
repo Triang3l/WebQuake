@@ -1238,7 +1238,7 @@ Mod.LoadSpriteModel = function(buffer)
 			inframe += 4;
 			for (j = 0; j < numframes; ++j)
 			{
-				group.frames[j] = {interval: mod.getFloat32(inframe, true)};
+				group.frames[j] = {interval: model.getFloat32(inframe, true)};
 				if (group.frames[j].interval <= 0.0)
 					Sys.Error('Mod.LoadSpriteModel: interval<=0');
 				inframe += 4;
