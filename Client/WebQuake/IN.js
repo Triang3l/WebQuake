@@ -18,7 +18,7 @@ IN.StartupMouse = function()
 		IN.requestPointerLock = 'webkitRequestPointerLock';
 		IN.pointerlockchange = 'onwebkitpointerlockchange';
 	}
-	if (VID.mainwindow.mozRequestPointerLock != null)
+	else if (VID.mainwindow.mozRequestPointerLock != null)
 	{
 		IN.movementX = 'mozMovementX';
 		IN.movementY = 'mozMovementY';
@@ -27,7 +27,9 @@ IN.StartupMouse = function()
 		IN.pointerlockchange = 'onmozpointerlockchange';
 	}
 	else
+	{
 		return;
+	}
 	VID.mainwindow.onclick = IN.onclick;
 	document.onmousemove = IN.onmousemove;
 	document[IN.pointerlockchange] = IN.onpointerlockchange;
