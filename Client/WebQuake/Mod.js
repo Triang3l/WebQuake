@@ -1133,6 +1133,11 @@ Mod.LoadSpriteFrame = function(identifier, buffer, inframe, frame)
 {
 	var i;
 
+	if (!frame)
+	{
+		Sys.Print('Mod.LoadSpriteFrame: invalid frame: ' + identifier);
+		return;
+	}
 	var model = new DataView(buffer);
 	frame.origin = [model.getInt32(inframe, true), -model.getInt32(inframe + 4, true)];
 	frame.width = model.getUint32(inframe + 8, true);
@@ -1238,7 +1243,7 @@ Mod.LoadSpriteModel = function(buffer)
 			inframe += 4;
 			for (j = 0; j < numframes; ++j)
 			{
-				group.frames[j] = {interval: mod.getFloat32(inframe, true)};
+				group.frames[j] = {interval: model.getFloat32(inframe, true)};
 				if (group.frames[j].interval <= 0.0)
 					Sys.Error('Mod.LoadSpriteModel: interval<=0');
 				inframe += 4;
