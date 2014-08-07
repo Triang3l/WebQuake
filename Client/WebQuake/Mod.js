@@ -1156,7 +1156,7 @@ Mod.LoadSpriteFrame = function(identifier, buffer, inframe, frame)
 	var scaled_width = frame.width, scaled_height = frame.height;
 	if (((frame.width & (frame.width - 1)) !== 0) || ((frame.height & (frame.height - 1)) !== 0))
 	{
-		--scaled_width ;
+		--scaled_width;
 		scaled_width |= (scaled_width >> 1);
 		scaled_width |= (scaled_width >> 2);
 		scaled_width |= (scaled_width >> 4);
@@ -1171,10 +1171,10 @@ Mod.LoadSpriteFrame = function(identifier, buffer, inframe, frame)
 		scaled_height |= (scaled_height >> 16);
 		++scaled_height;
 	}
-	if (scaled_width > 1024)
-		scaled_width = 1024;
-	if (scaled_height > 1024)
-		scaled_height = 1024;
+	if (scaled_width > GL.maxtexturesize)
+		scaled_width = GL.maxtexturesize;
+	if (scaled_height > GL.maxtexturesize)
+		scaled_height = GL.maxtexturesize;
 	if ((scaled_width !== frame.width) || (scaled_height !== frame.height))
 	{
 		size = scaled_width * scaled_height;
@@ -1225,8 +1225,9 @@ Mod.LoadSpriteModel = function(buffer)
 		inframe += 4;
 		if (model.getUint32(inframe - 4, true) === 0)
 		{
-			Mod.loadmodel.frames[i] = {group: false};
-			inframe = Mod.LoadSpriteFrame(Mod.loadmodel.name + '_' + i + '_' + j, buffer, inframe, Mod.loadmodel.frames[i]);
+			frame = {group: false};
+			Mod.loadmodel.frames[i] = frame;
+			inframe = Mod.LoadSpriteFrame(Mod.loadmodel.name + '_' + i + '_' + j, buffer, inframe, frame);
 		}
 		else
 		{
@@ -1234,17 +1235,18 @@ Mod.LoadSpriteModel = function(buffer)
 				group: true,
 				frames: []
 			};
+			Mod.loadmodel.frames[i] = group;
 			numframes = model.getUint32(inframe, true);
 			inframe += 4;
 			for (j = 0; j < numframes; ++j)
 			{
-				group.frames[j] = {interval: mod.getFloat32(inframe, true)};
+				group.frames[j] = {interval: model.getFloat32(inframe, true)};
 				if (group.frames[j].interval <= 0.0)
 					Sys.Error('Mod.LoadSpriteModel: interval<=0');
 				inframe += 4;
 			}
 			for (j = 0; j < numframes; ++j)
-				inframe = Mod.LoadSpriteFrame(Mod.loadmodel.name + '_' + i + '_' + j, buffer, inframe, frame);
+				inframe = Mod.LoadSpriteFrame(Mod.loadmodel.name + '_' + i + '_' + j, buffer, inframe, group.frames[j]);
 		}
 	}
 };

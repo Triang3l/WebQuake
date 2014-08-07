@@ -116,10 +116,10 @@ GL.Upload = function(data, width, height)
 		scaled_height |= (scaled_height >> 16);
 		++scaled_height;
 	}
-	if (scaled_width > 1024)
-		scaled_width = 1024;
-	if (scaled_height > 1024)
-		scaled_height = 1024;
+	if (scaled_width > GL.maxtexturesize)
+		scaled_width = GL.maxtexturesize;
+	if (scaled_height > GL.maxtexturesize)
+		scaled_height = GL.maxtexturesize;
 	if ((scaled_width !== width) || (scaled_height !== height))
 		data = GL.ResampleTexture(data, width, height, scaled_width, scaled_height);
 	var trans = new ArrayBuffer((scaled_width * scaled_height) << 2)
@@ -172,10 +172,10 @@ GL.LoadTexture = function(identifier, width, height, data)
 		scaled_height |= (scaled_height >> 16);
 		++scaled_height;
 	}
-	if (scaled_width > 1024)
-		scaled_width = 1024;
-	if (scaled_height > 1024)
-		scaled_height = 1024;
+	if (scaled_width > GL.maxtexturesize)
+		scaled_width = GL.maxtexturesize;
+	if (scaled_height > GL.maxtexturesize)
+		scaled_height = GL.maxtexturesize;
 	scaled_width >>= GL.picmip.value;
 	if (scaled_width === 0)
 		scaled_width = 1;
@@ -212,10 +212,10 @@ GL.LoadPicTexture = function(pic)
 		scaled_height |= (scaled_height >> 16);
 		++scaled_height;
 	}
-	if (scaled_width > 1024)
-		scaled_width = 1024;
-	if (scaled_height > 1024)
-		scaled_height = 1024;
+	if (scaled_width > GL.maxtexturesize)
+		scaled_width = GL.maxtexturesize;
+	if (scaled_height > GL.maxtexturesize)
+		scaled_height = GL.maxtexturesize;
 	if ((scaled_width !== pic.width) || (scaled_height !== pic.height))
 		data = GL.ResampleTexture(data, pic.width, pic.height, scaled_width, scaled_height);
 
@@ -348,6 +348,8 @@ GL.Init = function()
 	catch (e) {}
 	if (gl == null)
 		Sys.Error('Unable to initialize WebGL. Your browser may not support it.');
+
+	GL.maxtexturesize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
 
 	gl.clearColor(0.0, 0.0, 0.0, 0.0);
 	gl.cullFace(gl.FRONT);
