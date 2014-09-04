@@ -27,10 +27,11 @@ S.Init = function()
 
 	S.started = true;
 
-	if ((window.AudioContext != null) && (navigator.userAgent.indexOf('Gecko') < 0))
+	// createBuffer is broken, disable Web Audio for now.
+	/* if (window.AudioContext != null))
 		S.context = new AudioContext();
 	else if (window.webkitAudioContext != null)
-		S.context = new webkitAudioContext();
+		S.context = new webkitAudioContext(); */
 
 	var i, ambient_sfx = ['water1', 'wind2'], ch, nodes;
 	for (i = 0; i < ambient_sfx.length; ++i)
