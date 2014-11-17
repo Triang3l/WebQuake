@@ -42,7 +42,7 @@ S.Init = function()
 			continue;
 		if (ch.sfx.cache.loopstart == null)
 		{
-			Con.Print('Sound ambience/' + sfx.name + '.wav not looped\n');
+			Con.Print('Sound ambience/' + ch.sfx.name + '.wav not looped\n');
 			continue;
 		}
 		if (S.context != null)
