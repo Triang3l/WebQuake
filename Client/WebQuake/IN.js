@@ -10,7 +10,15 @@ IN.StartupMouse = function()
 	IN.m_filter = Cvar.RegisterVariable('m_filter', '1');
 	if (COM.CheckParm('-nomouse') != null)
 		return;
-	if (VID.mainwindow.webkitRequestPointerLock != null)
+	if (VID.mainwindow.pointerLockElement != null)
+	{
+		IN.movementX = 'movementX';
+		IN.movementY = 'movementY';
+		IN.pointerLockElement = 'pointerLockElement';
+		IN.requestPointerLock = 'requestPointerLock';
+		IN.pointerlockchange = 'onpointerlockchange';
+	}
+	else if (VID.mainwindow.webkitRequestPointerLock != null)
 	{
 		IN.movementX = 'webkitMovementX';
 		IN.movementY = 'webkitMovementY';
