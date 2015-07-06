@@ -582,7 +582,7 @@ Host.Kill_f = function()
 		return;
 	if (SV.player.v_float[PR.entvars.health] <= 0.0)
 	{
-		Host.ClientPrint('Can\'t suicide -- allready dead!\n');
+		Host.ClientPrint('Can\'t suicide -- already dead!\n');
 		return;
 	}
 	PR.globals_float[PR.globalvars.time] = SV.server.time;
@@ -615,7 +615,7 @@ Host.PreSpawn_f = function()
 	var client = Host.client;
 	if (client.spawned === true)
 	{
-		Con.Print('prespawn not valid -- allready spawned\n');
+		Con.Print('prespawn not valid -- already spawned\n');
 		return;
 	}
 	SZ.Write(client.message, new Uint8Array(SV.server.signon.data), SV.server.signon.cursize);
@@ -634,7 +634,7 @@ Host.Spawn_f = function()
 	var client = Host.client;
 	if (client.spawned === true)
 	{
-		Con.Print('Spawn not valid -- allready spawned\n');
+		Con.Print('Spawn not valid -- already spawned\n');
 		return;
 	}
 
@@ -713,6 +713,11 @@ Host.Begin_f = function()
 
 Host.Kick_f = function()
 {
+	var username = Cmd.argv[1];
+	if ( !username )
+		return;
+	username = username.toLowerCase();
+	
 	if (SV.server.active !== true)
 		return;
 	if ((Cmd.client === true) && (PR.globals_float[PR.globalvars.deathmatch] !== 0.0))
@@ -736,7 +741,7 @@ Host.Kick_f = function()
 			Host.client = SV.svs.clients[i];
 			if (Host.client.active !== true)
 				continue;
-			if (SV.GetClientName(Host.client).toLowerCase() === Cmd.argv[1].toLowerCase())
+			if (SV.GetClientName(Host.client).toLowerCase() === username)
 				break;
 		}
 	}
