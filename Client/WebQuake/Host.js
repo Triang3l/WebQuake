@@ -951,7 +951,7 @@ Host.Kill_f = function()
 	}
 	if (SV.player.v_float[PR.entvars.health] <= 0.0)
 	{
-		Host.ClientPrint('Can\'t suicide -- allready dead!\n');
+		Host.ClientPrint('Can\'t suicide -- already dead!\n');
 		return;
 	}
 	PR.globals_float[PR.globalvars.time] = SV.server.time;
@@ -987,7 +987,7 @@ Host.PreSpawn_f = function()
 	var client = Host.client;
 	if (client.spawned === true)
 	{
-		Con.Print('prespawn not valid -- allready spawned\n');
+		Con.Print('prespawn not valid -- already spawned\n');
 		return;
 	}
 	SZ.Write(client.message, new Uint8Array(SV.server.signon.data), SV.server.signon.cursize);
@@ -1006,7 +1006,7 @@ Host.Spawn_f = function()
 	var client = Host.client;
 	if (client.spawned === true)
 	{
-		Con.Print('Spawn not valid -- allready spawned\n');
+		Con.Print('Spawn not valid -- already spawned\n');
 		return;
 	}
 
