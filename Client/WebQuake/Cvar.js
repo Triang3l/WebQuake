@@ -55,7 +55,7 @@ Cvar.RegisterVariable = function(name, value, archive, server)
 	{
 		if (Cvar.vars[i].name === name)
 		{
-			Con.Print('Can\'t register variable ' + name + ', allready defined\n');
+			Con.Print('Can\'t register variable ' + name + ', already defined\n');
 			return;
 		}
 	}
