@@ -1099,9 +1099,12 @@ Host.Kick_f = function()
 	}
 	else if (PR.globals_float[PR.globalvars.deathmatch] !== 0.0)
 		return;
+	if (Cmd.argv.length <= 1)
+		return;
 	var save = Host.client;
+	var s = Cmd.argv[1].toLowerCase();
 	var i, byNumber;
-	if ((Cmd.argv.length >= 3) && (Cmd.argv[1] === '#'))
+	if ((Cmd.argv.length >= 3) && (s === '#'))
 	{
 		i = Q.atoi(Cmd.argv[2]) - 1;
 		if ((i < 0) || (i >= SV.svs.maxclients))
@@ -1118,7 +1121,7 @@ Host.Kick_f = function()
 			Host.client = SV.svs.clients[i];
 			if (Host.client.active !== true)
 				continue;
-			if (SV.GetClientName(Host.client).toLowerCase() === Cmd.argv[1].toLowerCase())
+			if (SV.GetClientName(Host.client).toLowerCase() === s)
 				break;
 		}
 	}
