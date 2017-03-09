@@ -529,7 +529,7 @@ GL.Init = function()
 	GL.picmip = Cvar.RegisterVariable('gl_picmip', '0');
 	Cmd.AddCommand('gl_texturemode', GL.TextureMode_f);
 
-	GL.streamArray = new ArrayBuffer(65536);
+	GL.streamArray = new ArrayBuffer(8192); // Increasing even a little bit ruins all performance on Mali.
 	GL.streamArrayBytes = new Uint8Array(GL.streamArray);
 	GL.streamArrayPosition = 0;
 	GL.streamArrayVertexCount = 0;
