@@ -10,7 +10,7 @@ IN.StartupMouse = function()
 	IN.m_filter = Cvar.RegisterVariable('m_filter', '1');
 	if (COM.CheckParm('-nomouse') != null)
 		return;
-	if (VID.mainwindow.pointerLockElement != null)
+	if (VID.mainwindow.requestPointerLock != null)
 	{
 		IN.movementX = 'movementX';
 		IN.movementY = 'movementY';
