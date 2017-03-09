@@ -4,10 +4,12 @@ GL.textures = [];
 GL.currenttextures = [];
 GL.programs = [];
 
-GL.Bind = function(target, texnum)
+GL.Bind = function(target, texnum, flushStream)
 {
 	if (GL.currenttextures[target] !== texnum)
 	{
+		if (flushStream === true)
+			GL.StreamFlush();
 		if (GL.activetexture !== target)
 		{
 			GL.activetexture = target;
@@ -265,15 +267,36 @@ GL.CreateProgram = function(identifier, uniforms, attribs, textures)
 		Sys.Error('Error linking program: ' + gl.getProgramInfoLog(p));
 
 	gl.useProgram(p);
-	var i;
-	for (i = 0; i < uniforms.length; ++i)
+
+	for (var i = 0; i < uniforms.length; ++i)
 		program[uniforms[i]] = gl.getUniformLocation(p, uniforms[i]);
-	for (i = 0; i < attribs.length; ++i)
+
+	program.vertexSize = 0;
+	program.attribBits = 0;
+	for (var i = 0; i < attribs.length; ++i)
 	{
-		program.attribs[program.attribs.length] = attribs[i];
-		program[attribs[i]] = gl.getAttribLocation(p, attribs[i]);
+		var attribParameters = attribs[i];
+		var attrib =
+		{
+			name: attribParameters[0],
+			location: gl.getAttribLocation(p, attribParameters[0]),
+			type: attribParameters[1],
+			components: attribParameters[2],
+			normalized: (attribParameters[3] === true),
+			offset: program.vertexSize
+		};
+		program.attribs[i] = attrib;
+		program[attrib.name] = attrib;
+		if (attrib.type === gl.FLOAT)
+			program.vertexSize += attrib.components * 4;
+		else if (attrib.type === gl.BYTE || attrib.type === gl.UNSIGNED_BYTE)
+			program.vertexSize += 4;
+		else
+			Sys.Error('Unknown vertex attribute type');
+		program.attribBits |= 1 << attrib.location;
 	}
-	for (i = 0; i < textures.length; ++i)
+
+	for (var i = 0; i < textures.length; ++i)
 	{
 		program[textures[i]] = i;
 		gl.uniform1i(gl.getUniformLocation(p, textures[i]), i);
@@ -283,39 +306,60 @@ GL.CreateProgram = function(identifier, uniforms, attribs, textures)
 	return program;
 };
 
-GL.UseProgram = function(identifier)
+GL.UseProgram = function(identifier, flushStream)
 {
-	var i, j;
-	var program = GL.currentprogram;
-	if (program != null)
+	var currentProgram = GL.currentProgram;
+	if (currentProgram != null)
 	{
-		if (program.identifier === identifier)
-			return program;
-		for (i = 0; i < program.attribs.length; ++i)
-			gl.disableVertexAttribArray(program[program.attribs[i]]);
+		if (currentProgram.identifier === identifier)
+			return currentProgram;
+		if (flushStream === true)
+			GL.StreamFlush();
 	}
-	for (i = 0; i < GL.programs.length; ++i)
+
+	var program = null;
+	for (var i = 0; i < GL.programs.length; ++i)
 	{
-		program = GL.programs[i];
-		if (program.identifier === identifier)
+		if (GL.programs[i].identifier === identifier)
 		{
-			GL.currentprogram = program;
-			gl.useProgram(program.program);
-			for (j = 0; j < program.attribs.length; ++j)
-				gl.enableVertexAttribArray(program[program.attribs[j]]);
-			return program;
+			program = GL.programs[i];
+			break;
 		}
 	}
+	if (program == null)
+		return null;
+
+	var enableAttribs = program.attribBits, disableAttribs = 0;
+	if (currentProgram != null)
+	{
+		enableAttribs &= ~currentProgram.attribBits;
+		disableAttribs = currentProgram.attribBits & ~program.attribBits;
+	}
+	GL.currentProgram = program;
+	gl.useProgram(program.program);
+	for (var attrib = 0; enableAttribs !== 0 || disableAttribs !== 0; ++attrib)
+	{
+		var mask = 1 << attrib;
+		if ((enableAttribs & mask) !== 0)
+			gl.enableVertexAttribArray(attrib);
+		else if ((disableAttribs & mask) !== 0)
+			gl.disableVertexAttribArray(attrib);
+		enableAttribs &= ~mask;
+		disableAttribs &= ~mask;
+	}
+
+	return program;
 };
 
 GL.UnbindProgram = function()
 {
-	if (GL.currentprogram == null)
+	if (GL.currentProgram == null)
 		return;
+	GL.StreamFlush();
 	var i;
-	for (i = 0; i < GL.currentprogram.attribs.length; ++i)
-		gl.disableVertexAttribArray(GL.currentprogram[GL.currentprogram.attribs[i]]);
-	GL.currentprogram = null;
+	for (i = 0; i < GL.currentProgram.attribs.length; ++i)
+		gl.disableVertexAttribArray(GL.currentProgram.attribs[i].location);
+	GL.currentProgram = null;
 };
 
 GL.identity = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
@@ -337,6 +381,122 @@ GL.RotationMatrix = function(pitch, yaw, roll)
 		-sy * -sr + cy * sp * cr,	cy * -sr + sy * sp * cr,	cp * cr
 	];
 };
+
+GL.StreamFlush = function()
+{
+	if (GL.streamArrayVertexCount === 0)
+		return;
+	var program = GL.currentProgram;
+	if (program != null)
+	{
+		gl.bindBuffer(gl.ARRAY_BUFFER, GL.streamBuffer);
+		gl.bufferSubData(gl.ARRAY_BUFFER, GL.streamBufferPosition,
+			GL.streamArrayBytes.subarray(0, GL.streamArrayPosition));
+		var attribs = program.attribs;
+		for (var i = 0; i < attribs.length; ++i)
+		{
+			var attrib = attribs[i];
+			gl.vertexAttribPointer(attrib.location,
+				attrib.components, attrib.type, attrib.normalized,
+				program.vertexSize, GL.streamBufferPosition + attrib.offset);
+		}
+		gl.drawArrays(gl.TRIANGLES, 0, GL.streamArrayVertexCount);
+		GL.streamBufferPosition += GL.streamArrayPosition;
+	}
+	GL.streamArrayPosition = 0;
+	GL.streamArrayVertexCount = 0;
+}
+
+GL.StreamGetSpace = function(vertexCount)
+{
+	var program = GL.currentProgram;
+	if (program == null)
+		return;
+	var length = vertexCount * program.vertexSize;
+	if ((GL.streamBufferPosition + GL.streamArrayPosition + length) > GL.streamArray.byteLength)
+	{
+		GL.StreamFlush();
+		GL.streamBufferPosition = 0;
+	}
+	GL.streamArrayVertexCount += vertexCount;
+}
+
+GL.StreamWriteFloat = function(x)
+{
+	GL.streamArrayView.setFloat32(GL.streamArrayPosition, x, true);
+	GL.streamArrayPosition += 4;
+}
+
+GL.StreamWriteFloat2 = function(x, y)
+{
+	var view = GL.streamArrayView;
+	var position = GL.streamArrayPosition;
+	view.setFloat32(position, x, true);
+	view.setFloat32(position + 4, y, true);
+	GL.streamArrayPosition += 8;
+}
+
+GL.StreamWriteFloat3 = function(x, y, z)
+{
+	var view = GL.streamArrayView;
+	var position = GL.streamArrayPosition;
+	view.setFloat32(position, x, true);
+	view.setFloat32(position + 4, y, true);
+	view.setFloat32(position + 8, z, true);
+	GL.streamArrayPosition += 12;
+}
+
+GL.StreamWriteFloat4 = function(x, y, z, w)
+{
+	var view = GL.streamArrayView;
+	var position = GL.streamArrayPosition;
+	view.setFloat32(position, x, true);
+	view.setFloat32(position + 4, y, true);
+	view.setFloat32(position + 8, z, true);
+	view.setFloat32(position + 12, w, true);
+	GL.streamArrayPosition += 16;
+}
+
+GL.StreamWriteUByte4 = function(x, y, z, w)
+{
+	var view = GL.streamArrayView;
+	var position = GL.streamArrayPosition;
+	view.setUint8(position, x);
+	view.setUint8(position + 1, y);
+	view.setUint8(position + 2, z);
+	view.setUint8(position + 3, w);
+	GL.streamArrayPosition += 4;
+}
+
+GL.StreamDrawTexturedQuad = function(x, y, w, h, u, v, u2, v2)
+{
+	var x2 = x + w, y2 = y + h;
+	GL.StreamGetSpace(6);
+	GL.StreamWriteFloat4(x, y, u, v);
+	GL.StreamWriteFloat4(x, y2, u, v2);
+	GL.StreamWriteFloat4(x2, y, u2, v);
+	GL.StreamWriteFloat4(x2, y, u2, v);
+	GL.StreamWriteFloat4(x, y2, u, v2);
+	GL.StreamWriteFloat4(x2, y2, u2, v2);
+}
+
+GL.StreamDrawColoredQuad = function(x, y, w, h, r, g, b, a)
+{
+	var x2 = x + w, y2 = y + h;
+	GL.StreamGetSpace(6);
+	GL.StreamWriteFloat2(x, y);
+	GL.StreamWriteUByte4(r, g, b, a);
+	GL.StreamWriteFloat2(x, y2);
+	GL.StreamWriteUByte4(r, g, b, a);
+	GL.StreamWriteFloat2(x2, y);
+	GL.StreamWriteUByte4(r, g, b, a);
+	GL.StreamWriteFloat2(x2, y);
+	GL.StreamWriteUByte4(r, g, b, a);
+	GL.StreamWriteFloat2(x, y2);
+	GL.StreamWriteUByte4(r, g, b, a);
+	GL.StreamWriteFloat2(x2, y2);
+	GL.StreamWriteUByte4(r, g, b, a);
+}
 
 GL.Init = function()
 {
@@ -369,9 +529,15 @@ GL.Init = function()
 	GL.picmip = Cvar.RegisterVariable('gl_picmip', '0');
 	Cmd.AddCommand('gl_texturemode', GL.TextureMode_f);
 
-	GL.rect = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 0, 1, 1, 0, 1, 1]), gl.STATIC_DRAW);
+	GL.streamArray = new ArrayBuffer(65536);
+	GL.streamArrayBytes = new Uint8Array(GL.streamArray);
+	GL.streamArrayPosition = 0;
+	GL.streamArrayVertexCount = 0;
+	GL.streamArrayView = new DataView(GL.streamArray);
+	GL.streamBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, GL.streamBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, GL.streamArray.byteLength, gl.DYNAMIC_DRAW);
+	GL.streamBufferPosition = 0;
 
 	VID.mainwindow.style.display = 'inline-block';
 };

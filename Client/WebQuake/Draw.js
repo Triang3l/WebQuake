@@ -53,53 +53,52 @@ Draw.Init = function()
 
 	document.body.style.backgroundImage = 'url("' + Draw.PicToDataURL(Draw.PicFromWad('BACKTILE')) + '")';
 
-	GL.CreateProgram('Character', ['uCharacter', 'uDest', 'uOrtho'], ['aPoint'], ['tTexture']);
-	GL.CreateProgram('Fill', ['uRect', 'uOrtho', 'uColor'], ['aPoint'], []);
-	GL.CreateProgram('Pic', ['uRect', 'uOrtho'], ['aPoint'], ['tTexture']);
-	GL.CreateProgram('PicTranslate', ['uRect', 'uOrtho', 'uTop', 'uBottom'], ['aPoint'], ['tTexture', 'tTrans']);
+	GL.CreateProgram('Fill',
+		['uOrtho'],
+		[['aPosition', gl.FLOAT, 2], ['aColor', gl.UNSIGNED_BYTE, 4, true]],
+		[]);
+	GL.CreateProgram('Pic',
+		['uOrtho'],
+		[['aPosition', gl.FLOAT, 2], ['aTexCoord', gl.FLOAT, 2]],
+		['tTexture']);
+	GL.CreateProgram('PicTranslate',
+		['uOrtho', 'uTop', 'uBottom'],
+		[['aPosition', gl.FLOAT, 2], ['aTexCoord', gl.FLOAT, 2]],
+		['tTexture', 'tTrans']);
 };
+
+Draw.Char = function(x, y, num)
+{
+	GL.StreamDrawTexturedQuad(x, y, 8, 8,
+		(num & 15) * 0.0625, (num >> 4) * 0.0625,
+		((num & 15) + 1) * 0.0625, ((num >> 4) + 1) * 0.0625);
+}
 
 Draw.Character = function(x, y, num)
 {
-	var program = GL.UseProgram('Character');
-	GL.Bind(program.tTexture, Draw.char_texture);
-	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
-	gl.vertexAttribPointer(program.aPoint, 2, gl.FLOAT, false, 0, 0);
-	gl.uniform2f(program.uCharacter, num & 15, num >> 4);
-	gl.uniform2f(program.uDest, x, y);
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	var program = GL.UseProgram('Pic', true);
+	GL.Bind(program.tTexture, Draw.char_texture, true);
+	Draw.Char(x, y, num);
 };
 
 Draw.String = function(x, y, str)
 {
-	var program = GL.UseProgram('Character');
-	GL.Bind(program.tTexture, Draw.char_texture);
-	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
-	gl.vertexAttribPointer(program.aPoint, 2, gl.FLOAT, false, 0, 0);
-	var i, num;
-	for (i = 0; i < str.length; ++i)
+	var program = GL.UseProgram('Pic', true);
+	GL.Bind(program.tTexture, Draw.char_texture, true);
+	for (var i = 0; i < str.length; ++i)
 	{
-		num = str.charCodeAt(i);
-		gl.uniform2f(program.uCharacter, num & 15, num >> 4);
-		gl.uniform2f(program.uDest, x, y);
-		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+		Draw.Char(x, y, str.charCodeAt(i));
 		x += 8;
 	}
 };
 
 Draw.StringWhite = function(x, y, str)
 {
-	var program = GL.UseProgram('Character');
-	GL.Bind(program.tTexture, Draw.char_texture);
-	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
-	gl.vertexAttribPointer(program.aPoint, 2, gl.FLOAT, false, 0, 0);
-	var i, num;
-	for (i = 0; i < str.length; ++i)
+	var program = GL.UseProgram('Pic', true);
+	GL.Bind(program.tTexture, Draw.char_texture, true);
+	for (var i = 0; i < str.length; ++i)
 	{
-		num = str.charCodeAt(i) + 128;
-		gl.uniform2f(program.uCharacter, num & 15, num >> 4);
-		gl.uniform2f(program.uDest, x, y);
-		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+		Draw.Char(x, y, str.charCodeAt(i) + 128);
 		x += 8;
 	}
 };
@@ -133,58 +132,47 @@ Draw.CachePic = function(path)
 
 Draw.Pic = function(x, y, pic)
 {
-	var program = GL.UseProgram('Pic');
-	GL.Bind(program.tTexture, pic.texnum);
-	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
-	gl.vertexAttribPointer(program.aPoint, 2, gl.FLOAT, false, 0, 0);
-	gl.uniform4f(program.uRect, x, y, pic.width, pic.height);
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	var program = GL.UseProgram('Pic', true);
+	GL.Bind(program.tTexture, pic.texnum, true);
+	GL.StreamDrawTexturedQuad(x, y, pic.width, pic.height, 0.0, 0.0, 1.0, 1.0);
 };
 
 Draw.PicTranslate = function(x, y, pic, top, bottom)
 {
+	GL.StreamFlush();
 	var program = GL.UseProgram('PicTranslate');
 	GL.Bind(program.tTexture, pic.texnum);
 	GL.Bind(program.tTrans, pic.translate);
-	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
-	gl.vertexAttribPointer(program.aPoint, 2, gl.FLOAT, false, 0, 0);
-	gl.uniform4f(program.uRect, x, y, pic.width, pic.height);
+
 	var p = VID.d_8to24table[top];
-	gl.uniform3f(program.uTop, p & 0xff, (p >> 8) & 0xff, p >> 16);
+	var scale = 1.0 / 191.25;
+	gl.uniform3f(program.uTop, (p & 0xff) * scale, ((p >> 8) & 0xff) * scale, (p >> 16) * scale);
 	p = VID.d_8to24table[bottom];
-	gl.uniform3f(program.uBottom, p & 0xff, (p >> 8) & 0xff, p >> 16);
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	gl.uniform3f(program.uBottom, (p & 0xff) * scale, ((p >> 8) & 0xff) * scale, (p >> 16) * scale);
+
+	GL.StreamDrawTexturedQuad(x, y, pic.width, pic.height, 0.0, 0.0, 1.0, 1.0);
+
+	GL.StreamFlush();
 };
 
 Draw.ConsoleBackground = function(lines)
 {
-	var program = GL.UseProgram('Pic');
-	GL.Bind(program.tTexture, Draw.conback.texnum);
-	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
-	gl.vertexAttribPointer(program.aPoint, 2, gl.FLOAT, false, 0, 0);
-	gl.uniform4f(program.uRect, 0, lines - VID.height, VID.width, VID.height);
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	var program = GL.UseProgram('Pic', true);
+	GL.Bind(program.tTexture, Draw.conback.texnum, true);
+	GL.StreamDrawTexturedQuad(0, lines - VID.height, VID.width, VID.height, 0.0, 0.0, 1.0, 1.0);
 };
 
 Draw.Fill = function(x, y, w, h, c)
 {
-	var program = GL.UseProgram('Fill');
-	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
-	gl.vertexAttribPointer(program.aPoint, 2, gl.FLOAT, false, 0, 0);
-	gl.uniform4f(program.uRect, x, y, w, h);
+	var program = GL.UseProgram('Fill', true);
 	var color = VID.d_8to24table[c];
-	gl.uniform4f(program.uColor, color & 0xff, (color >> 8) & 0xff, color >> 16, 1.0);
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	GL.StreamDrawColoredQuad(x, y, w, h, color & 0xff, (color >> 8) & 0xff, color >> 16, 255);
 };
 
 Draw.FadeScreen = function()
 {
-	var program = GL.UseProgram('Fill');
-	gl.bindBuffer(gl.ARRAY_BUFFER, GL.rect);
-	gl.vertexAttribPointer(program.aPoint, 2, gl.FLOAT, false, 0, 0);
-	gl.uniform4f(program.uRect, 0, 0, VID.width, VID.height);
-	gl.uniform4f(program.uColor, 0.0, 0.0, 0.0, 0.8);
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	var program = GL.UseProgram('Fill', true);
+	GL.StreamDrawColoredQuad(0, 0, VID.width, VID.height, 0, 0, 0, 204);
 };
 
 Draw.BeginDisc = function()

@@ -132,17 +132,17 @@ uniform vec3 uViewOrigin;
 uniform mat3 uViewAngles;
 uniform mat4 uPerspective;
 uniform vec3 uLightVec;
-attribute vec3 aPoint;
-attribute vec3 aLightNormal;
+attribute vec3 aPosition;
+attribute vec3 aNormal;
 attribute vec2 aTexCoord;
 varying vec2 vTexCoord;
 varying float vLightDot;
 void main(void)
 {
-	vec3 position = uViewAngles * (uAngles * aPoint.xyz + uOrigin - uViewOrigin);
+	vec3 position = uViewAngles * (uAngles * aPosition + uOrigin - uViewOrigin);
 	gl_Position = uPerspective * vec4(position.xz, -position.y, 1.0);
 	vTexCoord = aTexCoord;
-	vLightDot = dot(aLightNormal, uLightVec);
+	vLightDot = dot(aNormal, uLightVec);
 }
 </script>
 <script type="x-shader/x-fragment" id="fshAlias">
@@ -168,14 +168,14 @@ uniform mat3 uAngles;
 uniform vec3 uViewOrigin;
 uniform mat3 uViewAngles;
 uniform mat4 uPerspective;
-attribute vec3 aPoint;
+attribute vec3 aPosition;
 attribute vec4 aTexCoord;
 attribute vec4 aLightStyle;
 varying vec4 vTexCoord;
 varying vec4 vLightStyle;
 void main(void)
 {
-	vec3 position = uViewAngles * (uAngles * aPoint + uOrigin - uViewOrigin);
+	vec3 position = uViewAngles * (uAngles * aPosition + uOrigin - uViewOrigin);
 	gl_Position = uPerspective * vec4(position.xz, -position.y, 1.0);
 	vTexCoord = aTexCoord;
 	vLightStyle = aLightStyle;
@@ -209,12 +209,12 @@ void main(void)
 uniform vec2 uCharacter;
 uniform vec2 uDest;
 uniform mat4 uOrtho;
-attribute vec2 aPoint;
+attribute vec2 aPosition;
 varying vec2 vTexCoord;
 void main(void)
 {
-	gl_Position = uOrtho * vec4(aPoint * 8.0 + uDest, 0.0, 1.0);
-	vTexCoord = (aPoint + uCharacter) * 0.0625;
+	gl_Position = uOrtho * vec4(aPosition * 8.0 + uDest, 0.0, 1.0);
+	vTexCoord = (aPosition + uCharacter) * 0.0625;
 }
 </script>
 <script type="x-shader/x-fragment" id="fshCharacter">
@@ -232,13 +232,13 @@ uniform vec3 uViewOrigin;
 uniform mat3 uViewAngles;
 uniform mat4 uPerspective;
 uniform float uRadius;
-attribute vec3 aPoint;
+attribute vec3 aPosition;
 varying float vAlpha;
 void main(void)
 {
-	vec3 position = aPoint * 0.35 * uRadius + uViewAngles * (uOrigin - uViewOrigin);
+	vec3 position = aPosition * 0.35 * uRadius + uViewAngles * (uOrigin - uViewOrigin);
 	gl_Position = uPerspective * vec4(position.xz, -position.y, 1.0);
-	vAlpha = aPoint.y * -0.2;
+	vAlpha = aPosition.y * -0.2;
 }
 </script>
 <script type="x-shader/x-fragment" id="fshDlight">
@@ -251,60 +251,66 @@ void main(void)
 }
 </script>
 <script type="x-shader/x-vertex" id="vshFill">
-uniform vec4 uRect;
 uniform mat4 uOrtho;
-attribute vec2 aPoint;
+attribute vec2 aPosition;
+attribute vec4 aColor;
+varying vec4 vColor;
 void main(void)
 {
-	gl_Position = uOrtho * vec4(uRect.xy + uRect.zw * aPoint, 0.0, 1.0);
+	gl_Position = uOrtho * vec4(aPosition, 0.0, 1.0);
+	vColor = aColor;
 }
 </script>
 <script type="x-shader/x-fragment" id="fshFill">
 precision mediump float;
-uniform vec4 uColor;
+varying vec4 vColor;
 void main(void)
 {
-	gl_FragColor = vec4(uColor.rgb * (1.0 / 255.0), uColor.a);
+	gl_FragColor = vColor;
 }
 </script>
 <script type="x-shader/x-vertex" id="vshParticle">
-uniform vec3 uOrigin;
 uniform vec3 uViewOrigin;
 uniform mat3 uViewAngles;
 uniform mat4 uPerspective;
 uniform float uScale;
-attribute vec2 aPoint;
+attribute vec3 aOrigin;
+attribute vec2 aCoord;
+attribute float aScale;
+attribute vec3 aColor;
 varying vec2 vCoord;
+varying vec3 vColor;
 void main(void)
 {
-	vec2 point = (aPoint - 0.5) * uScale;
-	vec3 position = vec3(point.x, 0.0, point.y) + uViewAngles * (uOrigin - uViewOrigin);
+	vec2 point = aCoord * aScale;
+	vec3 position = vec3(point.x, 0.0, point.y) + uViewAngles * (aOrigin - uViewOrigin);
 	gl_Position = uPerspective * vec4(position.xz, -position.y, 1.0);
-	vCoord = vec2(aPoint.x - 0.5, 0.5 - aPoint.y) * 2.0;
+	vCoord = aCoord;
+	vColor = aColor;
 }
 </script>
 <script type="x-shader/x-fragment" id="fshParticle">
 precision mediump float;
 uniform float uGamma;
-uniform vec3 uColor;
 varying vec2 vCoord;
+varying vec3 vColor;
 void main(void)
 {
-	gl_FragColor = vec4(uColor * (1.0 / 255.0), 1.0 - smoothstep(0.75, 1.0, length(vCoord)));
+	gl_FragColor = vec4(vColor, 1.0 - smoothstep(0.75, 1.0, length(vCoord)));
 	gl_FragColor.r = pow(gl_FragColor.r, uGamma);
 	gl_FragColor.g = pow(gl_FragColor.g, uGamma);
 	gl_FragColor.b = pow(gl_FragColor.b, uGamma);
 }
 </script>
 <script type="x-shader/x-vertex" id="vshPic">
-uniform vec4 uRect;
 uniform mat4 uOrtho;
-attribute vec2 aPoint;
+attribute vec2 aPosition;
+attribute vec2 aTexCoord;
 varying vec2 vTexCoord;
 void main(void)
 {
-	gl_Position = uOrtho * vec4(uRect.xy + uRect.zw * aPoint.xy, 0.0, 1.0);
-	vTexCoord = aPoint;
+	gl_Position = uOrtho * vec4(aPosition, 0.0, 1.0);
+	vTexCoord = aTexCoord;
 }
 </script>
 <script type="x-shader/x-fragment" id="fshPic">
@@ -317,14 +323,14 @@ void main(void)
 }
 </script>
 <script type="x-shader/x-vertex" id="vshPicTranslate">
-uniform vec4 uRect;
 uniform mat4 uOrtho;
-attribute vec2 aPoint;
+attribute vec2 aPosition;
+attribute vec2 aTexCoord;
 varying vec2 vTexCoord;
 void main(void)
 {
-	gl_Position = uOrtho * vec4(uRect.xy + uRect.zw * aPoint.xy, 0.0, 1.0);
-	vTexCoord = aPoint;
+	gl_Position = uOrtho * vec4(aPosition, 0.0, 1.0);
+	vTexCoord = aTexCoord;
 }
 </script>
 <script type="x-shader/x-fragment" id="fshPicTranslate">
@@ -338,7 +344,7 @@ void main(void)
 {
 	vec4 texture = texture2D(tTexture, vTexCoord);
 	vec4 trans = texture2D(tTrans, vTexCoord);
-	gl_FragColor = vec4(mix(mix(texture.rgb, uTop * (1.0 / 191.25) * trans.x, trans.y), uBottom * (1.0 / 191.25) * trans.z, trans.w), texture.a);
+	gl_FragColor = vec4(mix(mix(texture.rgb, uTop * trans.x, trans.y), uBottom * trans.z, trans.w), texture.a);
 }
 </script>
 <script type="x-shader/x-vertex" id="vshPlayer">
@@ -348,17 +354,17 @@ uniform vec3 uViewOrigin;
 uniform mat3 uViewAngles;
 uniform mat4 uPerspective;
 uniform vec3 uLightVec;
-attribute vec3 aPoint;
-attribute vec3 aLightNormal;
+attribute vec3 aPosition;
+attribute vec3 aNormal;
 attribute vec2 aTexCoord;
 varying vec2 vTexCoord;
 varying float vLightDot;
 void main(void)
 {
-	vec3 position = uViewAngles * (uAngles * aPoint.xyz + uOrigin - uViewOrigin);
+	vec3 position = uViewAngles * (uAngles * aPosition + uOrigin - uViewOrigin);
 	gl_Position = uPerspective * vec4(position.xz, -position.y, 1.0);
 	vTexCoord = aTexCoord;
-	vLightDot = dot(aLightNormal, uLightVec);
+	vLightDot = dot(aNormal, uLightVec);
 }
 </script>
 <script type="x-shader/x-fragment" id="fshPlayer">
@@ -388,13 +394,13 @@ void main(void)
 uniform mat3 uViewAngles;
 uniform mat4 uPerspective;
 uniform vec3 uScale;
-attribute vec3 aPoint;
+attribute vec3 aPosition;
 varying vec2 vTexCoord;
 void main(void)
 {
-	vec3 position = uViewAngles * (aPoint * uScale * 18918.0);
+	vec3 position = uViewAngles * (aPosition * uScale * 18918.0);
 	gl_Position = uPerspective * vec4(position.xz, -position.y, 1.0);
-	vTexCoord = aPoint.xy * uScale.xy * 1.5;
+	vTexCoord = aPosition.xy * uScale.xy * 1.5;
 }
 </script>
 <script type="x-shader/x-fragment" id="fshSky">
@@ -417,10 +423,10 @@ void main(void)
 uniform vec3 uViewOrigin;
 uniform mat3 uViewAngles;
 uniform mat4 uPerspective;
-attribute vec3 aPoint;
+attribute vec3 aPosition;
 void main(void)
 {
-	vec3 position = uViewAngles * (aPoint - uViewOrigin);
+	vec3 position = uViewAngles * (aPosition - uViewOrigin);
 	gl_Position = uPerspective * vec4(position.xz, -position.y, 1.0);
 }
 </script>
@@ -432,51 +438,20 @@ void main(void)
 </script>
 <script type="x-shader/x-vertex" id="vshSprite">
 uniform vec4 uRect;
-uniform vec3 uOrigin;
 uniform vec3 uViewOrigin;
 uniform mat3 uViewAngles;
 uniform mat4 uPerspective;
-attribute vec2 aPoint;
+attribute vec3 aPosition;
+attribute vec2 aTexCoord;
 varying vec2 vTexCoord;
 void main(void)
 {
-	vec2 point = uRect.xy + uRect.zw * aPoint;
-	vec3 position = vec3(point.x, 0.0, point.y) + uViewAngles * (uOrigin - uViewOrigin);
+	vec3 position = uViewAngles * (aPosition - uViewOrigin);
 	gl_Position = uPerspective * vec4(position.xz, -position.y, 1.0);
-	vTexCoord = vec2(aPoint.x, -aPoint.y);
+	vTexCoord = aTexCoord;
 }
 </script>
 <script type="x-shader/x-fragment" id="fshSprite">
-precision mediump float;
-uniform float uGamma;
-uniform sampler2D tTexture;
-varying vec2 vTexCoord;
-void main(void)
-{
-	gl_FragColor = texture2D(tTexture, vTexCoord);
-	gl_FragColor.r = pow(gl_FragColor.r, uGamma);
-	gl_FragColor.g = pow(gl_FragColor.g, uGamma);
-	gl_FragColor.b = pow(gl_FragColor.b, uGamma);
-}
-</script>
-<script type="x-shader/x-vertex" id="vshSpriteOriented">
-uniform vec4 uRect;
-uniform vec3 uOrigin;
-uniform mat3 uAngles;
-uniform vec3 uViewOrigin;
-uniform mat3 uViewAngles;
-uniform mat4 uPerspective;
-attribute vec2 aPoint;
-varying vec2 vTexCoord;
-void main(void)
-{
-	vec2 point = uRect.xy + uRect.zw * aPoint;
-	vec3 position = uViewAngles * (uAngles * vec3(point.x, 0.0, point.y) + uOrigin - uViewOrigin);
-	gl_Position = uPerspective * vec4(position.xz, -position.y, 1.0);
-	vTexCoord = vec2(aPoint.x, -aPoint.y);
-}
-</script>
-<script type="x-shader/x-fragment" id="fshSpriteOriented">
 precision mediump float;
 uniform float uGamma;
 uniform sampler2D tTexture;
@@ -495,12 +470,12 @@ uniform mat3 uAngles;
 uniform vec3 uViewOrigin;
 uniform mat3 uViewAngles;
 uniform mat4 uPerspective;
-attribute vec3 aPoint;
+attribute vec3 aPosition;
 attribute vec2 aTexCoord;
 varying vec2 vTexCoord;
 void main(void)
 {
-	vec3 position = uViewAngles * (uAngles * aPoint + uOrigin - uViewOrigin);
+	vec3 position = uViewAngles * (uAngles * aPosition + uOrigin - uViewOrigin);
 	gl_Position = uPerspective * vec4(position.xz, -position.y, 1.0);
 	vTexCoord = aTexCoord;
 }
@@ -520,14 +495,14 @@ void main(void)
 }
 </script>
 <script type="x-shader/x-vertex" id="vshWarp">
-uniform vec4 uRect;
 uniform mat4 uOrtho;
-attribute vec2 aPoint;
+attribute vec2 aPosition;
+attribute vec2 aTexCoord;
 varying vec2 vTexCoord;
 void main(void)
 {
-	gl_Position = uOrtho * vec4(uRect.x + uRect.z * aPoint.x, uRect.y + uRect.w * aPoint.y, 0.0, 1.0);
-	vTexCoord = vec2(aPoint.x, 1.0 - aPoint.y);
+	gl_Position = uOrtho * vec4(aPosition, 0.0, 1.0);
+	vTexCoord = aTexCoord;
 }
 </script>
 <script type="x-shader/x-fragment" id="fshWarp">

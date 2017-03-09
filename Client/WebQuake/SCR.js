@@ -349,6 +349,8 @@ SCR.UpdateScreen = function()
 		M.Draw();
 	}
 
+	GL.StreamFlush();
+
 	gl.disable(gl.BLEND);
 
 	if (SCR.screenshot === true)
