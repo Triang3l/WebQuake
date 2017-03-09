@@ -152,23 +152,21 @@ R.PushDlights = function()
 	}
 
 	GL.Bind(0, R.dlightmap_texture);
-	var start;
 	for (i = 0; i <= 1023; ++i)
 	{
-		if ((start == null) && (R.lightmap_modified[i] === true))
-			start = i;
-		else if ((start != null) && (R.lightmap_modified[i] !== true))
+		if (R.lightmap_modified[i] !== true)
+			continue;
+		for (j = 1023; j >= i; --j)
 		{
-			gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, start, 1024, i - start, gl.ALPHA, gl.UNSIGNED_BYTE,
-				R.dlightmaps.subarray(start << 10, i << 10));
-			start = null;
+			if (R.lightmap_modified[j] !== true)
+				continue;
+			gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, i, 1024, j - i + 1, gl.ALPHA, gl.UNSIGNED_BYTE,
+				R.dlightmaps.subarray(i << 10, (j + 1) << 10));
+			break;
 		}
+		break;
 	}
-	if (start != null)
-	{
-		gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, start, 1024, 1024 - start, gl.ALPHA, gl.UNSIGNED_BYTE,
-			R.dlightmaps.subarray(start << 10, 1048576));
-	}
+
 	++R.dlightframecount;
 };
 
