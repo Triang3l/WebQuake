@@ -1,0 +1,11 @@
+{
+  "name": "webquake-server",
+  "description": "Server for WebQuake written on Node.js",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {"start": "node WebQDS.js"},
+  "main": "WebQDS.js",
+  "dependencies": {
+    "websocket": "1.0.x"
+  }
+}
