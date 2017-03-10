@@ -35,7 +35,9 @@ IN.StartupMouse = function()
 		IN.pointerlockchange = 'onmozpointerlockchange';
 	}
 	else
+	{
 		return;
+	}
 	VID.mainwindow.onclick = IN.onclick;
 	document.onmousemove = IN.onmousemove;
 	document[IN.pointerlockchange] = IN.onpointerlockchange;
