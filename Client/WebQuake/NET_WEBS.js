@@ -11,7 +11,7 @@ WEBS.Connect = function(host){
 	var charSizen=6;	    
 	if (host.length <= 7)
 		return;
-	if ((host.substring(0, 5) !== 'ws://')&&(host.substring(0, 6) !== 'wss://'){
+	if ((host.substring(0, 5) !== 'ws://')&&(host.substring(0, 6) !== 'wss://')){
 		return;
 	}else if(host.substring(0, 5) !== 'ws://')
 		charSizen=5;
