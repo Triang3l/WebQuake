@@ -7,8 +7,7 @@ Host.Error = function(error)
 	if (Host.inerror === true)
 		Sys.Error('Host.Error: recursively entered');
 	Host.inerror = true;
-	error = 'Host.Error: ' + error + '\n';
-	Con.Print(error);
+	error = 'Host.Error: ' + error + '';
 	Sys.Error(error);
 };
 
@@ -67,18 +66,6 @@ Host.InitLocal = function()
 	Host.FindMaxClients();
 };
 
-Host.GetConsoleCommands = function()
-{
-	var cmd;
-	for (;;)
-	{
-		cmd = Sys.ConsoleInput();
-		if (cmd == null)
-			return;
-		Cmd.text += cmd;
-	}
-};
-
 Host.ClientPrint = function(string)
 {
 	MSG.WriteByte(Host.client.message, Protocol.svc.print);
@@ -115,7 +102,7 @@ Host.DropClient = function(crash)
 			PR.ExecuteProgram(PR.globals_int[PR.globalvars.ClientDisconnect]);
 			PR.globals_int[PR.globalvars.self] = saveSelf;
 		}
-		Sys.Print('Client ' + SV.GetClientName(client) + ' removed\n');
+		Con.Print('Client ' + SV.GetClientName(client) + ' removed');
 	}
 	NET.Close(client.netconnection);
 	client.netconnection = null;
@@ -171,7 +158,7 @@ Host.ShutdownServer = function(crash)
 	(new Uint8Array(buf.data))[0] = Protocol.svc.disconnect;
 	count = NET.SendToAll(buf);
 	if (count !== 0)
-		Con.Print('Host.ShutdownServer: NET.SendToAll failed for ' + count + ' clients\n');
+		Con.Warn('Host.ShutdownServer: NET.SendToAll failed for ' + count + ' clients');
 	for (i = 0; i < SV.svs.maxclients; ++i)
 	{
 		Host.client = SV.svs.clients[i];
@@ -184,10 +171,10 @@ Host.RemoteCommand = function(from, data, password)
 {
 	if ((Host.rcon_password.string.length === 0) || (password !== Host.rcon_password.string))
 	{
-		Con.Print('Bad rcon from ' + from + ':\n' + data + '\n');
+		Con.Warn('Bad rcon from ' + from + ':\n' + data + '');
 		return;
 	};
-	Con.Print('Rcon from ' + from + ':\n' + data + '\n');
+	Con.Print('Rcon from ' + from + ':\n' + data + '');
 	Cmd.ExecuteString(data);
 	return true;
 };
@@ -223,7 +210,6 @@ Host._Frame = function()
 	Cmd.Execute();
 	if (SV.server.active === true)
 		Host.ServerFrame();
-	Host.GetConsoleCommands();
 	++Host.framecount;
 };
 
@@ -251,7 +237,7 @@ Host.Frame = function()
 		if (SV.svs.clients[i].active === true)
 			++c;
 	}
-	Con.Print('serverprofile: ' + (c <= 9 ? ' ' : '') + c + ' clients ' + (m <= 9 ? ' ' : '') + m + ' msec\n');
+	Con.Print('serverprofile: ' + (c <= 9 ? ' ' : '') + c + ' clients ' + (m <= 9 ? ' ' : '') + m + ' msec');
 };
 
 Host.Init = function()
@@ -266,7 +252,7 @@ Host.Init = function()
 	NET.Init();
 	SV.Init();
 	Cmd.text = 'exec quake.rc\n' + Cmd.text;
-	Sys.Print('========Quake Initialized=========\n');
+	Con.Print('========Quake Initialized=========');
 };
 
 // Commands
@@ -287,10 +273,10 @@ Host.Status_f = function()
 	}
 	else
 		print = Host.ClientPrint;
-	print('host:    ' + NET.hostname.string + '\n');
-	print('version: 1.09\n');
-	print('map:     ' + PR.GetString(PR.globals_int[PR.globalvars.mapname]) + '\n');
-	print('players: ' + NET.activeconnections + ' active (' + SV.svs.maxclients + ' max)\n\n');
+	print('host:    ' + NET.hostname.string + '');
+	print('version: 1.09');
+	print('map:     ' + PR.GetString(PR.globals_int[PR.globalvars.mapname]) + '');
+	print('players: ' + NET.activeconnections + ' active (' + SV.svs.maxclients + ' max)');
 	var i, client, str, frags, hours, minutes, seconds;
 	for (i = 0; i < SV.svs.maxclients; ++i)
 	{
@@ -328,8 +314,8 @@ Host.Status_f = function()
 		str += minutes + ':';
 		if (seconds <= 9)
 			str += '0';
-		print(str + seconds + '\n');
-		print('   ' + client.netconnection.address + '\n');
+		print(str + seconds + '');
+		print('   ' + client.netconnection.address + '');
 	}
 };
 
@@ -422,7 +408,7 @@ Host.Map_f = function()
 {
 	if (Cmd.argv.length <= 1)
 	{
-		Con.Print('USAGE: map <map>\n');
+		Con.Print('USAGE: map <map>');
 		return;
 	}
 	if (Cmd.client === true)
@@ -436,12 +422,12 @@ Host.Changelevel_f = function()
 {
 	if (Cmd.argv.length !== 2)
 	{
-		Con.Print('changelevel <levelname> : continue game on a new level\n');
+		Con.Print('changelevel <levelname> : continue game on a new level');
 		return;
 	}
 	if (SV.server.active !== true)
 	{
-		Con.Print('Only the server may changelevel\n');
+		Con.Print('Only the server may changelevel');
 		return;
 	}
 	SV.SaveSpawnparms();
@@ -475,7 +461,7 @@ Host.Name_f = function()
 
 Host.Version_f = function()
 {
-	Con.Print('Version 1.09\n');
+	Con.Print('Version 1.09');
 	Con.Print(Def.timedate);
 };
 
@@ -512,7 +498,7 @@ Host.Say = function(teamonly)
 		Host.ClientPrint(text);
 	}
 	Host.client = save;
-	Sys.Print(text.substring(1));
+	Con.Print(text.substring(1));
 };
 
 Host.Say_Team_f = function()
@@ -609,13 +595,13 @@ Host.PreSpawn_f = function()
 {
 	if (Cmd.client !== true)
 	{
-		Con.Print('prespawn is not valid from the console\n');
+		Con.Error('prespawn is not valid from the console');
 		return;
 	}
 	var client = Host.client;
 	if (client.spawned === true)
 	{
-		Con.Print('prespawn not valid -- allready spawned\n');
+		Con.Print('prespawn not valid -- allready spawned');
 		return;
 	}
 	SZ.Write(client.message, new Uint8Array(SV.server.signon.data), SV.server.signon.cursize);
@@ -628,13 +614,13 @@ Host.Spawn_f = function()
 {
 	if (Cmd.client !== true)
 	{
-		Con.Print('spawn is not valid from the console\n');
+		Con.Warn('spawn is not valid from the console');
 		return;
 	}
 	var client = Host.client;
 	if (client.spawned === true)
 	{
-		Con.Print('Spawn not valid -- allready spawned\n');
+		Con.Print('Spawn not valid -- allready spawned');
 		return;
 	}
 
@@ -652,7 +638,7 @@ Host.Spawn_f = function()
 	PR.globals_int[PR.globalvars.self] = ent.num;
 	PR.ExecuteProgram(PR.globals_int[PR.globalvars.ClientConnect]);
 	if ((Sys.FloatTime() - client.netconnection.connecttime) <= SV.server.time)
-		Sys.Print(SV.GetClientName(client) + ' entered the game\n');
+            Con.Print(SV.GetClientName(client) + ' entered the game');
 	PR.ExecuteProgram(PR.globals_int[PR.globalvars.PutClientInServer]);
 
 	var message = client.message;
@@ -705,7 +691,7 @@ Host.Begin_f = function()
 {
 	if (Cmd.client !== true)
 	{
-		Con.Print('begin is not valid from the console\n');
+		Con.Print('begin is not valid from the console');
 		return;
 	}
 	Host.client.spawned = true;
@@ -775,7 +761,7 @@ Host.Kick_f = function()
 			if (message.charCodeAt(p) !== 32)
 				break;
 		}
-		Host.ClientPrint('Kicked by ' + who + ': ' + message.substring(p) + '\n');
+		Host.ClientPrint('Kicked by ' + who + ': ' + message.substring(p) + '');
 	}
 	else
 		Host.ClientPrint('Kicked by ' + who + '\n');

@@ -452,8 +452,8 @@ Mod.LoadSpriteModel = function(buffer)
 
 Mod.Print = function()
 {
-	Con.Print('Cached models:\n');
+	Con.Print('Cached models:');
 	var i;
 	for (i = 0; i < Mod.known.length; ++i)
-		Con.Print(Mod.known[i].name + '\n');
+		Con.Print(Mod.known[i].name + '');
 };

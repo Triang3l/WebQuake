@@ -102,10 +102,10 @@ ED.Print = function(ed)
 {
 	if (ed.free === true)
 	{
-		Con.Print('FREE\n');
+		Con.Print('FREE');
 		return;
 	}
-	Con.Print('\nEDICT ' + ed.num + ':\n');
+	Con.Print('\nEDICT ' + ed.num + ':');
 	var i, d, name, v, l;
 	for (i = 1; i < PR.fielddefs.length; ++i)
 	{
@@ -126,7 +126,7 @@ ED.Print = function(ed)
 		}
 		for (; name.length <= 14; )
 			name += ' ';
-		Con.Print(name + PR.ValueString(d.type, ed.v, v) + '\n');
+		Con.Print(name + PR.ValueString(d.type, ed.v, v) + '');
 	}
 };
 
@@ -134,7 +134,7 @@ ED.PrintEdicts = function()
 {
 	if (SV.server.active !== true)
 		return;
-	Con.Print(SV.server.num_edicts + ' entities\n');
+	Con.Print(SV.server.num_edicts + ' entities');
 	var i;
 	for (i = 0; i < SV.server.num_edicts; ++i)
 		ED.Print(SV.server.edicts[i]);
@@ -168,11 +168,11 @@ ED.Count = function()
 			++step;
 	}
 	var num_edicts = SV.server.num_edicts;
-	Con.Print('num_edicts:' + (num_edicts <= 9 ? '  ' : (num_edicts <= 99 ? ' ' : '')) + num_edicts + '\n');
-	Con.Print('active    :' + (active <= 9 ? '  ' : (active <= 99 ? ' ' : '')) + active + '\n');
-	Con.Print('view      :' + (models <= 9 ? '  ' : (models <= 99 ? ' ' : '')) + models + '\n');
-	Con.Print('touch     :' + (solid <= 9 ? '  ' : (solid <= 99 ? ' ' : '')) + solid + '\n');
-	Con.Print('step      :' + (step <= 9 ? '  ' : (step <= 99 ? ' ' : '')) + step + '\n');
+	Con.Print('num_edicts:' + (num_edicts <= 9 ? '  ' : (num_edicts <= 99 ? ' ' : '')) + num_edicts + '');
+	Con.Print('active    :' + (active <= 9 ? '  ' : (active <= 99 ? ' ' : '')) + active + '');
+	Con.Print('view      :' + (models <= 9 ? '  ' : (models <= 99 ? ' ' : '')) + models + '');
+	Con.Print('touch     :' + (solid <= 9 ? '  ' : (solid <= 99 ? ' ' : '')) + solid + '');
+	Con.Print('step      :' + (step <= 9 ? '  ' : (step <= 99 ? ' ' : '')) + step + '');
 };
 
 ED.ParseGlobals = function(data)
@@ -194,7 +194,7 @@ ED.ParseGlobals = function(data)
 		key = ED.FindGlobal(keyname);
 		if (key == null)
 		{
-			Con.Print('\'' + keyname + '\' is not a global\n');
+			Con.Print('\'' + keyname + '\' is not a global');
 			continue;
 		}
 		if (ED.ParseEpair(PR.globals, key, COM.token) !== true)
@@ -211,7 +211,7 @@ ED.NewString = function(string)
 		if ((c === 92) && (i < (string.length - 1)))
 		{
 			++i;
-			newstring[newstring.length] = (string.charCodeAt(i) === 110) ? '\n' : '\\';
+			newstring[newstring.length] = (string.charCodeAt(i) === 110) ? '' : '\\';
 		}
 		else
 			newstring[newstring.length] = String.fromCharCode(c);
@@ -245,7 +245,7 @@ ED.ParseEpair = function(base, key, s)
 		d = ED.FindField(s);
 		if (d == null)
 		{
-			Con.Print('Can\'t find field ' + s + '\n');
+			Con.Warn('Can\'t find field ' + s + '');
 			return;
 		}
 		d_int[key.ofs] = d.ofs;
@@ -254,7 +254,7 @@ ED.ParseEpair = function(base, key, s)
 		d = ED.FindFunction(s);
 		if (d == null)
 		{
-			Con.Print('Can\'t find function ' + s + '\n');
+			Con.Warn('Can\'t find function ' + s + '');
 			return;
 		}
 		d_int[key.ofs] = d;
@@ -305,7 +305,7 @@ ED.ParseEdict = function(data, ent)
 		key = ED.FindField(keyname);
 		if (key == null)
 		{
-			Con.Print('\'' + keyname + '\' is not a field\n');
+			Con.Print('\'' + keyname + '\' is not a field');
 			continue;
 		}
 		if (anglehack == true)
@@ -358,7 +358,7 @@ ED.LoadFromFile = function(data)
 
 		if (ent.v_int[PR.entvars.classname] === 0)
 		{
-			Con.Print('No classname for:\n');
+			Con.Warn('No classname for:');
 			ED.Print(ent);
 			ED.Free(ent);
 			continue;
@@ -367,7 +367,7 @@ ED.LoadFromFile = function(data)
 		func = ED.FindFunction(PR.GetString(ent.v_int[PR.entvars.classname]));
 		if (func == null)
 		{
-			Con.Print('No spawn function for:\n');
+			Con.Warn('No spawn function for:');
 			ED.Print(ent);
 			ED.Free(ent);
 			continue;
@@ -377,7 +377,7 @@ ED.LoadFromFile = function(data)
 		PR.ExecuteProgram(func);
 	}
 
-	Con.DPrint(inhibit + ' entities inhibited\n');
+	Con.DPrint(inhibit + ' entities inhibited');
 };
 
 ED.Vector = function(e, o)

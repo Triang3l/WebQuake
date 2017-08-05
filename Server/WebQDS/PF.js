@@ -10,14 +10,14 @@ PF.VarString = function(first)
 
 PF.error = function()
 {
-	Con.Print('======SERVER ERROR in ' + PR.GetString(PR.xfunction.name) + '\n' + PF.VarString(0) + '\n');
+	Con.Error('======SERVER ERROR in ' + PR.GetString(PR.xfunction.name) + '\n' + PF.VarString(0) + '');
 	ED.Print(SV.server.edicts[PR.globals_int[PR.globalvars.self]]);
 	Host.Error('Program error');
 };
 
 PF.objerror = function()
 {
-	Con.Print('======OBJECT ERROR in ' + PR.GetString(PR.xfunction.name) + '\n' + PF.VarString(0) + '\n');
+	Con.Error('======OBJECT ERROR in ' + PR.GetString(PR.xfunction.name) + '\n' + PF.VarString(0) + '');
 	ED.Print(SV.server.edicts[PR.globals_int[PR.globalvars.self]]);
 	Host.Error('Program error');
 };
@@ -95,7 +95,7 @@ PF.sprint = function()
 	var entnum = PR.globals_int[4];
 	if ((entnum <= 0) || (entnum > SV.svs.maxclients))
 	{
-		Con.Print('tried to sprint to a non-client\n');
+		Con.Warn('tried to sprint to a non-client');
 		return;
 	}
 	var client = SV.svs.clients[entnum - 1];
@@ -108,7 +108,7 @@ PF.centerprint = function()
 	var entnum = PR.globals_int[4];
 	if ((entnum <= 0) || (entnum > SV.svs.maxclients))
 	{
-		Con.Print('tried to sprint to a non-client\n');
+		Con.Warn('tried to sprint to a non-client');
 		return;
 	}
 	var client = SV.svs.clients[entnum - 1];
@@ -190,7 +190,7 @@ PF.ambientsound = function()
 	}
 	if (i === SV.server.sound_precache.length)
 	{
-		Con.Print('no precache: ' + samp + '\n');
+		Con.Warn('no precache: ' + samp + '');
 		return;
 	}
 	var signon = SV.server.signon;
@@ -214,7 +214,7 @@ PF.sound = function()
 
 PF.breakstatement = function()
 {
-	Con.Print('break statement\n');
+	Con.Warn('break statement');
 };
 
 PF.traceline = function()

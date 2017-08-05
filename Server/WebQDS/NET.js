@@ -27,7 +27,7 @@ NET.Listen_f = function()
 {
 	if (Cmd.argv.length !== 2)
 	{
-		Con.Print('"listen" is "' + (NET.listening === true ? 1 : 0) + '"\n');
+		Con.Print('"listen" is "' + (NET.listening === true ? 1 : 0) + '"');
 		return;
 	}
 	var listening = (Q.atoi(Cmd.argv[1]) !== 0);
@@ -47,12 +47,12 @@ NET.MaxPlayers_f = function()
 {
 	if (Cmd.argv.length !== 2)
 	{
-		Con.Print('"maxplayers" is "' + SV.svs.maxclients + '"\n');
+		Con.Print('"maxplayers" is "' + SV.svs.maxclients + '"');
 		return;
 	}
 	if (SV.server.active === true)
 	{
-		Con.Print('maxplayers can not be changed while a server is running.\n');
+		Con.Print('maxplayers can not be changed while a server is running.');
 		return;
 	}
 	var n = Q.atoi(Cmd.argv[1]);
@@ -61,7 +61,7 @@ NET.MaxPlayers_f = function()
 	else if (n > SV.svs.maxclientslimit)
 	{
 		n = SV.svs.maxclientslimit;
-		Con.Print('"maxplayers" set to "' + n + '"\n');
+		Con.Print('"maxplayers" set to "' + n + '"');
 	}
 	if ((n === 1) && (NET.listening === true))
 		Cmd.text += 'listen 0\n';
@@ -78,13 +78,13 @@ NET.Port_f = function()
 {
 	if (Cmd.argv.length !== 2)
 	{
-		Con.Print('"port" is "' + NET.hostport + '"\n');
+		Con.Print('"port" is "' + NET.hostport + '"');
 		return;
 	}
 	var n = Q.atoi(Cmd.argv[1]);
 	if ((n <= 0) || (n >= 65535))
 	{
-		Con.Print('Bad value, must be between 1 and 65534\n');
+		Con.Warn('Bad value, must be between 1 and 65534');
 		return;
 	}
 	NET.hostport = n;
@@ -124,7 +124,7 @@ NET.GetMessage = function(sock)
 		return -1;
 	if (sock.disconnected === true)
 	{
-		Con.Print('NET.GetMessage: disconnected socket\n');
+		Con.Warn('NET.GetMessage: disconnected socket');
 		return -1;
 	}
 	NET.time = Sys.FloatTime();
@@ -148,7 +148,7 @@ NET.SendMessage = function(sock, data)
 		return -1;
 	if (sock.disconnected === true)
 	{
-		Con.Print('NET.SendMessage: disconnected socket\n');
+		Con.Warn('NET.SendMessage: disconnected socket');
 		return -1;
 	}
 	NET.time = Sys.FloatTime();
@@ -161,7 +161,7 @@ NET.SendUnreliableMessage = function(sock, data)
 		return -1;
 	if (sock.disconnected === true)
 	{
-		Con.Print('NET.SendUnreliableMessage: disconnected socket\n');
+		Con.Warn('NET.SendUnreliableMessage: disconnected socket');
 		return -1;
 	}
 	NET.time = Sys.FloatTime();

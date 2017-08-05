@@ -9,7 +9,7 @@ SZ.GetSpace = function(buf, length)
 		if (length > buf.byteLength)
 			Sys.Error('SZ.GetSpace: ' + length + ' is > full buffer size');
 		buf.overflowed = true;
-		Con.Print('SZ.GetSpace: overflow\n');
+		Con.Warn('SZ.GetSpace: overflow');
 		buf.cursize = 0;
 	}
 	var cursize = buf.cursize;
