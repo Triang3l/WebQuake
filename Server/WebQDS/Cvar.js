@@ -28,7 +28,7 @@ Cvar.Set = function(name, value)
 			Host.BroadcastPrint('"' + v.name + '" changed to "' + v.string + '"\n');
 		return;
 	}
-	Con.Print('Cvar.Set: variable ' + name + ' not found\n');
+	Con.Warn('Cvar.Set: variable ' + name + ' not found');
 };
 
 Cvar.SetValue = function(name, value)
@@ -43,7 +43,7 @@ Cvar.RegisterVariable = function(name, value, archive, server)
 	{
 		if (Cvar.vars[i].name === name)
 		{
-			Con.Print('Can\'t register variable ' + name + ', allready defined\n');
+			Con.Warn('Can\'t register variable ' + name + ', allready defined');
 			return;
 		}
 	}
@@ -65,7 +65,7 @@ Cvar.Command = function()
 		return;
 	if (Cmd.argv.length <= 1)
 	{
-		Con.Print('"' + v.name + '" is "' + v.string + '"\n');
+		Con.Print('"' + v.name + '" is "' + v.string + '"');
 		return true;
 	}
 	Cvar.Set(v.name, Cmd.argv[1]);

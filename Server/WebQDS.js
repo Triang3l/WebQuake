@@ -4,8 +4,10 @@ Node = {
 	http: require('http'),
 	os: require('os'),
 	url: require('url'),
-	websocket: require('websocket')
+	websocket: require('websocket'),
+        interactiveConsole:require('./WebQDS/interactiveConsole.js')
 };
+
 require('./WebQDS/Cmd.js');
 require('./WebQDS/COM.js');
 require('./WebQDS/Console.js');

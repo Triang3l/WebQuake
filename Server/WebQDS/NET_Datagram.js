@@ -56,7 +56,7 @@ Datagram.Listen = function()
 	}
 	catch (e)
 	{
-		Con.Print('Unable to bind to ' + Datagram.myAddr + ':' + NET.hostport + '\n');
+		Con.Warn('Unable to bind to ' + Datagram.myAddr + ':' + NET.hostport + '');
 		controlsocket.close();
 		return;
 	}
@@ -120,12 +120,12 @@ Datagram.GetMessage = function(sock)
 		{
 			if (sequence < sock.unreliableReceiveSequence)
 			{
-				Con.DPrint('Got a stale datagram\n');
+				Con.DPrint('Got a stale datagram');
 				ret = 0;
 				break;
 			}
 			if (sequence !== sock.unreliableReceiveSequence)
-				Con.DPrint('Dropped ' + (sequence - sock.unreliableReceiveSequence) + ' datagram(s)\n');
+				Con.DPrint('Dropped ' + (sequence - sock.unreliableReceiveSequence) + ' datagram(s)');
 			sock.unreliableReceiveSequence = sequence + 1;
 			NET.message.cursize = length;
 			for (i = 0; i < length; ++i)
@@ -137,17 +137,17 @@ Datagram.GetMessage = function(sock)
 		{
 			if (sequence !== (sock.sendSequence - 1))
 			{
-				Con.DPrint('Stale ACK received\n');
+				Con.DPrint('Stale ACK received');
 				continue;
 			}
 			if (sequence === sock.ackSequence)
 			{
 				if (++sock.ackSequence !== sock.sendSequence)
-					Con.DPrint('ack sequencing error\n');
+					Con.DPrint('ack sequencing error');
 			}
 			else
 			{
-				Con.DPrint('Duplicate ACK received\n');
+				Con.DPrint('Duplicate ACK received');
 				continue;
 			}
 			sock.sendMessageLength -= 1024;

@@ -76,13 +76,13 @@ Cmd.Exec_f = function()
 {
 	if (Cmd.argv.length !== 2)
 	{
-		Con.Print('exec <filename> : execute a script file\n');
+		Con.Print('exec <filename> : execute a script file');
 		return;
 	}
 	var f = COM.LoadTextFile(Cmd.argv[1]);
 	if (f == null)
 	{
-		Con.Print('couldn\'t exec ' + Cmd.argv[1] + '\n');
+		Con.Warn('couldn\'t exec ' + Cmd.argv[1] + '');
 		return;
 	}
 	Con.Print('execing ' + Cmd.argv[1] + '\n');
@@ -102,7 +102,7 @@ Cmd.Alias_f = function()
 	var i;
 	if (Cmd.argv.length <= 1)
 	{
-		Con.Print('Current alias commands:\n');
+		Con.Print('Current alias commands:');
 		for (i = 0; i < Cmd.alias.length; ++i)
 			Con.Print(Cmd.alias[i].name + ' : ' + Cmd.alias[i].value + '\n');
 	}
@@ -119,7 +119,7 @@ Cmd.Alias_f = function()
 		if (j !== Cmd.argv.length)
 			value += ' ';
 	}
-	Cmd.alias[i] = {name: s, value: value + '\n'};
+	Cmd.alias[i] = {name: s, value: value + ''};
 };
 
 Cmd.argv = [];
@@ -164,7 +164,7 @@ Cmd.AddCommand = function(name, command)
 	{
 		if (Cvar.vars[i].name === name)
 		{
-			Con.Print('Cmd.AddCommand: ' + name + ' already defined as a var\n');
+			Con.Warn('Cmd.AddCommand: ' + name + ' already defined as a var');
 			return;
 		}
 	}
@@ -172,7 +172,7 @@ Cmd.AddCommand = function(name, command)
 	{
 		if (Cmd.functions[i].name === name)
 		{
-			Con.Print('Cmd.AddCommand: ' + name + ' already defined\n');
+			Con.Warn('Cmd.AddCommand: ' + name + ' already defined');
 			return;
 		}
 	}
@@ -204,5 +204,5 @@ Cmd.ExecuteString = function(text, client)
 		}
 	}
 	if (Cvar.Command() !== true)
-		Con.Print('Unknown command "' + name + '"\n');
+		Con.Warn('Unknown command "' + name + '"');
 };

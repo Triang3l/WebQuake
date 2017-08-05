@@ -78,7 +78,7 @@ COM.CheckRegistered = function()
 	var h = COM.LoadFile('gfx/pop.lmp');
 	if (h == null)
 	{
-		Con.Print('Playing shareware version.\n');
+		Con.Print('Playing shareware version.');
 		if (COM.modified === true)
 			Sys.Error('You must have the registered version to use modified games');
 		return;
@@ -110,7 +110,7 @@ COM.CheckRegistered = function()
 			Sys.Error('Corrupted data file.');
 	}
 	Cvar.Set('registered', '1');
-	Con.Print('Playing registered version.\n');
+	Con.Print('Playing registered version.');
 };
 
 COM.InitArgv = function(argv)
@@ -172,7 +172,7 @@ COM.LoadFile = function(filename)
 				{
 					break;
 				}
-				Sys.Print('PackFile: ' + search.filename + '/pak' + j + '.pak : ' + filename + '\n')
+				Con.Print('PackFile: ' + search.filename + '/pak' + j + '.pak : ' + filename + '')
 				src = new Buffer(file.filelen);
 				Node.fs.readSync(fd, src, 0, file.filelen, file.filepos);
 				Node.fs.closeSync(fd);
@@ -184,7 +184,7 @@ COM.LoadFile = function(filename)
 		try
 		{
 			src = Node.fs.readFileSync(search.filename + '/' + filename);
-			Sys.Print('FindFile: ' + search.filename + '/' + filename + '\n');
+			Con.Print('FindFile: ' + search.filename + '/' + filename + '');
 			break;
 		}
 		catch (e)
@@ -193,7 +193,7 @@ COM.LoadFile = function(filename)
 	}
 	if (src == null)
 	{
-		Sys.Print('FindFile: can\'t find ' + filename + '\n');
+		Con.Print('FindFile: can\'t find ' + filename + '');
 		return;
 	}
 	var size = src.length;
@@ -283,7 +283,7 @@ COM.LoadPackFile = function(packfile)
 		}
 	}
 	Node.fs.closeSync(fd);
-	Con.Print('Added packfile ' + packfile + ' (' + numpackfiles + ' files)\n');
+	Con.Print('Added packfile ' + packfile + ' (' + numpackfiles + ' files)');
 	return pack;
 };
 

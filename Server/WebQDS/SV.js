@@ -121,7 +121,7 @@ SV.StartSound = function(entity, channel, sample, volume, attenuation)
 	}
 	if (i >= SV.server.sound_precache.length)
 	{
-		Con.Print('SV.StartSound: ' + sample + ' not precached\n');
+		Con.Error('SV.StartSound: ' + sample + ' not precached');
 		return;
 	}
 
@@ -179,7 +179,7 @@ SV.ConnectClient = function(clientnum)
 {
 	var client = SV.svs.clients[clientnum];
 	var i, spawn_parms;
-	Con.DPrint('Client ' + client.netconnection.address + ' connected\n');
+	Con.DPrint('Client ' + client.netconnection.address + ' connected');
 	client.active = true;
 	client.dropasap = false;
 	client.last_message = 0.0;
@@ -287,7 +287,7 @@ SV.WriteEntitiesToClient = function(clent, msg)
 		}
 		if ((msg.data.byteLength - msg.cursize) < 16)
 		{
-			Con.Print('packet overflow\n');
+			Con.Warn('packet overflow');
 			return;
 		}
 
@@ -1028,7 +1028,7 @@ SV.CheckAllEnts = function()
 			continue;
 		}
 		if (SV.TestEntityPosition(check) === true)
-			Con.Print('entity in invalid position\n');
+			Con.Warn('entity in invalid position');
 	}
 };
 
@@ -1040,12 +1040,12 @@ SV.CheckVelocity = function(ent)
 		velocity = ent.v_float[PR.entvars.velocity + i];
 		if (Number.isNaN(velocity) === true)
 		{
-			Con.Print('Got a NaN velocity on ' + PR.GetString(ent.v_int[PR.entvars.classname]) + '\n');
+			Con.Warn('Got a NaN velocity on ' + PR.GetString(ent.v_int[PR.entvars.classname]) + '');
 			velocity = 0.0;
 		}
 		if (Number.isNaN(ent.v_float[PR.entvars.origin + i]) === true)
 		{
-			Con.Print('Got a NaN origin on ' + PR.GetString(ent.v_int[PR.entvars.classname]) + '\n');
+			Con.Warn('Got a NaN origin on ' + PR.GetString(ent.v_int[PR.entvars.classname]) + '');
 			ent.v_float[PR.entvars.origin + i] = 0.0;
 		}
 		if (velocity > SV.maxvelocity.value)
@@ -1405,7 +1405,7 @@ SV.CheckStuck = function(ent)
 				ent.v_float[PR.entvars.origin2] = org[2] + z;
 				if (SV.TestEntityPosition(ent) !== true)
 				{
-					Con.DPrint('Unstuck.\n');
+					Con.DPrint('Unstuck.');
 					SV.LinkEdict(ent, true);
 					return;
 				}
@@ -1413,7 +1413,7 @@ SV.CheckStuck = function(ent)
 		}
 	}
 	ED.SetVector(ent, PR.entvars.origin, org);
-	Con.DPrint('player is stuck.\n');
+	Con.DPrint('player is stuck.');
 };
 
 SV.CheckWater = function(ent)
@@ -1981,7 +1981,7 @@ SV.ReadClientMessage = function()
 		ret = NET.GetMessage(Host.client.netconnection);
 		if (ret === -1)
 		{
-			Sys.Print('SV.ReadClientMessage: NET.GetMessage failed\n');
+		    Con.Warn('SV.ReadClientMessage: NET.GetMessage failed');
 			return;
 		}
 		if (ret === 0)
@@ -1993,7 +1993,7 @@ SV.ReadClientMessage = function()
 				return;
 			if (MSG.badread === true)
 			{
-				Sys.Print('SV.ReadClientMessage: badread\n');
+				Con.Warn('SV.ReadClientMessage: badread');
 				return;
 			}
 			cmd = MSG.ReadChar();
@@ -2023,7 +2023,7 @@ SV.ReadClientMessage = function()
 				SV.ReadClientMove();
 			else
 			{
-				Sys.Print('SV.ReadClientMessage: unknown command char\n');
+				Con.Warn('SV.ReadClientMessage: unknown command char');
 				return;
 			}
 		}

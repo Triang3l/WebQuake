@@ -1,22 +1,24 @@
 WEBS = {};
 
-WEBS.Init = function()
-{
-	if ((window.WebSocket == null) || (document.location.protocol === 'https:'))
+WEBS.Init = function(){
+	if (window.WebSocket == null)
 		return;
 	WEBS.available = true;
 	return true;
 };
 
-WEBS.Connect = function(host)
-{
-	if (host.length <= 5)
+WEBS.Connect = function(host){
+	var charSizen=6;	    
+	if (host.length <= 7)
 		return;
-	if (host.charCodeAt(5) === 47)
+	if ((host.substring(0, 5) !== 'ws://')&&(host.substring(0, 6) !== 'wss://')){
 		return;
-	if (host.substring(0, 5) !== 'ws://')
+	}else if(host.substring(0, 5) !== 'ws://')
+		charSizen=5;
+	if (host.charCodeAt(charSizen) === 47)
 		return;
-	host = 'ws://' + host.split('/')[2];
+
+	
 	var sock = NET.NewQSocket();
 	sock.disconnected = true;
 	sock.receiveMessage = [];

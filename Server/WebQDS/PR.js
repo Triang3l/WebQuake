@@ -300,7 +300,7 @@ PR.LoadProgs = function()
 	var progs = COM.LoadFile('progs.dat');
 	if (progs == null)
 		Sys.Error('PR.LoadProgs: couldn\'t load progs.dat');
-	Con.DPrint('Programs occupy ' + (progs.byteLength >> 10) + 'K.\n');
+	Con.DPrint('Programs occupy ' + (progs.byteLength >> 10) + 'K.');
 	var view = new DataView(progs);
 
 	var i = view.getUint32(0, true);
@@ -494,14 +494,14 @@ PR.PrintStatement = function(s)
 		if (s.c !== 0)
 			text += PR.GlobalStringNoContents(s.c);
 	}
-	Con.Print(text + '\n');
+	Con.Print(text + '');
 };
 
 PR.StackTrace = function()
 {
 	if (PR.depth === 0)
 	{
-		Con.Print('<NO STACK>\n');
+		Con.Warn('<NO STACK>');
 		return;
 	}
 	PR.stack[PR.depth] = [PR.xstatement, PR.xfunction];
@@ -511,7 +511,7 @@ PR.StackTrace = function()
 		f = PR.stack[PR.depth][1];
 		if (f == null)
 		{
-			Con.Print('<NO FUNCTION>\n');
+			Con.Warn('<NO FUNCTION>');
 			continue;
 		}
 		file = PR.GetString(f.file);
