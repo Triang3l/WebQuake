@@ -98,12 +98,6 @@ If the sound randomly doesn't play, go to console (press ~ or Options > Go to co
 
 You can delete saved games by pressing Del in the load or save menus. This only works for the saved games created in WebQuake.
 
-# Intentionally unimplemented features
-
-These features are intentionally left unimplemented in this build. Please don't make pull requests adding them.
-
-* Gamepad support - uses vendor prefixes.
-
 # Contributing
 
 If you want to contribute to WebQuake, feel free to fork the project and make a pull request. Pull requests and issues will be reviewed by the developer.
