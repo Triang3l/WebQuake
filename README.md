@@ -63,11 +63,11 @@ Then, you have 4 ways to execute server commands:
 
 You can retrieve some server information in JSON format by going to special addresses on your server IP.
 
-* `/server_info` - returns an object containing the server name `hostName`, current level name `levelName`, number of connected players `currentPlayers`, maximum number of players `maxPlayers` and API version `protocolVersion`. Gives 503 when server is off.
-* `/player_info` - returns an array of objects with the info about a player, where # is player number starting from 0. Contains name `name`, shirt/pants color `colors`, shirt color is upper 4 bits, pants color is lower 4 bits), number of kills `frags`, time since connected `connectTime` and IP address `address`. Gives 503 when server is off or 404 if the player is not found.
-* `/player_info/#` - returns single player info object for the player under the number #.
-* `/rule_info` - returns an array of all server console variables (like movement variables), in `{rule:"variable name",value:"variable value"}` format.
-* `/rule_info/variable_name` - returns single server console variable in the same format. 404 if the variable doesn't exist.
+* `/server_info` — returns an object containing the server name `hostName`, current level name `levelName`, number of connected players `currentPlayers`, maximum number of players `maxPlayers` and API version `protocolVersion`. Gives 503 when server is off.
+* `/player_info` — returns an array of objects with the info about a player, where # is player number starting from 0. Contains name `name`, shirt/pants color `colors`, shirt color is upper 4 bits, pants color is lower 4 bits), number of kills `frags`, time since connected `connectTime` and IP address `address`. Gives 503 when server is off or 404 if the player is not found.
+* `/player_info/#` — returns single player info object for the player under the number #.
+* `/rule_info` — returns an array of all server console variables (like movement variables), in `{rule:"variable name",value:"variable value"}` format.
+* `/rule_info/variable_name` — returns single server console variable in the same format. 404 if the variable doesn't exist.
 
 # Adding game music
 
@@ -81,14 +81,14 @@ After that, create "media" folder in the "id1" folder (or, for the mission pack 
 
 # Browser support
 
-The port has been tested on the following browsers:
+The port has been tested on the following browsers (results from 2013):
 
-* Firefox (Windows) - **Very good** - developed on it.
-* Chrome (Windows) - **Very good** - no "loading" image.
-* Firefox (Android) - **Okay** - very low performance (canvas is locked at 12 FPS), no mouse support. Keypresses are incorrect, not tested with Windows keyboard.
-* Chrome (Android) - **Not Good** - no "loading" image, sound is broken (launch with `?-nosound -nocdaudio`), no mouse. Requires Windows-compatible keyboard for Esc and F1-F12 keys.
-* Opera (Windows) - **Not Good** - low performance, nothing is drawn in water (type `r_waterwarp 0` in the console), no mouse.
-* Internet Explorer (Windows) - **Unsupported** - bad TypedArray support, but likely many more issues.
+* Firefox (Windows) — **Very good** — developed on it.
+* Chrome (Windows) — **Very good** — no "loading" image.
+* Firefox (Android) — **Okay** — very low performance (canvas is locked at 12 FPS), no mouse support. Keypresses are incorrect, not tested with Windows keyboard.
+* Chrome (Android) — **Not Good** — no "loading" image, sound is broken (launch with `?-nosound -nocdaudio`), no mouse. Requires Windows-compatible keyboard for Esc and F1-F12 keys.
+* Opera (Windows) — **Not Good** — low performance, nothing is drawn in water (type `r_waterwarp 0` in the console), no mouse.
+* Internet Explorer (Windows) — **Unsupported** — bad TypedArray support, but likely many more issues.
 
 Mouse support is currently available only on Chrome and Firefox. Stereo positional audio is supported on Chrome and Safari.
 
