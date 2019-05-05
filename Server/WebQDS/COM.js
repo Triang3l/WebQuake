@@ -173,7 +173,7 @@ COM.LoadFile = function(filename)
 					break;
 				}
 				Sys.Print('PackFile: ' + search.filename + '/pak' + j + '.pak : ' + filename + '\n')
-				src = new Buffer(file.filelen);
+				src = Buffer.alloc(file.filelen);
 				Node.fs.readSync(fd, src, 0, file.filelen, file.filepos);
 				Node.fs.closeSync(fd);
 				break;
@@ -255,7 +255,7 @@ COM.LoadPackFile = function(packfile)
 	{
 		return;
 	}
-	var buf = new Buffer(12);
+	var buf = Buffer.alloc(12);
 	Node.fs.readSync(fd, buf, 0, 12, 0);
 	if (buf.readUInt32LE(0) !== 0x4b434150)
 		Sys.Error(packfile + ' is not a packfile');
@@ -267,7 +267,7 @@ COM.LoadPackFile = function(packfile)
 	var pack = [];
 	if (numpackfiles !== 0)
 	{
-		buf = new Buffer(dirlen);
+		buf = Buffer.alloc(dirlen);
 		Node.fs.readSync(fd, buf, 0, dirlen, dirofs);
 		if (CRC.Block(buf) !== 32981)
 			COM.modified = true;
