@@ -87,15 +87,15 @@ Datagram.CheckNewConnections = function()
 	sock.sendSequence = 0;
 	sock.unreliableSendSequence = 0;
 	sock.sendMessageLength = 0;
-	sock.sendMessage = new Buffer(8192);
+	sock.sendMessage = Buffer.alloc(8192);
 	sock.receiveSequence = 0;
 	sock.unreliableReceiveSequence = 0;
 	sock.receiveMessageLength = 0;
-	sock.receiveMessage = new Buffer(8192);
+	sock.receiveMessage = Buffer.alloc(8192);
 	sock.addr = address;
 	sock.address = address[0] + ':' + address[1];
 	sock.messages = [];
-	var buf = new Buffer(1032);
+	var buf = Buffer.alloc(1032);
 	buf.writeUInt32LE(0x09000080, 0);
 	buf[4] = 0x81;
 	buf.writeUInt32LE(newsocket.data_port, 5);
@@ -128,8 +128,9 @@ Datagram.GetMessage = function(sock)
 				Con.DPrint('Dropped ' + (sequence - sock.unreliableReceiveSequence) + ' datagram(s)\n');
 			sock.unreliableReceiveSequence = sequence + 1;
 			NET.message.cursize = length;
+			const dest = new Uint8Array(NET.message.data)
 			for (i = 0; i < length; ++i)
-				NET.message.data[i] = message[8 + i];
+				dest[i] = message[8 + i];
 			ret = 2;
 			break;
 		}
@@ -163,7 +164,7 @@ Datagram.GetMessage = function(sock)
 		}
 		if ((flags & 1) !== 0)
 		{
-			sock.driverdata.send(new Buffer([0, 2, 0, 8, sequence >>> 24, (sequence & 0xff0000) >>> 16, (sequence & 0xff00) >>> 8, (sequence & 0xff) >>> 0]),
+			sock.driverdata.send(Buffer.from([0, 2, 0, 8, sequence >>> 24, (sequence & 0xff0000) >>> 16, (sequence & 0xff00) >>> 8, (sequence & 0xff) >>> 0]),
 				0, 8, sock.addr[1], sock.addr[0]);
 			if (sequence !== sock.receiveSequence)
 				continue;
@@ -198,7 +199,7 @@ Datagram.SendMessage = function(sock, data)
 	for (i = 0; i < data.cursize; ++i)
 		sock.sendMessage[i] = src[i];
 	sock.sendMessageLength = data.cursize;
-	var buf = new Buffer(1032);
+	var buf = Buffer.alloc(1032);
 	buf[0] = 0;
 	var dataLen;
 	if (data.cursize <= 1024)
@@ -222,7 +223,7 @@ Datagram.SendMessage = function(sock, data)
 
 Datagram.SendMessageNext = function(sock, resend)
 {
-	var buf = new Buffer(1032);
+	var buf = Buffer.alloc(1032);
 	buf[0] = 0;
 	var dataLen;
 	if (sock.sendMessageLength <= 1024)
@@ -250,7 +251,7 @@ Datagram.SendUnreliableMessage = function(sock, data)
 {
 	if (sock.driverdata == null)
 		return -1;
-	var buf = new Buffer(1032);
+	var buf = Buffer.alloc(1032);
 	buf.writeUInt32BE(data.cursize + 0x00100008, 0);
 	buf.writeUInt32BE(sock.unreliableSendSequence++, 4);
 	var i, src = new Uint8Array(data.data);
@@ -288,7 +289,7 @@ Datagram.ControlOnMessage = function(msg, rinfo)
 	if (((msg[2] << 8) + msg[3]) !== rinfo.size)
 		return;
 	var command = msg[4];
-	var buf = new Buffer(1032), str, cursize;
+	var buf = Buffer.alloc(1032), str, cursize;
 	buf[0] = 0x80;
 	buf[1] = 0;
 

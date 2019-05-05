@@ -83,7 +83,7 @@ WEBS.SendMessage = function(sock, data)
 		return -1;
 	if (sock.driverdata.closeReasonCode !== -1)
 		return -1;
-	var src = new Uint8Array(data.data), dest = new Buffer(data.cursize + 1), i;
+	var src = new Uint8Array(data.data), dest = Buffer.alloc(data.cursize + 1), i;
 	dest[0] = 1;
 	var i;
 	for (i = 0; i < data.cursize; ++i)
@@ -98,7 +98,7 @@ WEBS.SendUnreliableMessage = function(sock, data)
 		return -1;
 	if (sock.driverdata.closeReasonCode !== -1)
 		return -1;
-	var src = new Uint8Array(data.data), dest = new Buffer(data.cursize + 1), i;
+	var src = new Uint8Array(data.data), dest = Buffer.alloc(data.cursize + 1), i;
 	dest[0] = 2;
 	var i;
 	for (i = 0; i < data.cursize; ++i)
@@ -420,7 +420,7 @@ WEBS.HTTPOnRequest = function(request, response)
 		}
 		try
 		{
-			password = (new Buffer(password.substring(6), 'base64')).toString('ascii');
+			password = (Buffer.from(password.substring(6), 'base64')).toString('ascii');
 		}
 		catch (e)
 		{
