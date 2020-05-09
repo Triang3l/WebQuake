@@ -649,7 +649,7 @@ Host.Savegame_f = function()
 		if ((type & 0x8000) === 0)
 			continue;
 		type &= 0x7fff;
-		if ((type !== PR.etype.ev_string) && (type !== PR.etype.ev_float) && (type !== PR.etype.entity))
+		if ((type !== PR.etype.ev_string) && (type !== PR.etype.ev_float) && (type !== PR.etype.ev_entity))
 			continue;
 		f[f.length] = '"' + PR.GetString(def.name) + '" "' + PR.UglyValueString(type, PR.globals, def.ofs) + '"\n';
 	}
