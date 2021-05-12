@@ -21,7 +21,7 @@ require('./Server/WebQDS/NET_Datagram.js');
 require('./Server/WebQDS/NET_WEBS.js');
 require('./Server/WebQDS/PF.js');
 require('./Server/WebQDS/PR.js');
-require('./Server/WebQDS/Protocol.js');
+require('./Client/WebQuake//Protocol.js');
 require('./Server/WebQDS/Q.js');
 require('./Server/WebQDS/SV.js');
 require('./Server/WebQDS/Sys.js');
