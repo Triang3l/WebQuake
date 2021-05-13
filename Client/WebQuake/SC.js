@@ -1,19 +1,19 @@
 
 const sClass = function(){
     this.Init=function(){
-        init();
+        _init();
     };
     this.PrecacheSound = function(name){
         if (this.nosound !== 0)
             return name;
         if (this.precache === 0)
             return name;
-        return precacheSound(name);
+        return _precacheSound(name);
     };
     this.LoadSound = function(source){
         if (this.nosound.value !== 0)
             return;
-        return loadSound(source);
+        return _loadSound(source);
     };
     this.SounList = function(){
         for(let i in sfxs)
@@ -27,7 +27,7 @@ const sClass = function(){
         );
     };
     this.StartSound = function(entnum, entchannel, sfx, origin, vol, attenuation){
-        startSound(entnum, entchannel, sfx, origin, vol, attenuation);
+        _startSound(entnum, entchannel, sfx, origin, vol, attenuation);
     }
     this.StartAmbient = function(name){
         return startAmbient(name);
@@ -39,7 +39,7 @@ const sClass = function(){
         return out;
     }
     this.LocalSound = function(sound){
-         startSound(
+         _startSound(
              CL.state.viewentity, 
              1, 
              sound,
@@ -54,14 +54,8 @@ const sClass = function(){
     this.StopSound = function(etnum, etchannel){
          stopSound(etnum, etchannel);
     }
-    this.Play = function(){
-
-    }
-    this.PlayVol = function(){
-
-    }
     this.StaticSound = async function(sfx, origin, vol, attenuation){
-         await startSound(
+         await _startSound(
              "static", 
              staticSerial,
              sfx,
@@ -86,11 +80,11 @@ const sClass = function(){
                activeChannels.splice(i, 1);
                continue;
             }
-            spatialize(
+            _spatialize(
                 activeChannels[i].entnum,
                 activeChannels[i].entchannel
             );
-            channelVolume(
+            _channelVolume(
                 activeChannels[i].entnum,
                 activeChannels[i].entchannel
             );
@@ -108,7 +102,6 @@ const sClass = function(){
         else if (volume.value > 1.0)
             Cvar.SetValue('volume', 1.0);
     }
-    this.Spatialize = function(ch){}
     this.size = 0;
     this.bgmvolume = 0;
     this.volume = 0;
@@ -116,7 +109,6 @@ const sClass = function(){
     this.ambient_fade = 100;
     this.precache = 1;
     this.nosound = 0;
-    this.static_channels = [];
     this.known_sfx = [];
     this.started = false;
     let staticSerial = 0;
@@ -129,10 +121,10 @@ const sClass = function(){
     let listener_up = [0.0, 0.0, 0.0];
     let sfxs = {};
     let audioCTX;
-    let init = async function(){
+    const _init = async function(){
         Con.Print('\nSound Initialization\n');
-        Cmd.AddCommand('play', S.Play);
-        Cmd.AddCommand('playvol', S.PlayVol);
+        Cmd.AddCommand('play', _playCommand);
+        Cmd.AddCommand('playvol', _playCommand);
         Cmd.AddCommand('stopsound', S.StopAllSounds);
         Cmd.AddCommand('soundlist', S.SoundList);
         this.nosound = Cvar.RegisterVariable(
@@ -173,10 +165,7 @@ const sClass = function(){
              startAmbient('ambience/' + i + '.wav');
 
     }
-    let upldate = function(){
-
-    }
-    let spatialize = function(en, ec){
+    const _spatialize = function(en, ec){
         if(en === CL.state.viewentity){
            channels[en].sub[ec].volLeft = channels[en].sub[ec].vol; 
            channels[en].sub[ec].volRight = channels[en].sub[ec].vol; 
@@ -195,7 +184,7 @@ const sClass = function(){
             source[2] /= dist;
         }
         dist *= (channels[en].sub[ec].mult*0.4);
-        var dot = listener_right[0] * source[0]
+        const dot = listener_right[0] * source[0]
             + listener_right[1] * source[1]
             + listener_right[2] * source[2];
         channels[en].sub[ec].volRight = channels[en].sub[ec].vol * (1.0 - dist) * (1.0 + dot);
@@ -209,18 +198,59 @@ const sClass = function(){
         if (channels[en].sub[ec].volLeft > 1.0)
             channels[en].sub[ec].volLeft = 1.0;
     }
-    let channelVolume = function(en,ec){
+    const _channelVolume = function(en,ec){
         channels[en].sub[ec].g1.gain.value = 
              channels[en].sub[ec].volLeft * volume.value;
         channels[en].sub[ec].g2.gain.value = 
              channels[en].sub[ec].volRight * volume.value;
     }
-    let startSound = async function(entnum, entchannel, sfx, origin, vol, attenuation){
+    const _playCommand = function(){
+        const [command, ...list] = Cmd.argv;
+        if (this.nosound.value !== 0)
+            return;
+        if (command === 'playVol')
+            return _playVol(list);
+        _play(list);
+    }
+    const _play = function(list){
+        let sfx;
+        for (let i of list){
+            sfx = _precacheSound(COM.DefaultExtension(i, '.wav'));
+            if(sfx != null)
+                _startSound(
+                    CL.state.viewentity,
+                    0,
+                    sfx,
+                    listener_originm
+                    1.0,
+                    1.0
+                );
+        }
+
+    }
+    const _playVol = function(list){
+        let sfx;
+        for (let i = 0; i < list; i+=2){
+            sfx = _precacheSound(COM.DefaultExtension(list[i], '.wav'));
+            if(sfx != null)
+                _startSound(
+                    CL.state.viewentity,
+                    0,
+                    sfx,
+                    listener_originm
+                    Q.atof(
+                       list[i+1],
+                    ),
+                    1.0
+                );
+        }
+    }
+    const _startSound = async function(entnum, entchannel, sfx, origin, vol, attenuation){
          pickChannel(entnum, entchannel);
-         await loadSound(sfx);
+         await _loadSound(sfx);
          channels[entnum].sub[entchannel].vol = vol;
          channels[entnum].sub[entchannel].mult = attenuation * 0.001;
-         spatialize(entnum, entchannel);
+         _spatialize(entnum, entchannel);
          if (
              (channels[entnum].sub[entchannel].volLeft === 0.0)&&
              (channels[entnum].sub[entchannel].volRight === 0.0)
@@ -235,7 +265,6 @@ const sClass = function(){
             });
          }
          channels[entnum].sub[entchannel].sx.buffer = sfxs[sfx].cache;
-//        channels[entnum].sub[entchannel].sx.connect(audioCTX.destination);
          channels[entnum].sub[entchannel].end  = Host.realtime + sfxs[sfx].cache.length;
          channels[entnum].sub[entchannel].sx.connect(
              channels[entnum].sub[entchannel].m1
@@ -261,38 +290,40 @@ const sClass = function(){
          channels[entnum].sub[entchannel].m2.connect(
              audioCTX.destination
          );
-         channelVolume(entnum,entchannel);
+         _channelVolume(entnum,entchannel);
          return channels[entnum].sub[entchannel].sx.start(); 
     }
     let startAmbient = async (sfx)=>{
         try{
             ambient_channels[sfx].stop();
-        }catch(e){};
-        loadSound(sfx);
+        }catch(e){
+            console.error(e);
+        };
+        _loadSound(sfx);
         ambient_channels[sfx] = audioCTX.createBufferSource();
         ambient_channels[sfx].loop = true ;
         ambient_channels[sfx].connect(audioCTX.destination);
         setTimeout(function(){
             try{
                 console.info(sfx);
-                 ambient_channels[sfx].buffer = sfxs[sfx].cache;
-                 ambient_channels[sfx].start(); 
+                ambient_channels[sfx].buffer = sfxs[sfx].cache;
+                ambient_channels[sfx].start(); 
             }catch(e){
                  console.error(e);
             }
         },2000);
     }
-    let startAmbientAll = function(){
+    const _startAmbientAll = function(){
         for (let i  in  ambient_channels)
            startAmbient(i);
     }
-    let precacheSound = function(name){
+    const _precacheSound = function(name){
         if(typeof sfxs[name] === "undefined")
             sfxs[name] = {name: name};
-        loadSound(name);
+        _loadSound(name);
         return name;
     }
-    let loadSound = async function(name){
+    const _loadSound = async function(name){
         if (sfxs[name]  == null)
             sfxs[name] = {
                name  : name,
