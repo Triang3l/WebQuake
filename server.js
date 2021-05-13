@@ -1,10 +1,10 @@
 Node = {
-	dgram: require('dgram'),
-	fs: require('fs'),
-	http: require('http'),
-	os: require('os'),
-	url: require('url'),
-	websocket: require('websocket')
+    fs:    require('fs'),
+    os:    require('os'),
+    url:   require('url'),
+    http:  require('http'),
+    dgram: require('dgram'),
+    websocket: require('websocket')
 };
 require('./Server/WebQDS/Cmd.js');
 require('./Server/WebQDS/COM.js');
@@ -25,7 +25,7 @@ require('./Client/WebQuake/Protocol.js');
 require('./Server/WebQDS/Q.js');
 require('./Server/WebQDS/SV.js');
 require('./Server/WebQDS/Sys.js');
-require('./Server/WebQDS/SZ.js');
+require('./Client/WebQuake/SZ.js');
 require('./Server/WebQDS/V.js');
 require('./Server/WebQDS/Vec.js');
 Sys.main();
