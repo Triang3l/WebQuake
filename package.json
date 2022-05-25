@@ -1,0 +1,30 @@
+{
+    "name": "rock-quake",
+    "version": "0.0.1",
+    "description": "web quake",
+    "main": "index.js",
+    "scripts": {
+        "test": "node test.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Soldy/WebQuake.git"
+    },
+    "keywords": [],
+    "author": "Soldy <4786022+Soldy@users.noreply.github.com>",
+    "license": "GPLv3",
+    "bugs": {
+        "url": "https://github.com/Soldy/WebQuake/issues"
+    },
+    "homepage": "https://github.com/Soldy/WebQuake#readme",
+    "devDependencies": {
+        "cheapest-sleep": "^0.99.0-alpha0",
+        "eslint": "^7.32.0",
+        "nanoTest": "^0.9.9-beta31"
+    },
+    "dependencies": {
+        "interactiveConsole": "^0.0.7-alpha0",
+        "websocket": "^1.0.34"
+
+    }
+}
